@@ -3,7 +3,7 @@ CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER');
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Auth" (
-    "userId" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "passwordLastModificationTime" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
