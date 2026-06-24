@@ -28,6 +28,15 @@ export class UserRepository {
         });
     }
 
+    async findByEmail(email: string) {
+        return prisma.user.findFirst({
+            where: {
+                email: email,
+                isDeleted: false,
+            },
+        });
+    }
+
     async update(userId: string, data: Prisma.UserUpdateInput) {
         return prisma.user.update({
             where: {

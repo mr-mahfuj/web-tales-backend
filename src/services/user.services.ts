@@ -12,7 +12,14 @@ type UpdateUserInput = Partial<CreateUserInput>;
 export class UserService {
     constructor(private readonly userRepository = new UserRepository()){}
 
-    createUser(data : CreateUserInput) {
+    async createUser(data : CreateUserInput) {
+        const existingUser = await this.userRepository.findByEmail(
+            data.email
+        );
+
+        if (existingUser) {
+            throw new Error("Email already exists");
+        }
         return this.userRepository.create(data);
     }
 
