@@ -1,12 +1,5 @@
 {
   "compilerOptions": {
-<<<<<<< HEAD
-=======
-    // File Layout
-    "rootDir": "./src",
-    "outDir": "./dist",
->>>>>>> 3c81192 (fix: add db status to the /health checkpoint)
-
     "module": "nodenext",
     "target": "esnext",
     "types": [],

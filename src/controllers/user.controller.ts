@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { StatusCode } from "../enums/status-code.enum.js";
 import { UserService } from "../services/user.services.js";
 
 type CreateUserInput = {
@@ -56,7 +57,7 @@ export class UserController {
         const { username, name, email } = req.body as Partial<CreateUserInput>;
 
         if (!username || !name || !email) {
-            return res.status(400).json({
+            return res.status(StatusCode.BadRequest).json({
                 message: "username, name, and email are required",
             });
         }
@@ -67,19 +68,19 @@ export class UserController {
             email,
         });
 
-        return res.status(201).json(formatUser(user));
+        return res.status(StatusCode.Created).json(formatUser(user));
     }
 
     async getAllUsers(_req: Request, res: Response) {
         const users = await userService.getAllUsers();
-        return res.status(200).json(users.map(formatUser));
+        return res.status(StatusCode.Ok).json(users.map(formatUser));
     }
 
     async getUserById(req: Request, res: Response) {
         const userId = parseUserId(req.params.userId);
 
         if (!userId) {
-            return res.status(400).json({
+            return res.status(StatusCode.BadRequest).json({
                 message: "Invalid userId",
             });
         }
@@ -87,19 +88,19 @@ export class UserController {
         const user = await userService.getUserById(userId);
 
         if (!user) {
-            return res.status(404).json({
+            return res.status(StatusCode.NotFound).json({
                 message: "User not found",
             });
         }
 
-        return res.status(200).json(formatUser(user));
+        return res.status(StatusCode.Ok).json(formatUser(user));
     }
 
     async updateUser(req: Request, res: Response) {
         const userId = parseUserId(req.params.userId);
 
         if (!userId) {
-            return res.status(400).json({
+            return res.status(StatusCode.BadRequest).json({
                 message: "Invalid userId",
             });
         }
@@ -112,7 +113,7 @@ export class UserController {
         if (email !== undefined) updateData.email = email;
 
         if (Object.keys(updateData).length === 0) {
-            return res.status(400).json({
+            return res.status(StatusCode.BadRequest).json({
                 message: "At least one field is required",
             });
         }
@@ -120,19 +121,19 @@ export class UserController {
         const updatedUser = await userService.updateUser(userId, updateData);
 
         if (!updatedUser) {
-            return res.status(404).json({
+            return res.status(StatusCode.NotFound).json({
                 message: "User not found",
             });
         }
 
-        return res.status(200).json(formatUser(updatedUser));
+        return res.status(StatusCode.Ok).json(formatUser(updatedUser));
     }
 
     async deleteUser(req: Request, res: Response) {
         const userId = parseUserId(req.params.userId);
 
         if (!userId) {
-            return res.status(400).json({
+            return res.status(StatusCode.BadRequest).json({
                 message: "Invalid userId",
             });
         }
@@ -140,12 +141,12 @@ export class UserController {
         const deletedUser = await userService.softDelete(userId);
 
         if (!deletedUser) {
-            return res.status(404).json({
+            return res.status(StatusCode.NotFound).json({
                 message: "User not found",
             });
         }
 
-        return res.status(200).json({
+        return res.status(StatusCode.Ok).json({
             message: "User deleted successfully",
         });
     }
