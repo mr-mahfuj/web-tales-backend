@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { timeStamp } from "node:console";
-import { stat } from "node:fs";
+
+import { StatusCode } from "../enums/status-code.enum.js";
 
 const router = Router();
 
 router.get("/", (_req, res) => {
-    res.status(200).json({
+    res.status(StatusCode.Ok).json({
         status: "UP",
         timeStamp : new Date().toISOString(),
     })
