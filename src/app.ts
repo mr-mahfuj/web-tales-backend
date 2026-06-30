@@ -9,6 +9,5 @@ app.use(express.json());
 
 app.use("/health", healthRouter);
 app.use("/users", userRouter);
-// app.use("/user", userRouter);
 
 export default app;

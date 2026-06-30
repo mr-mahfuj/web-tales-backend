@@ -2,9 +2,9 @@ import type { Prisma } from "@prisma/client";
 import { UserRepository } from "../repositories/user.repo.js";
 
 type CreateUserInput = {
-    username: string;
-    name: string;
-    email: string;
+    username?: string | undefined;
+    name?: string | undefined;
+    email?: string | undefined;
 };
 
 type UpdateUserInput = Partial<CreateUserInput>;
@@ -13,14 +13,24 @@ export class UserService {
     constructor(private readonly userRepository = new UserRepository()){}
 
     async createUser(data : CreateUserInput) {
+        const { username, name, email } = data;
+
+        if (!username || !name || !email) {
+            throw new Error("username, name, and email are required");
+        }
+
         const existingUser = await this.userRepository.findByEmail(
-            data.email
+            email
         );
 
         if (existingUser) {
             throw new Error("Email already exists");
         }
-        return this.userRepository.create(data);
+        return this.userRepository.create({
+            username,
+            name,
+            email,
+        });
     }
 
     getAllUsers() {
@@ -32,6 +42,12 @@ export class UserService {
     }
 
     async updateUser(userId: string, data: UpdateUserInput) {
+        const hasAtLeastOneField = Object.values(data).some((value) => value !== undefined);
+
+        if (!hasAtLeastOneField) {
+            throw new Error("At least one field is required");
+        }
+
         const existingUser = await this.userRepository.findById(userId);
         if(!existingUser) {
             return null;

@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { StatusCode } from "../enums/status-code.enum.js";
+import { StatusCode } from "../constants/status-code.enum.js";
 import { UserService } from "../services/user.services.js";
 
 type CreateUserInput = {
@@ -56,12 +56,6 @@ export class UserController {
     async createUser(req: Request, res: Response) {
         const { username, name, email } = req.body as Partial<CreateUserInput>;
 
-        if (!username || !name || !email) {
-            return res.status(StatusCode.BadRequest).json({
-                message: "username, name, and email are required",
-            });
-        }
-
         const user = await userService.createUser({
             username,
             name,
@@ -106,19 +100,12 @@ export class UserController {
         }
 
         const { username, name, email } = req.body as Partial<CreateUserInput>;
-        const updateData: UpdateUserInput = {};
 
-        if (username !== undefined) updateData.username = username;
-        if (name !== undefined) updateData.name = name;
-        if (email !== undefined) updateData.email = email;
-
-        if (Object.keys(updateData).length === 0) {
-            return res.status(StatusCode.BadRequest).json({
-                message: "At least one field is required",
-            });
-        }
-
-        const updatedUser = await userService.updateUser(userId, updateData);
+        const updatedUser = await userService.updateUser(userId, {
+            username,
+            name,
+            email,
+        });
 
         if (!updatedUser) {
             return res.status(StatusCode.NotFound).json({
