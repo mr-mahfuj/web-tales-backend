@@ -128,6 +128,9 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+# vscode files to ignore
+.vscode/
+
 # pnpm
 .pnpm-store
 
@@ -144,3 +147,5 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+/src/generated/prisma
