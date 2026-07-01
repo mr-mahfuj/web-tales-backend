@@ -1,6 +1,6 @@
-import type { Prisma } from "@prisma/client";
-import type { UserDTO } from "../dtos/user.dto.js";
-import prisma from "../config/prisma.js";
+import type { Prisma } from '@prisma/client';
+import type { UserDTO } from '../dtos/user.dto.js';
+import prisma from '../config/prisma.js';
 
 export class UserRepository {
     async create(data: Prisma.UserCreateInput): Promise<UserDTO> {
@@ -13,9 +13,9 @@ export class UserRepository {
         return prisma.user.findMany({
             where: {
                 isDeleted: false,
-            }, 
+            },
             orderBy: {
-                id: "asc",
+                id: 'asc',
             },
         });
     }
@@ -32,7 +32,7 @@ export class UserRepository {
     async findByEmail(email: string): Promise<UserDTO | null> {
         return prisma.user.findFirst({
             where: {
-                email: email,
+                email,
                 isDeleted: false,
             },
         });

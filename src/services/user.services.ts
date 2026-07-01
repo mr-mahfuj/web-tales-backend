@@ -1,19 +1,19 @@
-import type { Prisma } from "@prisma/client";
-import type { CreateUserDTO, UpdateUserDTO, UserDTO } from "../dtos/user.dto.js";
-import { UserRepository } from "../repositories/user.repo.js";
+import type { Prisma } from '@prisma/client';
+import type { CreateUserDTO, UpdateUserDTO, UserDTO } from '../dtos/user.dto.js';
+import { UserRepository } from '../repositories/user.repo.js';
 
 export class UserService {
     constructor(private readonly userRepository = new UserRepository()) {}
 
     private normalizeUserId(userId: string | string[] | undefined): string {
-        if (typeof userId !== "string") {
-            throw new Error("Invalid userId");
+        if (typeof userId !== 'string') {
+            throw new Error('Invalid userId');
         }
 
         const normalizedUserId = userId.trim();
 
         if (!normalizedUserId) {
-            throw new Error("Invalid userId");
+            throw new Error('Invalid userId');
         }
 
         return normalizedUserId;
@@ -36,7 +36,7 @@ export class UserService {
             const username = data.username.trim();
 
             if (!username) {
-                throw new Error("username cannot be empty");
+                throw new Error('username cannot be empty');
             }
 
             normalizedData.username = username;
@@ -46,7 +46,7 @@ export class UserService {
             const name = data.name.trim();
 
             if (!name) {
-                throw new Error("name cannot be empty");
+                throw new Error('name cannot be empty');
             }
 
             normalizedData.name = name;
@@ -56,14 +56,14 @@ export class UserService {
             const email = data.email.trim();
 
             if (!email) {
-                throw new Error("email cannot be empty");
+                throw new Error('email cannot be empty');
             }
 
             normalizedData.email = email;
         }
 
         if (Object.keys(normalizedData).length === 0) {
-            throw new Error("At least one field is required");
+            throw new Error('At least one field is required');
         }
 
         return normalizedData;
@@ -71,17 +71,17 @@ export class UserService {
 
     async createUser(data: CreateUserDTO): Promise<UserDTO> {
         if (!data.username?.trim() || !data.name?.trim() || !data.email?.trim()) {
-            throw new Error("username, name, and email are required");
+            throw new Error('username, name, and email are required');
         }
 
-        const username = this.normalizeRequiredText(data.username, "username");
-        const name = this.normalizeRequiredText(data.name, "name");
-        const email = this.normalizeRequiredText(data.email, "email");
+        const username = this.normalizeRequiredText(data.username, 'username');
+        const name = this.normalizeRequiredText(data.name, 'name');
+        const email = this.normalizeRequiredText(data.email, 'email');
 
         const existingUser = await this.userRepository.findByEmail(email);
 
         if (existingUser) {
-            throw new Error("Email already exists");
+            throw new Error('Email already exists');
         }
 
         return this.userRepository.create({
@@ -100,7 +100,7 @@ export class UserService {
         const user = await this.userRepository.findById(normalizedUserId);
 
         if (!user) {
-            throw new Error("User not found");
+            throw new Error('User not found');
         }
 
         return user;
@@ -113,10 +113,13 @@ export class UserService {
         const existingUser = await this.userRepository.findById(normalizedUserId);
 
         if (!existingUser) {
-            throw new Error("User not found");
+            throw new Error('User not found');
         }
 
-        return this.userRepository.update(normalizedUserId, normalizedData as Prisma.UserUpdateInput);
+        return this.userRepository.update(
+            normalizedUserId,
+            normalizedData as Prisma.UserUpdateInput,
+        );
     }
 
     async softDelete(userId: string | string[] | undefined): Promise<UserDTO> {
@@ -124,7 +127,7 @@ export class UserService {
         const existingUser = await this.userRepository.findById(normalizedUserId);
 
         if (!existingUser) {
-            throw new Error("User not found");
+            throw new Error('User not found');
         }
 
         return this.userRepository.update(normalizedUserId, {
