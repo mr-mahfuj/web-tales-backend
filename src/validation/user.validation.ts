@@ -43,8 +43,6 @@ const updateUserBodySchema = createUserBodySchema
         message: 'At least one field must be provided',
     });
 
-const replaceUserBodySchema = createUserBodySchema;
-
 export const createUserSchema = z.strictObject({
     body: createUserBodySchema,
 });
@@ -54,13 +52,6 @@ export const updateUserSchema = z.strictObject({
         userId: userIdSchema,
     }),
     body: updateUserBodySchema,
-});
-
-export const replaceUserSchema = z.strictObject({
-    params: z.strictObject({
-        userId: userIdSchema,
-    }),
-    body: replaceUserBodySchema,
 });
 
 export const getUserSchema = z.strictObject({

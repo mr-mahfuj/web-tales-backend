@@ -4,7 +4,6 @@ import { validate } from '../middleware/validate.middleware.js';
 import {
     createUserSchema,
     getUserSchema,
-    replaceUserSchema,
     updateUserSchema,
 } from '../validation/user.validation.js';
 
@@ -19,7 +18,6 @@ router.patch(
     validate(updateUserSchema),
     userController.updateUser.bind(userController),
 );
-router.put('/:userId', validate(replaceUserSchema), userController.updateUser.bind(userController));
 router.delete('/:userId', validate(getUserSchema), userController.deleteUser.bind(userController));
 
 export default router;
