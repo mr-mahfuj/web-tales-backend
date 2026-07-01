@@ -1,7 +1,7 @@
-import type { Request, Response } from "express";
-import { StatusCode } from "../constants/status-code.enum.js";
-import type { CreateUserDTO, UpdateUserDTO } from "../dtos/user.dto.js";
-import { UserService } from "../services/user.services.js";
+import type { Request, Response } from 'express';
+import { StatusCode } from '../constants/status-code.enum.js';
+import type { CreateUserDTO, UpdateUserDTO } from '../dtos/user.dto.js';
+import { UserService } from '../services/user.services.js';
 
 const userService = new UserService();
 
@@ -14,6 +14,7 @@ export class UserController {
 
     async getAllUsers(_req: Request, res: Response) {
         const users = await userService.getAllUsers();
+
         return res.status(StatusCode.Ok).json(users);
     }
 
@@ -24,7 +25,10 @@ export class UserController {
     }
 
     async updateUser(req: Request, res: Response) {
-        const updatedUser = await userService.updateUser(req.params.userId, req.body as UpdateUserDTO);
+        const updatedUser = await userService.updateUser(
+            req.params.userId,
+            req.body as UpdateUserDTO,
+        );
 
         return res.status(StatusCode.Ok).json(updatedUser);
     }
@@ -33,7 +37,7 @@ export class UserController {
         await userService.softDelete(req.params.userId);
 
         return res.status(StatusCode.Ok).json({
-            message: "User deleted successfully",
+            message: 'User deleted successfully',
         });
     }
 }
