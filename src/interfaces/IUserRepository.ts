@@ -1,4 +1,4 @@
-import type { CreateUserDTO, UpdateUserDTO, UserDTO } from "../dtos/user.dto.js";
+import type { CreateUserDTO, UpdateUserDTO, UserDTO } from '../dtos/user.dto.js';
 
 export interface IUserRepository {
     create(data: CreateUserDTO): Promise<UserDTO>;
