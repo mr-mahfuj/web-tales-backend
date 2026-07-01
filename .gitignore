@@ -149,3 +149,7 @@ vite.config.ts.timestamp-*
 .vite/
 
 /src/generated/prisma
+
+
+backend-doc/
+api.http
