@@ -1,7 +1,7 @@
 import type { CreateUserDTO, UpdateUserDTO, UserDTO } from '../dtos/user.dto.js';
 import { ConflictError, NotFoundError, ValidationError } from '../errors/index.js';
 import type { IUserRepository } from '../interfaces/IUserRepository.js';
-import { UserRepository } from '../repositories/user.repo.js';
+import { UserRepository } from '../repositories/user.repository.js';
 
 export class UserService {
     constructor(private readonly userRepository: IUserRepository = new UserRepository()) {}
