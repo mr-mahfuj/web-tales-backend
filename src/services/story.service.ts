@@ -1,87 +1,20 @@
 import type { CreateStoryDTO, UpdateStoryDTO, StoryDTO } from '../dtos/story.dto.js';
-import { ConflictError, NotFoundError, ValidationError } from '../errors/index.js';
-import type { IStoryRepository } from '../interfaces/IStoryRepository.js';
+import { NotFoundError } from '../common/errors/index.js';
 import { StoryRepository } from '../repositories/story.repository.js';
 
 export class StoryService {
-    constructor(private readonly storyRepository: IStoryRepository = new StoryRepository()) {}
-
-    private normalizeStoryId(storyId: string | string[] | undefined): string {
-        if (typeof storyId !== 'string') {
-            throw new ValidationError('Invalid story ID', { field: 'storyId' });
-        }
-
-        const normalizedStoryId = storyId.trim();
-
-        if (!normalizedStoryId) {
-            throw new ValidationError('Invalid story ID', { field: 'storyId' });
-        }
-
-        return normalizedStoryId;
-    }
-
-    private normalizeRequiredText(value: string | undefined, fieldName: string): string {
-        const normalizedValue = value?.trim();
-
-        if (!normalizedValue) {
-            throw new ValidationError(`${fieldName} is required`, { field: fieldName });
-        }
-
-        return normalizedValue;
-    }
-
-    private normalizeUpdateData(data: UpdateStoryDTO): UpdateStoryDTO {
-        const normalizedData: UpdateStoryDTO = {};
-
-        if (data.title !== undefined) {
-            const title = data.title.trim();
-
-            if (!title) {
-                throw new ValidationError('title cannot be empty', { field: 'title' });
-            }
-
-            normalizedData.title = title;
-        }
-
-        if (data.body !== undefined) {
-            const body = data.body.trim();
-
-            if (!body) {
-                throw new ValidationError('body cannot be empty', { field: 'body' });
-            }
-
-            normalizedData.body = body;
-        }
-
-        if (Object.keys(normalizedData).length === 0) {
-            throw new ValidationError('At least one field is required');
-        }
-
-        return normalizedData;
-    }
+    constructor(private readonly storyRepository = new StoryRepository()) {}
 
     async createStory(data: CreateStoryDTO): Promise<StoryDTO> {
-        if (!data.title?.trim() || !data.body?.trim()) {
-            throw new ValidationError('title or body is required');
-        }
-
-        const userId = this.normalizeRequiredText(data.userId, 'userId');
-        const title = this.normalizeRequiredText(data.title, 'title');
-        const body = this.normalizeRequiredText(data.body, 'body');
-
-        return this.storyRepository.create({
-            userId,
-            title,
-            body,
-        });
+        return this.storyRepository.create(data);
     }
 
     getAllStories(): Promise<StoryDTO[]> {
         return this.storyRepository.findAll();
     }
 
-    async getStoryById(storyId: string | string[] | undefined): Promise<StoryDTO> {
-        const normalizedStoryId = this.normalizeStoryId(storyId);
+    async getStoryById(storyId: string): Promise<StoryDTO> {
+        const normalizedStoryId = storyId.trim();
         const story = await this.storyRepository.findById(normalizedStoryId);
 
         if (!story) {
@@ -91,12 +24,8 @@ export class StoryService {
         return story;
     }
 
-    async updateStory(
-        storyId: string | string[] | undefined,
-        data: UpdateStoryDTO,
-    ): Promise<StoryDTO> {
-        const normalizedStoryId = this.normalizeStoryId(storyId);
-        const normalizedData = this.normalizeUpdateData(data);
+    async updateStory(storyId: string, data: UpdateStoryDTO): Promise<StoryDTO> {
+        const normalizedStoryId = storyId.trim();
 
         const existingStory = await this.storyRepository.findById(normalizedStoryId);
 
@@ -104,11 +33,11 @@ export class StoryService {
             throw new NotFoundError('Story not found', { storyId: normalizedStoryId });
         }
 
-        return this.storyRepository.update(normalizedStoryId, normalizedData);
+        return this.storyRepository.update(normalizedStoryId, data);
     }
 
-    async delete(storyId: string | string[] | undefined): Promise<boolean> {
-        const normalizedStoryId = this.normalizeStoryId(storyId);
+    async delete(storyId: string): Promise<boolean> {
+        const normalizedStoryId = storyId.trim();
         const existingStory = await this.storyRepository.findById(normalizedStoryId);
         if (!existingStory) {
             throw new NotFoundError('Story not found', { storyId: normalizedStoryId });

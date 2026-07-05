@@ -1,13 +1,11 @@
-export interface CreateStoryDTO {
-    userId: string;
-    title: string;
-    body: string;
-}
+import type { z } from 'zod';
+import type {
+    createStoryBodySchema,
+    updateStoryBodySchema,
+} from '../validation/story.validation.js';
 
-export interface UpdateStoryDTO {
-    title?: string;
-    body?: string;
-}
+export type CreateStoryDTO = z.infer<typeof createStoryBodySchema>;
+export type UpdateStoryDTO = z.infer<typeof updateStoryBodySchema>;
 
 export interface StoryDTO {
     userId: string;

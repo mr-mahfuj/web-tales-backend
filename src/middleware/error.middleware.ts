@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
-import type { LogLevel } from '../errors/AppError.js';
-import { AppError } from '../errors/AppError.js';
+import type { LogLevel } from '../common/errors/AppError.js';
+import { AppError } from '../common/errors/AppError.js';
 import { StatusCode } from '../constants/status-code.enum.js';
 import { formatZodIssues } from '../utils/error-formatters.js';
 import { logError } from '../utils/error-logger.js';

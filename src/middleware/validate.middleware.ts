@@ -1,7 +1,15 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import type { z } from 'zod';
-import { ValidationError } from '../errors/ValidationError.js';
+import { ValidationError } from '../common/errors/ValidationError.js';
 import { formatZodIssues } from '../utils/error-formatters.js';
+
+declare module 'express' {
+    interface Request {
+        validatedBody?: unknown;
+        validatedParams?: unknown;
+        validatedQuery?: unknown;
+    }
+}
 
 type SplitValidationSchema = {
     params?: z.ZodTypeAny;
@@ -31,7 +39,7 @@ export function validate(schema: z.ZodType | SplitValidationSchema): RequestHand
                     );
                 }
 
-                res.locals.validated = { params: paramsResult.data };
+                req.validatedParams = paramsResult.data;
             }
 
             if (schema.body) {
@@ -47,10 +55,7 @@ export function validate(schema: z.ZodType | SplitValidationSchema): RequestHand
                     );
                 }
 
-                res.locals.validated = {
-                    ...(res.locals.validated as Record<string, unknown> | undefined),
-                    body: bodyResult.data,
-                };
+                req.validatedBody = bodyResult.data;
             }
 
             if (schema.query) {
@@ -66,10 +71,7 @@ export function validate(schema: z.ZodType | SplitValidationSchema): RequestHand
                     );
                 }
 
-                res.locals.validated = {
-                    ...(res.locals.validated as Record<string, unknown> | undefined),
-                    query: queryResult.data,
-                };
+                req.validatedQuery = queryResult.data;
             }
 
             return next();
@@ -91,7 +93,10 @@ export function validate(schema: z.ZodType | SplitValidationSchema): RequestHand
             );
         }
 
-        res.locals.validated = result.data;
+        const validatedData = result.data as Record<string, unknown>;
+        req.validatedBody = validatedData.body;
+        req.validatedParams = validatedData.params;
+        req.validatedQuery = validatedData.query;
         return next();
     };
 }

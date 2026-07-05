@@ -1,9 +1,9 @@
+import type { Prisma } from '@prisma/client';
 import type { CreateStoryDTO, UpdateStoryDTO, StoryDTO } from '../dtos/story.dto.js';
 import prisma from '../config/prisma.js';
-import type { IStoryRepository } from '../interfaces/IStoryRepository.js';
 import { toStoryDTO } from '../utils/story.mapper.js';
 
-export class StoryRepository implements IStoryRepository {
+export class StoryRepository {
     private async execute<T>(operation: () => Promise<T>): Promise<T> {
         return await operation();
     }
@@ -44,7 +44,7 @@ export class StoryRepository implements IStoryRepository {
         return this.execute(async () => {
             const story = await prisma.story.update({
                 where: { storyId },
-                data,
+                data: data as Prisma.StoryUpdateInput,
             });
 
             return toStoryDTO(story);

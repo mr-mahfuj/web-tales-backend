@@ -17,7 +17,7 @@ const bodySchema = z
     .min(BODY.MIN, 'Story body is required')
     .max(BODY.MAX, `Story body cannot exceed ${BODY.MAX} characters`);
 
-const createStoryBodySchema = z
+export const createStoryBodySchema = z
     .object({
         userId: z.uuid({
             message: 'Invalid user id',
@@ -27,31 +27,29 @@ const createStoryBodySchema = z
     })
     .strict();
 
-const updateStoryBodySchema = createStoryBodySchema
+export const updateStoryBodySchema = createStoryBodySchema
     .partial()
     .refine((body) => Object.keys(body).length > 0, {
         message: 'At least one field must be provided',
     });
+
+export const storyIdParamsSchema = z.object({
+    storyId: storyIdSchema,
+});
 
 export const createStorySchema = {
     body: createStoryBodySchema,
 };
 
 export const updateStorySchema = {
-    params: z.strictObject({
-        storyId: storyIdSchema,
-    }),
+    params: storyIdParamsSchema,
     body: updateStoryBodySchema,
 };
 
 export const getStorySchema = {
-    params: z.strictObject({
-        storyId: storyIdSchema,
-    }),
+    params: storyIdParamsSchema,
 };
 
 export const deleteStorySchema = {
-    params: z.strictObject({
-        storyId: storyIdSchema,
-    }),
+    params: storyIdParamsSchema,
 };

@@ -23,7 +23,7 @@ const emailSchema = z
     })
     .transform((email) => email.trim().toLowerCase());
 
-const createUserBodySchema = z
+export const createUserBodySchema = z
     .object({
         username: usernameSchema,
         name: nameSchema,
@@ -31,25 +31,29 @@ const createUserBodySchema = z
     })
     .strict();
 
-const updateUserBodySchema = createUserBodySchema
+export const updateUserBodySchema = createUserBodySchema
     .partial()
     .refine((body) => Object.keys(body).length > 0, {
         message: 'At least one field must be provided',
     });
 
-export const createUserSchema = z.strictObject({
-    body: createUserBodySchema,
+export const userIdParamsSchema = z.object({
+    userId: userIdSchema,
 });
 
+export const createUserSchema = {
+    body: createUserBodySchema,
+};
+
 export const updateUserSchema = {
-    params: z.strictObject({
-        userId: userIdSchema,
-    }),
+    params: userIdParamsSchema,
     body: updateUserBodySchema,
 };
 
-export const getUserSchema = z.strictObject({
-    params: z.strictObject({
-        userId: userIdSchema,
-    }),
-});
+export const getUserSchema = {
+    params: userIdParamsSchema,
+};
+
+export const deleteUserSchema = {
+    params: userIdParamsSchema,
+};
