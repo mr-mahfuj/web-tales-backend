@@ -1,11 +1,13 @@
 import type { Request, Response } from 'express';
 import { StatusCode } from '../constants/status-code.enum.js';
 import type { CreateStoryDTO, UpdateStoryDTO } from '../dtos/story.dto.js';
+import type { ListStoriesQuery } from '../validation/story.validation.js';
 import { StoryService } from '../services/story.service.js';
 
 const getValidatedBody = <T>(req: Request): T => req.validatedBody as T;
 const getValidatedParams = <T extends Record<string, string>>(req: Request): T =>
     req.validatedParams as T;
+const getValidatedQuery = <T>(req: Request): T => req.validatedQuery as T;
 
 const storyService = new StoryService();
 
@@ -16,10 +18,18 @@ export class StoryController {
         return res.status(StatusCode.Created).json(story);
     }
 
-    async getAllStories(_req: Request, res: Response) {
-        const stories = await storyService.getAllStories();
+    async getAllStories(req: Request, res: Response) {
+        const query = getValidatedQuery<ListStoriesQuery>(req);
+        const result = await storyService.getAllStories(query);
 
-        return res.status(StatusCode.Ok).json(stories);
+        return res.status(StatusCode.Ok).json({
+            data: result.data,
+            meta: {
+                offset: query.offset,
+                limit: query.limit,
+                ...(result.total !== undefined ? { total: result.total } : {}),
+            },
+        });
     }
 
     async getStoryById(req: Request, res: Response) {

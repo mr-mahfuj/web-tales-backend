@@ -1,11 +1,13 @@
 import type { Request, Response } from 'express';
 import { StatusCode } from '../constants/status-code.enum.js';
 import type { CreateUserDTO, UpdateUserDTO } from '../dtos/user.dto.js';
+import type { ListUsersQuery } from '../validation/user.validation.js';
 import { UserService } from '../services/user.services.js';
 
 const getValidatedBody = <T>(req: Request): T => req.validatedBody as T;
 const getValidatedParams = <T extends Record<string, string>>(req: Request): T =>
     req.validatedParams as T;
+const getValidatedQuery = <T>(req: Request): T => req.validatedQuery as T;
 
 const userService = new UserService();
 
@@ -16,10 +18,18 @@ export class UserController {
         return res.status(StatusCode.Created).json(user);
     }
 
-    async getAllUsers(_req: Request, res: Response) {
-        const users = await userService.getAllUsers();
+    async getAllUsers(req: Request, res: Response) {
+        const query = getValidatedQuery<ListUsersQuery>(req);
+        const result = await userService.getAllUsers(query);
 
-        return res.status(StatusCode.Ok).json(users);
+        return res.status(StatusCode.Ok).json({
+            data: result.data,
+            meta: {
+                offset: query.offset,
+                limit: query.limit,
+                ...(result.total !== undefined ? { total: result.total } : {}),
+            },
+        });
     }
 
     async getUserById(req: Request, res: Response) {

@@ -1,8 +1,6 @@
 import type { Role } from '@prisma/client';
 import type { z } from 'zod';
 import type { createUserBodySchema, updateUserBodySchema } from '../validation/user.validation.js';
-import type { z } from 'zod';
-import type { createUserBodySchema, updateUserBodySchema } from '../validation/user.validation.js';
 
 export type CreateUserDTO = z.infer<typeof createUserBodySchema>;
 export type UpdateUserDTO = z.infer<typeof updateUserBodySchema>;

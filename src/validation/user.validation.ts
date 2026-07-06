@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { NAME, USERNAME } from '../constants/user.constants.js';
+import { createListQuerySchema } from './list-query.validation.js';
 
 const userIdSchema = z.uuid({
     message: 'Invalid user id',
@@ -22,6 +23,8 @@ const emailSchema = z
         message: 'Invalid email address',
     })
     .transform((email) => email.trim().toLowerCase());
+
+const userOrderBySchema = z.enum(['joinDate', 'username', 'name', 'email']).default('joinDate');
 
 export const createUserBodySchema = z
     .object({
@@ -57,3 +60,11 @@ export const getUserSchema = {
 export const deleteUserSchema = {
     params: userIdParamsSchema,
 };
+
+export const listUsersQuerySchema = createListQuerySchema(userOrderBySchema);
+
+export const getAllUsersSchema = {
+    query: listUsersQuerySchema,
+};
+
+export type ListUsersQuery = z.infer<typeof listUsersQuerySchema>;

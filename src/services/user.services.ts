@@ -1,6 +1,7 @@
 import type { CreateUserDTO, UpdateUserDTO, UserDTO } from '../dtos/user.dto.js';
 import { ConflictError, NotFoundError, ValidationError } from '../common/errors/index.js';
 import { UserRepository } from '../repositories/user.repository.js';
+import type { ListUsersQuery } from '../validation/user.validation.js';
 
 export class UserService {
     constructor(private readonly userRepository = new UserRepository()) {}
@@ -19,8 +20,8 @@ export class UserService {
         return this.userRepository.create(data);
     }
 
-    getAllUsers(): Promise<UserDTO[]> {
-        return this.userRepository.findAll();
+    getAllUsers(query: ListUsersQuery): Promise<{ data: UserDTO[]; total?: number }> {
+        return this.userRepository.findAll(query);
     }
 
     async getUserById(userId: string): Promise<UserDTO> {

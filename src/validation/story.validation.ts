@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { TITLE, BODY } from '../constants/story.constants.js';
+import { createListQuerySchema } from './list-query.validation.js';
 
 const storyIdSchema = z.uuid({
     message: 'Invalid story id',
@@ -16,6 +17,8 @@ const bodySchema = z
     .trim()
     .min(BODY.MIN, 'Story body is required')
     .max(BODY.MAX, `Story body cannot exceed ${BODY.MAX} characters`);
+
+const storyOrderBySchema = z.enum(['createdAt', 'updatedAt', 'title']).default('createdAt');
 
 export const createStoryBodySchema = z
     .object({
@@ -53,3 +56,11 @@ export const getStorySchema = {
 export const deleteStorySchema = {
     params: storyIdParamsSchema,
 };
+
+export const listStoriesQuerySchema = createListQuerySchema(storyOrderBySchema);
+
+export const getAllStoriesSchema = {
+    query: listStoriesQuerySchema,
+};
+
+export type ListStoriesQuery = z.infer<typeof listStoriesQuerySchema>;

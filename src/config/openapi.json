@@ -1,0 +1,355 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Web Tales API",
+        "version": "1.0.0",
+        "description": "REST API documentation for the Web Tales backend."
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "Development server"
+        }
+    ],
+    "components": {
+        "schemas": {
+            "ValidationIssue": {
+                "type": "object",
+                "properties": {
+                    "field": {
+                        "type": "string",
+                        "example": "email"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Invalid email address"
+                    },
+                    "code": {
+                        "type": "string",
+                        "example": "invalid_format"
+                    }
+                },
+                "required": ["field", "message", "code"]
+            },
+            "ErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string",
+                                "example": "Validation failed"
+                            },
+                            "code": {
+                                "type": "string",
+                                "example": "VALIDATION_ERROR"
+                            },
+                            "details": {
+                                "oneOf": [
+                                    {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/ValidationIssue"
+                                        }
+                                    },
+                                    {
+                                        "type": "object",
+                                        "additionalProperties": true
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "stack": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["message", "code"]
+                    }
+                },
+                "required": ["success", "error"]
+            },
+            "PaginationMeta": {
+                "type": "object",
+                "properties": {
+                    "offset": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 42
+                    }
+                },
+                "required": ["offset", "limit"]
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "11111111-1111-1111-1111-111111111111"
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "johndoe"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    },
+                    "joinDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-07-06T10:00:00.000Z"
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": ["ADMIN", "USER"],
+                        "example": "USER"
+                    }
+                },
+                "required": ["id", "username", "name", "email", "joinDate", "role"]
+            },
+            "UserCreateRequest": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "johndoe"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    }
+                },
+                "required": ["username", "name", "email"]
+            },
+            "UserUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "johnsmith"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Smith"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "johnsmith@example.com"
+                    }
+                },
+                "minProperties": 1
+            },
+            "UserListResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/User"
+                        }
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    }
+                },
+                "required": ["data", "meta"]
+            },
+            "Story": {
+                "type": "object",
+                "properties": {
+                    "userId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "11111111-1111-1111-1111-111111111111"
+                    },
+                    "storyId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "22222222-2222-2222-2222-222222222222"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "A Story About Testing"
+                    },
+                    "body": {
+                        "type": "string",
+                        "example": "This is a long story body used as an API example. It is intentionally verbose so it resembles a real record in the API response."
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-07-06T10:00:00.000Z"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-07-06T10:30:00.000Z"
+                    }
+                },
+                "required": ["userId", "storyId", "title", "body", "createdAt", "updatedAt"]
+            },
+            "StoryCreateRequest": {
+                "type": "object",
+                "properties": {
+                    "userId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "11111111-1111-1111-1111-111111111111"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "A Story About Testing"
+                    },
+                    "body": {
+                        "type": "string",
+                        "example": "This is a long story body used as an API example. It is intentionally verbose so it satisfies the validation minimum and looks like real content."
+                    }
+                },
+                "required": ["userId", "title", "body"]
+            },
+            "StoryUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "userId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "11111111-1111-1111-1111-111111111111"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Updated Story Title"
+                    },
+                    "body": {
+                        "type": "string",
+                        "example": "Updated body content that remains long enough to satisfy validation rules and demonstrate the payload shape."
+                    }
+                },
+                "minProperties": 1
+            },
+            "StoryListResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Story"
+                        }
+                    },
+                    "meta": {
+                        "$ref": "#/components/schemas/PaginationMeta"
+                    }
+                },
+                "required": ["data", "meta"]
+            }
+        },
+        "responses": {
+            "ValidationError": {
+                "description": "Request validation failed",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        },
+                        "example": {
+                            "success": false,
+                            "error": {
+                                "message": "Validation failed",
+                                "code": "VALIDATION_ERROR",
+                                "details": [
+                                    {
+                                        "field": "email",
+                                        "message": "Invalid email address",
+                                        "code": "invalid_format"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "NotFoundError": {
+                "description": "Requested resource was not found",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        },
+                        "example": {
+                            "success": false,
+                            "error": {
+                                "message": "User not found",
+                                "code": "NOT_FOUND",
+                                "details": {
+                                    "userId": "11111111-1111-1111-1111-111111111111"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ConflictError": {
+                "description": "Request conflicts with an existing resource",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        },
+                        "example": {
+                            "success": false,
+                            "error": {
+                                "message": "Email already exists",
+                                "code": "CONFLICT",
+                                "details": {
+                                    "field": "email"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "InternalServerError": {
+                "description": "Unexpected server error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        },
+                        "example": {
+                            "success": false,
+                            "error": {
+                                "message": "Something went wrong",
+                                "code": "INTERNAL_SERVER_ERROR"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
