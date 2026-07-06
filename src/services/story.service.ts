@@ -1,4 +1,4 @@
-import type { CreateStoryDTO, UpdateStoryDTO, StoryDTO } from '../dtos/story.dto.js';
+import { type CreateStoryDTO, type UpdateStoryDTO, StoryDTO } from '../dtos/story.dto.js';
 import { NotFoundError } from '../common/errors.js';
 import { StoryRepository } from '../repositories/story.repository.js';
 import type { ListStoriesQuery } from '../validation/story.validation.js';
@@ -7,11 +7,16 @@ export class StoryService {
     constructor(private readonly storyRepository = new StoryRepository()) {}
 
     async createStory(data: CreateStoryDTO): Promise<StoryDTO> {
-        return this.storyRepository.create(data);
+        return new StoryDTO(await this.storyRepository.create(data));
     }
 
-    getAllStories(query: ListStoriesQuery): Promise<{ data: StoryDTO[]; total?: number }> {
-        return this.storyRepository.findAll(query);
+    async getAllStories(query: ListStoriesQuery): Promise<{ data: StoryDTO[]; total?: number }> {
+        const result = await this.storyRepository.findAll(query);
+
+        return {
+            data: result.data.map((story) => new StoryDTO(story)),
+            ...(result.total !== undefined ? { total: result.total } : {}),
+        };
     }
 
     async getStoryById(storyId: string): Promise<StoryDTO> {
@@ -22,7 +27,7 @@ export class StoryService {
             throw new NotFoundError('Story not found', { storyId: normalizedStoryId });
         }
 
-        return story;
+        return new StoryDTO(story);
     }
 
     async updateStory(storyId: string, data: UpdateStoryDTO): Promise<StoryDTO> {
@@ -34,7 +39,7 @@ export class StoryService {
             throw new NotFoundError('Story not found', { storyId: normalizedStoryId });
         }
 
-        return this.storyRepository.update(normalizedStoryId, data);
+        return new StoryDTO(await this.storyRepository.update(normalizedStoryId, data));
     }
 
     async delete(storyId: string): Promise<boolean> {

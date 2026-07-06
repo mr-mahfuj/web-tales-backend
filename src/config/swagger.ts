@@ -1,11 +1,21 @@
-import swaggerJsdoc from 'swagger-jsdoc';
-import openapi from './openapi.json' with { type: 'json' };
+import swaggerAutogen from 'swagger-autogen';
 
-const options: swaggerJsdoc.Options = {
-    definition: openapi,
-    apis: ['./src/docs/**/*.ts'],
+const swagger = swaggerAutogen({ openapi: '3.0.0' });
+
+const doc = {
+    info: {
+        title: 'Web Tales',
+        description: 'API Documentation',
+        version: '1.0.0',
+    },
+    servers: [
+        {
+            url: 'http://localhost:3000',
+        },
+    ],
 };
 
-const swaggerSpec = swaggerJsdoc(options);
+const outputFile = './src/config/openapi.json';
+const endpointsFiles = ['./src/routes/index.ts'];
 
-export default swaggerSpec;
+await swagger(outputFile, endpointsFiles, doc);

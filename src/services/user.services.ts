@@ -1,4 +1,4 @@
-import type { CreateUserDTO, UpdateUserDTO, UserDTO } from '../dtos/user.dto.js';
+import { type CreateUserDTO, type UpdateUserDTO, UserDTO } from '../dtos/user.dto.js';
 import { ConflictError, NotFoundError, ValidationError } from '../common/errors.js';
 import { UserRepository } from '../repositories/user.repository.js';
 import type { ListUsersQuery } from '../validation/user.validation.js';
@@ -7,7 +7,7 @@ export class UserService {
     constructor(private readonly userRepository = new UserRepository()) {}
 
     async createUser(data: CreateUserDTO): Promise<UserDTO> {
-        if (!data.username?.trim() || !data.name?.trim() || !data.email?.trim()) {
+        if (!data.username || !data.name || !data.email) {
             throw new ValidationError('username, name, and email are required');
         }
 
@@ -17,22 +17,26 @@ export class UserService {
             throw new ConflictError('Email already exists', { field: 'email' });
         }
 
-        return this.userRepository.create(data);
+        return new UserDTO(await this.userRepository.create(data));
     }
 
-    getAllUsers(query: ListUsersQuery): Promise<{ data: UserDTO[]; total?: number }> {
-        return this.userRepository.findAll(query);
+    async getAllUsers(query: ListUsersQuery): Promise<{ data: UserDTO[]; total?: number }> {
+        const result = await this.userRepository.findAll(query);
+
+        return {
+            data: result.data.map((user) => new UserDTO(user)),
+            ...(result.total !== undefined ? { total: result.total } : {}),
+        };
     }
 
     async getUserById(userId: string): Promise<UserDTO> {
-        const normalizedUserId = userId.trim();
-        const user = await this.userRepository.findById(normalizedUserId);
+        const user = await this.userRepository.findById(userId);
 
         if (!user) {
-            throw new NotFoundError('User not found', { userId: normalizedUserId });
+            throw new NotFoundError('User not found', { userId: userId });
         }
 
-        return user;
+        return new UserDTO(user);
     }
 
     async updateUser(userId: string, data: UpdateUserDTO): Promise<UserDTO> {
@@ -42,17 +46,16 @@ export class UserService {
             throw new NotFoundError('User not found', userId);
         }
 
-        return this.userRepository.update(userId, data);
+        return new UserDTO(await this.userRepository.update(userId, data));
     }
 
     async softDelete(userId: string): Promise<UserDTO> {
-        const normalizedUserId = userId.trim();
-        const existingUser = await this.userRepository.findById(normalizedUserId);
+        const existingUser = await this.userRepository.findById(userId);
 
         if (!existingUser) {
-            throw new NotFoundError('User not found', { userId: normalizedUserId });
+            throw new NotFoundError('User not found', userId);
         }
 
-        return this.userRepository.softDelete(normalizedUserId);
+        return this.userRepository.softDelete(userId);
     }
 }

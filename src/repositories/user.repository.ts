@@ -1,162 +1,97 @@
-import { Prisma, type Role } from '@prisma/client';
-import type { CreateUserDTO, UpdateUserDTO, UserDTO } from '../dtos/user.dto.js';
+import type { Prisma } from '@prisma/client';
+import { type User } from '@prisma/client';
 import prisma from '../config/prisma.js';
-import { QUERY_CONSTANTS } from '../constants/pagination.constants.js';
-import { toUserDTO } from '../utils/user.mapper.js';
+import type { CreateUserDTO, UpdateUserDTO } from '../dtos/user.dto.js';
 import type { ListUsersQuery } from '../validation/user.validation.js';
 
-type UserSearchRow = {
-    id: string;
-    username: string;
-    name: string;
-    email: string;
-    joinDate: Date;
-    role: Role;
-};
-
-const getUserOrderByClause = (orderBy: ListUsersQuery['orderBy']) => {
+const getUserOrderBy = (
+    orderBy?: ListUsersQuery['orderBy'],
+): Prisma.UserOrderByWithRelationInput => {
     switch (orderBy) {
         case 'username':
-            return Prisma.sql`u."username" ASC`;
+            return { username: 'asc' };
         case 'name':
-            return Prisma.sql`u."name" ASC`;
+            return { name: 'asc' };
         case 'email':
-            return Prisma.sql`u."email" ASC`;
+            return { email: 'asc' };
         case 'joinDate':
         default:
-            return Prisma.sql`u."joinDate" DESC`;
+            return { joinDate: 'desc' };
     }
 };
 
-const buildUserWhereClause = (search?: string) => {
-    if (!search) {
-        return Prisma.sql`WHERE u."isDeleted" = false`;
-    }
+const getUserWhere = (search?: string): Prisma.UserWhereInput => {
+    const trimmed = search?.trim();
 
-    return Prisma.sql`WHERE u."isDeleted" = false
-        AND (
-            similarity(u."username", ${search}) >= ${QUERY_CONSTANTS.FUZZY_SEARCH_THRESHOLD}
-            OR similarity(u."name", ${search}) >= ${QUERY_CONSTANTS.FUZZY_SEARCH_THRESHOLD}
-            OR similarity(u."email", ${search}) >= ${QUERY_CONSTANTS.FUZZY_SEARCH_THRESHOLD}
-        )`;
-};
-
-const buildUserOrderClause = (orderBy: ListUsersQuery['orderBy'], search?: string) => {
-    if (!search) {
-        return Prisma.sql`ORDER BY ${getUserOrderByClause(orderBy)}`;
-    }
-
-    return Prisma.sql`ORDER BY GREATEST(
-            similarity(u."username", ${search}),
-            similarity(u."name", ${search}),
-            similarity(u."email", ${search})
-        ) DESC, ${getUserOrderByClause(orderBy)}`;
+    return {
+        isDeleted: false,
+        ...(trimmed && {
+            OR: [
+                { username: { contains: trimmed, mode: 'insensitive' } },
+                { name: { contains: trimmed, mode: 'insensitive' } },
+                { email: { contains: trimmed, mode: 'insensitive' } },
+            ],
+        }),
+    };
 };
 
 export class UserRepository {
-    private async execute<T>(operation: () => Promise<T>): Promise<T> {
-        return await operation();
+    async create(data: CreateUserDTO): Promise<User> {
+        return prisma.user.create({ data });
     }
 
-    async create(data: CreateUserDTO): Promise<UserDTO> {
-        return this.execute(async () => {
-            const user = await prisma.user.create({
-                data,
-            });
+    async findAll(query: ListUsersQuery): Promise<{ data: User[]; total?: number }> {
+        const where = getUserWhere(query.search);
+        const orderBy = getUserOrderBy(query.orderBy);
 
-            return toUserDTO(user);
-        });
-    }
-
-    async findAll(query: ListUsersQuery): Promise<{ data: UserDTO[]; total?: number }> {
-        return this.execute(async () => {
-            const searchTerm = query.search?.trim();
-            const whereClause = buildUserWhereClause(searchTerm);
-            const orderClause = buildUserOrderClause(query.orderBy, searchTerm);
-
-            const users = await prisma.$queryRaw<UserSearchRow[]>(Prisma.sql`
-                SELECT
-                    u."id",
-                    u."username",
-                    u."name",
-                    u."email",
-                    u."joinDate",
-                    u."role"
-                FROM "User" u
-                ${whereClause}
-                ${orderClause}
-                OFFSET ${query.offset}
-                LIMIT ${query.limit}
-            `);
-
-            const totalResult = query.count
-                ? await prisma.$queryRaw<Array<{ count: number }>>(Prisma.sql`
-                      SELECT COUNT(*)::int AS count
-                      FROM "User" u
-                      ${whereClause}
-                  `)
-                : [];
-
-            const total = totalResult[0]?.count;
-
-            return {
-                data: users.map(toUserDTO),
-                ...(total !== undefined ? { total } : {}),
-            };
-        });
-    }
-
-    async findById(userId: string): Promise<UserDTO | null> {
-        return this.execute(async () => {
-            const user = await prisma.user.findFirst({
-                where: {
-                    id: userId,
-                    isDeleted: false,
-                },
-            });
-
-            return user ? toUserDTO(user) : null;
-        });
-    }
-
-    async findByEmail(email: string): Promise<UserDTO | null> {
-        return this.execute(async () => {
-            const user = await prisma.user.findFirst({
-                where: {
-                    email,
-                    isDeleted: false,
-                },
-            });
-
-            return user ? toUserDTO(user) : null;
-        });
-    }
-
-    async update(userId: string, data: UpdateUserDTO): Promise<UserDTO> {
-        return this.execute(async () => {
-            const user = await prisma.user.update({
-                where: {
-                    id: userId,
-                },
-                data: data as Prisma.UserUpdateInput,
-            });
-
-            return toUserDTO(user);
-        });
-    }
-
-    async softDelete(userId: string): Promise<UserDTO> {
-        return this.execute(async () => {
-            const user = await prisma.user.update({
-                where: {
-                    id: userId,
-                },
-                data: {
+        const [data, total] = await Promise.all([
+            prisma.user.findMany({
+                where,
+                orderBy,
+                skip: query.offset,
+                take: query.limit,
+                select: {
+                    id: true,
+                    username: true,
+                    name: true,
+                    email: true,
+                    joinDate: true,
+                    role: true,
                     isDeleted: true,
                 },
-            });
+            }),
+            query.count ? prisma.user.count({ where }) : Promise.resolve(undefined),
+        ]);
 
-            return toUserDTO(user);
+        return {
+            data,
+            ...(total !== undefined && { total }),
+        };
+    }
+
+    async findById(userId: string): Promise<User | null> {
+        return prisma.user.findFirst({
+            where: { id: userId, isDeleted: false },
+        });
+    }
+
+    async findByEmail(email: string): Promise<User | null> {
+        return prisma.user.findFirst({
+            where: { email, isDeleted: false },
+        });
+    }
+
+    async update(userId: string, data: UpdateUserDTO): Promise<User> {
+        return prisma.user.update({
+            where: { id: userId },
+            data: data as Prisma.UserUpdateInput,
+        });
+    }
+
+    async softDelete(userId: string): Promise<User> {
+        return prisma.user.update({
+            where: { id: userId },
+            data: { isDeleted: true },
         });
     }
 }

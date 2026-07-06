@@ -1,134 +1,73 @@
-import { Prisma } from '@prisma/client';
-import type { CreateStoryDTO, UpdateStoryDTO, StoryDTO } from '../dtos/story.dto.js';
-import { QUERY_CONSTANTS } from '../constants/pagination.constants.js';
+import type { Prisma } from '@prisma/client';
+import { type Story } from '@prisma/client';
+import type { CreateStoryDTO, UpdateStoryDTO } from '../dtos/story.dto.js';
 import prisma from '../config/prisma.js';
-import { toStoryDTO } from '../utils/story.mapper.js';
 import type { ListStoriesQuery } from '../validation/story.validation.js';
 
-type StorySearchRow = {
-    storyId: string;
-    title: string;
-    body: string;
-    createdAt: Date;
-    updatedAt: Date;
-    userId: string;
-};
-
-const getStoryOrderByClause = (orderBy: ListStoriesQuery['orderBy']) => {
+const getStoryOrderBy = (
+    orderBy: ListStoriesQuery['orderBy'],
+): Prisma.StoryOrderByWithRelationInput => {
     switch (orderBy) {
         case 'updatedAt':
-            return Prisma.sql`u."updatedAt" DESC`;
+            return { updatedAt: 'desc' };
         case 'title':
-            return Prisma.sql`u."title" ASC`;
+            return { title: 'asc' };
         case 'createdAt':
         default:
-            return Prisma.sql`u."createdAt" DESC`;
+            return { createdAt: 'desc' };
     }
 };
 
-const buildStoryWhereClause = (search?: string) => {
-    if (!search) {
-        return Prisma.sql``;
-    }
+const getStoryWhere = (search?: string): Prisma.StoryWhereInput => {
+    const trimmed = search?.trim();
+    if (!trimmed) return {};
 
-    return Prisma.sql`WHERE (
-        similarity(u."title", ${search}) >= ${QUERY_CONSTANTS.FUZZY_SEARCH_THRESHOLD}
-        OR similarity(u."body", ${search}) >= ${QUERY_CONSTANTS.FUZZY_SEARCH_THRESHOLD}
-    )`;
-};
-
-const buildStoryOrderClause = (orderBy: ListStoriesQuery['orderBy'], search?: string) => {
-    if (!search) {
-        return Prisma.sql`ORDER BY ${getStoryOrderByClause(orderBy)}`;
-    }
-
-    return Prisma.sql`ORDER BY GREATEST(
-            similarity(u."title", ${search}),
-            similarity(u."body", ${search})
-        ) DESC, ${getStoryOrderByClause(orderBy)}`;
+    return {
+        OR: [
+            { title: { contains: trimmed, mode: 'insensitive' } },
+            { body: { contains: trimmed, mode: 'insensitive' } },
+        ],
+    };
 };
 
 export class StoryRepository {
-    private async execute<T>(operation: () => Promise<T>): Promise<T> {
-        return await operation();
+    async create(data: CreateStoryDTO): Promise<Story> {
+        return prisma.story.create({ data });
     }
 
-    async create(data: CreateStoryDTO): Promise<StoryDTO> {
-        return this.execute(async () => {
-            const story = await prisma.story.create({
-                data,
-            });
+    async findAll(query: ListStoriesQuery): Promise<{ data: Story[]; total?: number }> {
+        const where = getStoryWhere(query.search);
+        const orderBy = getStoryOrderBy(query.orderBy);
 
-            return toStoryDTO(story);
-        });
+        const [data, total] = await Promise.all([
+            prisma.story.findMany({
+                where,
+                orderBy,
+                skip: query.offset,
+                take: query.limit,
+            }),
+            query.count ? prisma.story.count({ where }) : Promise.resolve(undefined),
+        ]);
+
+        return {
+            data,
+            ...(total !== undefined ? { total } : {}),
+        };
     }
 
-    async findAll(query: ListStoriesQuery): Promise<{ data: StoryDTO[]; total?: number }> {
-        return this.execute(async () => {
-            const searchTerm = query.search?.trim();
-            const whereClause = buildStoryWhereClause(searchTerm);
-            const orderClause = buildStoryOrderClause(query.orderBy, searchTerm);
-
-            const stories = await prisma.$queryRaw<StorySearchRow[]>(Prisma.sql`
-                SELECT
-                    u."storyId",
-                    u."title",
-                    u."body",
-                    u."createdAt",
-                    u."updatedAt",
-                    u."userId"
-                FROM "Story" u
-                ${whereClause}
-                ${orderClause}
-                OFFSET ${query.offset}
-                LIMIT ${query.limit}
-            `);
-
-            const totalResult = query.count
-                ? await prisma.$queryRaw<Array<{ count: number }>>(Prisma.sql`
-                      SELECT COUNT(*)::int AS count
-                      FROM "Story" u
-                      ${whereClause}
-                  `)
-                : [];
-
-            const total = totalResult[0]?.count;
-
-            return {
-                data: stories.map(toStoryDTO),
-                ...(total !== undefined ? { total } : {}),
-            };
-        });
+    async findById(storyId: string): Promise<Story | null> {
+        return prisma.story.findUnique({ where: { storyId } });
     }
 
-    async findById(storyId: string): Promise<StoryDTO | null> {
-        return this.execute(async () => {
-            const story = await prisma.story.findUnique({
-                where: { storyId },
-            });
-
-            return story ? toStoryDTO(story) : null;
-        });
-    }
-
-    async update(storyId: string, data: UpdateStoryDTO): Promise<StoryDTO> {
-        return this.execute(async () => {
-            const story = await prisma.story.update({
-                where: { storyId },
-                data: data as Prisma.StoryUpdateInput,
-            });
-
-            return toStoryDTO(story);
+    async update(storyId: string, data: UpdateStoryDTO): Promise<Story> {
+        return prisma.story.update({
+            where: { storyId },
+            data: data as Prisma.StoryUpdateInput,
         });
     }
 
     async delete(storyId: string): Promise<boolean> {
-        return this.execute(async () => {
-            await prisma.story.delete({
-                where: { storyId },
-            });
-
-            return true;
-        });
+        await prisma.story.delete({ where: { storyId } });
+        return true;
     }
 }

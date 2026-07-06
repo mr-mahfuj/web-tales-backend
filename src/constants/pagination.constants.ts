@@ -5,6 +5,4 @@ export const QUERY_CONSTANTS = {
 
     MIN_SEARCH_LENGTH: 1,
     MAX_SEARCH_LENGTH: 100,
-
-    FUZZY_SEARCH_THRESHOLD: 0.2,
 } as const;
