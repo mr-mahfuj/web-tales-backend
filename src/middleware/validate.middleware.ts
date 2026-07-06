@@ -1,6 +1,6 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import type { z } from 'zod';
-import { ValidationError } from '../common/errors/ValidationError.js';
+import { ValidationError } from '../common/errors.js';
 import { formatZodIssues } from '../utils/error-formatters.js';
 
 declare module 'express' {

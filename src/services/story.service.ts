@@ -1,5 +1,5 @@
 import type { CreateStoryDTO, UpdateStoryDTO, StoryDTO } from '../dtos/story.dto.js';
-import { NotFoundError } from '../common/errors/index.js';
+import { NotFoundError } from '../common/errors.js';
 import { StoryRepository } from '../repositories/story.repository.js';
 import type { ListStoriesQuery } from '../validation/story.validation.js';
 
