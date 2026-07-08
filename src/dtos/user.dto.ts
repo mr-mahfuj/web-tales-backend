@@ -1,9 +1,11 @@
 import type { Role, User } from '@prisma/client';
 import type { z } from 'zod';
-import type { createUserBodySchema, updateUserBodySchema } from '../validation/user.validation.js';
+import type { createUserBodySchema, updateUserBodySchema } from '../schemas/user.schema.js';
 
-export type CreateUserDTO = z.infer<typeof createUserBodySchema>;
-export type UpdateUserDTO = z.infer<typeof updateUserBodySchema>;
+export type CreateUserDTO = z.output<typeof createUserBodySchema>;
+export type UpdateUserDTO = z.output<typeof updateUserBodySchema>;
+
+type UserLike = Pick<User, 'id' | 'username' | 'name' | 'email' | 'joinDate' | 'role'>;
 
 export class UserDTO {
     readonly id: string;
@@ -13,7 +15,7 @@ export class UserDTO {
     readonly joinDate: Date;
     readonly role: Role;
 
-    constructor(user: User) {
+    constructor(user: UserLike) {
         this.id = user.id;
         this.username = user.username;
         this.name = user.name;

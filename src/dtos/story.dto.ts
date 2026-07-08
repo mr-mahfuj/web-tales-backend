@@ -1,12 +1,9 @@
 import type { z } from 'zod';
-import type {
-    createStoryBodySchema,
-    updateStoryBodySchema,
-} from '../validation/story.validation.js';
+import type { createStoryBodySchema, updateStoryBodySchema } from '../schemas/story.schema.js';
 import type { Story } from '@prisma/client';
 
-export type CreateStoryDTO = z.infer<typeof createStoryBodySchema>;
-export type UpdateStoryDTO = z.infer<typeof updateStoryBodySchema>;
+export type CreateStoryDTO = z.output<typeof createStoryBodySchema>;
+export type UpdateStoryDTO = z.output<typeof updateStoryBodySchema>;
 
 export class StoryDTO {
     readonly userId: string;

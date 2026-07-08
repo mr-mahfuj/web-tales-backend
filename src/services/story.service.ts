@@ -1,22 +1,24 @@
 import { type CreateStoryDTO, type UpdateStoryDTO, StoryDTO } from '../dtos/story.dto.js';
-import { NotFoundError } from '../common/errors.js';
+import { ForbiddenError, NotFoundError } from '../common/errors.js';
 import { StoryRepository } from '../repositories/story.repository.js';
-import type { ListStoriesQuery } from '../validation/story.validation.js';
+import type { ListStoriesQuery } from '../schemas/story.schema.js';
+import { toListResponse, type ListResponse } from '../utils/pagination.mapper.js';
 
 export class StoryService {
     constructor(private readonly storyRepository = new StoryRepository()) {}
 
     async createStory(data: CreateStoryDTO): Promise<StoryDTO> {
-        return new StoryDTO(await this.storyRepository.create(data));
+        return new StoryDTO(await this.storyRepository.create({ ...data }));
     }
 
-    async getAllStories(query: ListStoriesQuery): Promise<{ data: StoryDTO[]; total?: number }> {
+    async getAllStories(query: ListStoriesQuery): Promise<ListResponse<StoryDTO>> {
         const result = await this.storyRepository.findAll(query);
 
-        return {
-            data: result.data.map((story) => new StoryDTO(story)),
-            ...(result.total !== undefined ? { total: result.total } : {}),
-        };
+        return toListResponse(
+            result.data.map((story) => new StoryDTO(story)),
+            query,
+            result.total,
+        );
     }
 
     async getStoryById(storyId: string): Promise<StoryDTO> {
@@ -38,17 +40,25 @@ export class StoryService {
         if (!existingStory) {
             throw new NotFoundError('Story not found', { storyId: normalizedStoryId });
         }
-
         return new StoryDTO(await this.storyRepository.update(normalizedStoryId, data));
     }
 
     async delete(storyId: string): Promise<boolean> {
         const normalizedStoryId = storyId.trim();
+
         const existingStory = await this.storyRepository.findById(normalizedStoryId);
+
         if (!existingStory) {
             throw new NotFoundError('Story not found', { storyId: normalizedStoryId });
         }
         await this.storyRepository.delete(normalizedStoryId);
+
         return true;
+    }
+
+    async getStoryOwnerId(storyId: string): Promise<string | undefined> {
+        const normalizedStoryId = storyId.trim();
+        const story = await this.storyRepository.findById(normalizedStoryId);
+        return story?.userId;
     }
 }

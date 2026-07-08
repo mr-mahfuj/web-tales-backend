@@ -1,60 +1,38 @@
 import type { Request, Response } from 'express';
 import { StatusCode } from '../constants/status-code.enum.js';
-import type { CreateUserDTO, UpdateUserDTO } from '../dtos/user.dto.js';
-import type { ListUsersQuery } from '../validation/user.validation.js';
+import type { UpdateUserDTO, UserDTO } from '../dtos/user.dto.js';
 import { UserService } from '../services/user.services.js';
-
-const getValidatedBody = <T>(req: Request): T => req.validatedBody as T;
-const getValidatedParams = <T extends Record<string, string>>(req: Request): T =>
-    req.validatedParams as T;
-const getValidatedQuery = <T>(req: Request): T => req.validatedQuery as T;
+import { toListResponse } from '../utils/list-response.js';
+import type { ListUsersQuery } from '../schemas/user.schema.js';
 
 const userService = new UserService();
 
-export class UserController {
-    async createUser(req: Request, res: Response) {
-        const user = await userService.createUser(getValidatedBody<CreateUserDTO>(req));
-
-        return res.status(StatusCode.Created).json(user);
-    }
-
-    async getAllUsers(req: Request, res: Response) {
-        const query = getValidatedQuery<ListUsersQuery>(req);
+export const UserController = {
+    getAllUsers: async (req: Request, res: Response) => {
+        const query = req.query as unknown as ListUsersQuery;
         const result = await userService.getAllUsers(query);
+        return res
+            .status(StatusCode.Ok)
+            .json(toListResponse<UserDTO>(result.data, query, result.meta.total));
+    },
 
-        return res.status(StatusCode.Ok).json({
-            data: result.data,
-            meta: {
-                offset: query.offset,
-                limit: query.limit,
-                ...(result.total !== undefined ? { total: result.total } : {}),
-            },
-        });
-    }
-
-    async getUserById(req: Request, res: Response) {
-        const { userId } = getValidatedParams<{ userId: string }>(req);
+    getUserById: async (req: Request, res: Response) => {
+        const { userId } = req.params as { userId: string };
         const user = await userService.getUserById(userId);
-
         return res.status(StatusCode.Ok).json(user);
-    }
+    },
 
-    async updateUser(req: Request, res: Response) {
-        const { userId } = getValidatedParams<{ userId: string }>(req);
-        const updatedUser = await userService.updateUser(
-            userId,
-            getValidatedBody<UpdateUserDTO>(req),
-        );
-
+    updateUser: async (req: Request, res: Response) => {
+        const { userId } = req.params as { userId: string };
+        const updatedUser = await userService.updateUser(userId, req.body as UpdateUserDTO);
         return res.status(StatusCode.Ok).json(updatedUser);
-    }
+    },
 
-    async deleteUser(req: Request, res: Response) {
-        const { userId } = getValidatedParams<{ userId: string }>(req);
+    deleteUser: async (req: Request, res: Response) => {
+        const { userId } = req.params as { userId: string };
         await userService.softDelete(userId);
-
         return res.status(StatusCode.Ok).json({
             message: 'User deleted successfully',
         });
-    }
-}
+    },
+};
