@@ -1,335 +1,594 @@
 {
-  "openapi": "3.0.0",
-  "info": {
-    "title": "Web Tales",
-    "description": "API Documentation",
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://localhost:3000"
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Web Tales",
+        "description": "API Documentation",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Use the token returned from /auth/login or /auth/signup"
+            }
+        },
+        "schemas": {
+            "Role": {
+                "type": "string",
+                "enum": ["ADMIN", "USER"]
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "username": { "type": "string" },
+                    "name": { "type": "string" },
+                    "email": { "type": "string", "format": "email" },
+                    "joinDate": { "type": "string", "format": "date-time" },
+                    "role": { "$ref": "#/components/schemas/Role" }
+                }
+            },
+            "Story": {
+                "type": "object",
+                "properties": {
+                    "storyId": { "type": "string", "format": "uuid" },
+                    "userId": { "type": "string", "format": "uuid" },
+                    "title": { "type": "string" },
+                    "body": { "type": "string" },
+                    "createdAt": { "type": "string", "format": "date-time" },
+                    "updatedAt": { "type": "string", "format": "date-time" }
+                }
+            },
+            "AuthResponse": {
+                "type": "object",
+                "properties": {
+                    "token": { "type": "string" },
+                    "user": { "$ref": "#/components/schemas/User" }
+                }
+            },
+            "SignupRequest": {
+                "type": "object",
+                "required": ["username", "name", "email", "password"],
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 50,
+                        "example": "johndoe"
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100,
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 8,
+                        "description": "Minimum 8 chars, must contain uppercase, lowercase, and a number",
+                        "example": "Secret123"
+                    }
+                }
+            },
+            "LoginRequest": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "Secret123"
+                    }
+                }
+            },
+            "ChangePasswordRequest": {
+                "type": "object",
+                "required": ["oldPassword", "newPassword"],
+                "properties": {
+                    "oldPassword": {
+                        "type": "string",
+                        "format": "password"
+                    },
+                    "newPassword": {
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 8,
+                        "description": "Minimum 8 chars, must contain uppercase, lowercase, and a number"
+                    }
+                }
+            },
+            "CreateStoryRequest": {
+                "type": "object",
+                "required": ["title", "body"],
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200,
+                        "example": "My first story"
+                    },
+                    "body": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 50000,
+                        "example": "Once upon a time..."
+                    }
+                }
+            },
+            "UpdateStoryRequest": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                    },
+                    "body": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 50000
+                    }
+                }
+            },
+            "UpdateUserRequest": {
+                "type": "object",
+                "properties": {
+                    "username": { "type": "string", "minLength": 3, "maxLength": 50 },
+                    "name": { "type": "string", "minLength": 1, "maxLength": 100 },
+                    "email": { "type": "string", "format": "email" }
+                }
+            },
+            "PaginationMeta": {
+                "type": "object",
+                "properties": {
+                    "offset": { "type": "integer" },
+                    "limit": { "type": "integer" },
+                    "total": { "type": "integer" }
+                }
+            },
+            "UserListResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/User" }
+                    },
+                    "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+                }
+            },
+            "StoryListResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/Story" }
+                    },
+                    "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+                }
+            },
+            "MessageResponse": {
+                "type": "object",
+                "properties": {
+                    "message": { "type": "string" }
+                }
+            },
+            "ErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "name": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" },
+                    "status": { "type": "string" },
+                    "statusCode": { "type": "integer" },
+                    "details": {}
+                }
+            }
+        },
+        "parameters": {
+            "UserIdParam": {
+                "name": "userId",
+                "in": "path",
+                "required": true,
+                "schema": { "type": "string", "format": "uuid" }
+            },
+            "StoryIdParam": {
+                "name": "storyId",
+                "in": "path",
+                "required": true,
+                "schema": { "type": "string", "format": "uuid" }
+            },
+            "ListUsersQuery": {
+                "name": "offset",
+                "in": "query",
+                "required": false,
+                "schema": { "type": "integer", "minimum": 0, "default": 0 }
+            },
+            "LimitQuery": {
+                "name": "limit",
+                "in": "query",
+                "required": false,
+                "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 }
+            },
+            "OrderByQuery": {
+                "name": "orderBy",
+                "in": "query",
+                "required": false,
+                "schema": { "type": "string", "enum": ["joinDate", "username", "name", "email"] }
+            },
+            "StoryOrderByQuery": {
+                "name": "orderBy",
+                "in": "query",
+                "required": false,
+                "schema": { "type": "string", "enum": ["createdAt", "updatedAt", "title"] }
+            },
+            "SearchQuery": {
+                "name": "search",
+                "in": "query",
+                "required": false,
+                "schema": { "type": "string" }
+            },
+            "CountQuery": {
+                "name": "count",
+                "in": "query",
+                "required": false,
+                "schema": { "type": "boolean" }
+            }
+        },
+        "responses": {
+            "BadRequest": {
+                "description": "Validation failed",
+                "content": {
+                    "application/json": {
+                        "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                    }
+                }
+            },
+            "Unauthorized": {
+                "description": "Missing or invalid token",
+                "content": {
+                    "application/json": {
+                        "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                    }
+                }
+            },
+            "Forbidden": {
+                "description": "Insufficient permissions",
+                "content": {
+                    "application/json": {
+                        "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                    }
+                }
+            },
+            "NotFound": {
+                "description": "Resource not found",
+                "content": {
+                    "application/json": {
+                        "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                    }
+                }
+            },
+            "Conflict": {
+                "description": "Resource already exists",
+                "content": {
+                    "application/json": {
+                        "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                    }
+                }
+            },
+            "Message": {
+                "description": "Success",
+                "content": {
+                    "application/json": {
+                        "schema": { "$ref": "#/components/schemas/MessageResponse" }
+                    }
+                }
+            }
+        }
+    },
+    "paths": {
+        "/health/": {
+            "get": {
+                "tags": ["Health"],
+                "summary": "Liveness probe",
+                "security": [],
+                "responses": {
+                    "200": {
+                        "description": "Server is up",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": { "type": "string", "example": "ok" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/signup": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Register a new user",
+                "security": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/SignupRequest" }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "409": { "$ref": "#/components/responses/Conflict" }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Login and receive a JWT",
+                "security": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/LoginRequest" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "401": { "$ref": "#/components/responses/Unauthorized" }
+                }
+            }
+        },
+        "/auth/password": {
+            "patch": {
+                "tags": ["Auth"],
+                "summary": "Change current user's password",
+                "security": [{ "bearerAuth": [] }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/ChangePasswordRequest" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Message" },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "401": { "$ref": "#/components/responses/Unauthorized" }
+                }
+            }
+        },
+        "/users/": {
+            "get": {
+                "tags": ["Users"],
+                "summary": "List users",
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    { "$ref": "#/components/parameters/ListUsersQuery" },
+                    { "$ref": "#/components/parameters/LimitQuery" },
+                    { "$ref": "#/components/parameters/OrderByQuery" },
+                    { "$ref": "#/components/parameters/SearchQuery" },
+                    { "$ref": "#/components/parameters/CountQuery" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of users",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/UserListResponse" }
+                            }
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/Unauthorized" }
+                }
+            }
+        },
+        "/users/{userId}": {
+            "parameters": [{ "$ref": "#/components/parameters/UserIdParam" }],
+            "get": {
+                "tags": ["Users"],
+                "summary": "Get user by id (self or admin)",
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "User profile",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/User" }
+                            }
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/Unauthorized" },
+                    "403": { "$ref": "#/components/responses/Forbidden" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
+                }
+            },
+            "patch": {
+                "tags": ["Users"],
+                "summary": "Update user profile (self or admin)",
+                "security": [{ "bearerAuth": [] }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/UpdateUserRequest" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated user",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/User" }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "401": { "$ref": "#/components/responses/Unauthorized" },
+                    "403": { "$ref": "#/components/responses/Forbidden" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
+                }
+            },
+            "delete": {
+                "tags": ["Users"],
+                "summary": "Soft-delete user (self or admin)",
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Message" },
+                    "401": { "$ref": "#/components/responses/Unauthorized" },
+                    "403": { "$ref": "#/components/responses/Forbidden" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
+                }
+            }
+        },
+        "/stories/": {
+            "post": {
+                "tags": ["Stories"],
+                "summary": "Create a story (authenticated)",
+                "security": [{ "bearerAuth": [] }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/CreateStoryRequest" }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Story created",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/Story" }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "401": { "$ref": "#/components/responses/Unauthorized" }
+                }
+            },
+            "get": {
+                "tags": ["Stories"],
+                "summary": "List stories",
+                "security": [],
+                "parameters": [
+                    { "$ref": "#/components/parameters/ListUsersQuery" },
+                    { "$ref": "#/components/parameters/LimitQuery" },
+                    { "$ref": "#/components/parameters/StoryOrderByQuery" },
+                    { "$ref": "#/components/parameters/SearchQuery" },
+                    { "$ref": "#/components/parameters/CountQuery" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of stories",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/StoryListResponse" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/stories/{storyId}": {
+            "parameters": [{ "$ref": "#/components/parameters/StoryIdParam" }],
+            "get": {
+                "tags": ["Stories"],
+                "summary": "Get story by id",
+                "security": [],
+                "responses": {
+                    "200": {
+                        "description": "Story",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/Story" }
+                            }
+                        }
+                    },
+                    "404": { "$ref": "#/components/responses/NotFound" }
+                }
+            },
+            "patch": {
+                "tags": ["Stories"],
+                "summary": "Update story (owner or admin)",
+                "security": [{ "bearerAuth": [] }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/UpdateStoryRequest" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated story",
+                        "content": {
+                            "application/json": {
+                                "schema": { "$ref": "#/components/schemas/Story" }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "401": { "$ref": "#/components/responses/Unauthorized" },
+                    "403": { "$ref": "#/components/responses/Forbidden" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
+                }
+            },
+            "delete": {
+                "tags": ["Stories"],
+                "summary": "Delete story (owner or admin)",
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Message" },
+                    "401": { "$ref": "#/components/responses/Unauthorized" },
+                    "403": { "$ref": "#/components/responses/Forbidden" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
+                }
+            }
+        }
     }
-  ],
-  "paths": {
-    "/health/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/users/": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "safeParse(req",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "safeParse(req": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "safeParse(req",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/users/{userId}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "safeParse(req",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
-      "patch": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "safeParse(req",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "safeParse(req": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "safeParse(req",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "safeParse(req": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/stories/": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "safeParse(req",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "safeParse(req": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "safeParse(req",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/stories/{storyId}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "storyId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "safeParse(req",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
-      "patch": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "storyId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "safeParse(req",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "safeParse(req": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "storyId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "safeParse(req",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "safeParse(req": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 }

@@ -1,10 +1,7 @@
 import { z } from 'zod';
 import { TITLE, BODY } from '../constants/story.constants.js';
-import { createListQuerySchema } from './list-query.validation.js';
-
-const storyIdSchema = z.uuid({
-    message: 'Invalid story id',
-});
+import { createListQuerySchema } from './list-query.schema.js';
+import { idSchema } from './id.schema.js';
 
 const titleSchema = z
     .string()
@@ -22,9 +19,7 @@ const storyOrderBySchema = z.enum(['createdAt', 'updatedAt', 'title']).default('
 
 export const createStoryBodySchema = z
     .object({
-        userId: z.uuid({
-            message: 'Invalid user id',
-        }),
+        userId: idSchema,
         title: titleSchema,
         body: bodySchema,
     })
@@ -37,7 +32,7 @@ export const updateStoryBodySchema = createStoryBodySchema
     });
 
 export const storyIdParamsSchema = z.object({
-    storyId: storyIdSchema,
+    storyId: idSchema,
 });
 
 export const createStorySchema = {

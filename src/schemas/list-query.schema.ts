@@ -1,29 +1,8 @@
 import { z } from 'zod';
 import { QUERY_CONSTANTS } from '../constants/pagination.constants.js';
 
-const parseBooleanQueryParam = (value: unknown): unknown => {
-    if (typeof value === 'string') {
-        const normalizedValue = value.trim().toLowerCase();
+const emptyToUndefined = (v: unknown) => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 
-        if (normalizedValue === 'true') {
-            return true;
-        }
-
-        if (normalizedValue === 'false') {
-            return false;
-        }
-    }
-
-    return value;
-};
-
-const emptyStringToUndefined = (value: unknown): unknown => {
-    if (typeof value === 'string' && value.trim() === '') {
-        return undefined;
-    }
-
-    return value;
-};
 export const listQueryBaseSchema = z
     .object({
         offset: z.coerce
@@ -40,7 +19,7 @@ export const listQueryBaseSchema = z
             .default(QUERY_CONSTANTS.DEFAULT_LIMIT),
 
         search: z.preprocess(
-            emptyStringToUndefined,
+            emptyToUndefined,
             z
                 .string()
                 .trim()
@@ -49,11 +28,9 @@ export const listQueryBaseSchema = z
                 .optional(),
         ),
 
-        count: z.preprocess(parseBooleanQueryParam, z.boolean().default(false)),
+        count: z.stringbool().default(false),
     })
     .strict();
 
 export const createListQuerySchema = <T extends z.ZodTypeAny>(orderBySchema: T) =>
-    listQueryBaseSchema.extend({
-        orderBy: orderBySchema,
-    });
+    listQueryBaseSchema.extend({ orderBy: orderBySchema });

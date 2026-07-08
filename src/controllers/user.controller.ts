@@ -1,23 +1,18 @@
 import type { Request, Response } from 'express';
 import { StatusCode } from '../constants/status-code.enum.js';
-import type { CreateUserDTO, UpdateUserDTO } from '../dtos/user.dto.js';
-import type { ListUsersQuery } from '../validation/user.validation.js';
+import type { ListUsersQuery } from '../schemas/user.schema.js';
 import { UserService } from '../services/user.services.js';
-
-const getValidatedBody = <T>(req: Request): T => req.validatedBody as T;
-const getValidatedParams = <T extends Record<string, string>>(req: Request): T =>
-    req.validatedParams as T;
-const getValidatedQuery = <T>(req: Request): T => req.validatedQuery as T;
+import {
+    getValidatedBody,
+    getValidatedParams,
+    getValidatedQuery,
+} from '../middleware/validate.middleware.js';
+import type { UpdateUserDTO } from '../dtos/user.dto.js';
+import { ForbiddenError, NotFoundError } from '../common/errors.js';
 
 const userService = new UserService();
 
 export class UserController {
-    async createUser(req: Request, res: Response) {
-        const user = await userService.createUser(getValidatedBody<CreateUserDTO>(req));
-
-        return res.status(StatusCode.Created).json(user);
-    }
-
     async getAllUsers(req: Request, res: Response) {
         const query = getValidatedQuery<ListUsersQuery>(req);
         const result = await userService.getAllUsers(query);
@@ -34,7 +29,16 @@ export class UserController {
 
     async getUserById(req: Request, res: Response) {
         const { userId } = getValidatedParams<{ userId: string }>(req);
+        const actor = req.user!;
+
+        if (actor.role !== 'ADMIN' && actor.id !== userId) {
+            throw new ForbiddenError('You can only view your own profile');
+        }
+
         const user = await userService.getUserById(userId);
+        if (!user) {
+            throw new NotFoundError('User not found', { userId });
+        }
 
         return res.status(StatusCode.Ok).json(user);
     }

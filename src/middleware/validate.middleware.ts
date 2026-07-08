@@ -11,6 +11,13 @@ declare module 'express' {
     }
 }
 
+export const getValidatedBody = <T>(req: Request): T => req.validatedBody as T;
+
+export const getValidatedParams = <T extends Record<string, string>>(req: Request): T =>
+    req.validatedParams as T;
+
+export const getValidatedQuery = <T>(req: Request): T => req.validatedQuery as T;
+
 type SplitValidationSchema = {
     params?: z.ZodTypeAny;
     body?: z.ZodTypeAny;
