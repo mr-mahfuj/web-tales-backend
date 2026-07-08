@@ -1,20 +1,17 @@
 import { type CreateUserDTO, type UpdateUserDTO, UserDTO } from '../dtos/user.dto.js';
 import { ConflictError, NotFoundError, ValidationError } from '../common/errors.js';
 import { UserRepository } from '../repositories/user.repository.js';
-import type { ListUsersQuery } from '../validation/user.validation.js';
+import type { ListUsersQuery } from '../schemas/user.schema.js';
 
 export class UserService {
-    constructor(private readonly userRepository = new UserRepository()) {}
-
+    userRepository = new UserRepository();
     async createUser(data: CreateUserDTO): Promise<UserDTO> {
-        if (!data.username || !data.name || !data.email) {
-            throw new ValidationError('username, name, and email are required');
+        if (await this.userRepository.existsByEmail(data.email)) {
+            throw new ConflictError('Email already exists', { field: 'email' });
         }
 
-        const existingUser = await this.userRepository.findByEmail(data.email);
-
-        if (existingUser) {
-            throw new ConflictError('Email already exists', { field: 'email' });
+        if (await this.userRepository.existsByUsername(data.username)) {
+            throw new ConflictError('Username already exists', { field: 'username' });
         }
 
         return new UserDTO(await this.userRepository.create(data));
@@ -34,6 +31,26 @@ export class UserService {
 
         if (!user) {
             throw new NotFoundError('User not found', { userId: userId });
+        }
+
+        return new UserDTO(user);
+    }
+
+    async getUserByEmail(email: string): Promise<UserDTO> {
+        const user = await this.userRepository.findByEmail(email);
+
+        if (!user) {
+            throw new NotFoundError('User not found', { email: email });
+        }
+
+        return new UserDTO(user);
+    }
+
+    async getUserByUsername(username: string): Promise<UserDTO> {
+        const user = await this.userRepository.findByUsername(username);
+
+        if (!user) {
+            throw new NotFoundError('User not found', { username: username });
         }
 
         return new UserDTO(user);

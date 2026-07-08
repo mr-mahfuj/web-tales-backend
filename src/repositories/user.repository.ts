@@ -2,7 +2,7 @@ import type { Prisma } from '@prisma/client';
 import { type User } from '@prisma/client';
 import prisma from '../config/prisma.js';
 import type { CreateUserDTO, UpdateUserDTO } from '../dtos/user.dto.js';
-import type { ListUsersQuery } from '../validation/user.validation.js';
+import type { ListUsersQuery } from '../schemas/user.schema.js';
 
 const getUserOrderBy = (
     orderBy?: ListUsersQuery['orderBy'],
@@ -79,6 +79,28 @@ export class UserRepository {
         return prisma.user.findFirst({
             where: { email, isDeleted: false },
         });
+    }
+
+    async findByUsername(username: string): Promise<User | null> {
+        return prisma.user.findFirst({
+            where: { username, isDeleted: false },
+        });
+    }
+
+    async existsByEmail(email: string): Promise<boolean> {
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true },
+        });
+        return user !== null;
+    }
+
+    async existsByUsername(username: string): Promise<boolean> {
+        const user = await prisma.user.findUnique({
+            where: { username },
+            select: { id: true },
+        });
+        return user !== null;
     }
 
     async update(userId: string, data: UpdateUserDTO): Promise<User> {

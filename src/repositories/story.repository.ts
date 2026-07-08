@@ -2,7 +2,7 @@ import type { Prisma } from '@prisma/client';
 import { type Story } from '@prisma/client';
 import type { CreateStoryDTO, UpdateStoryDTO } from '../dtos/story.dto.js';
 import prisma from '../config/prisma.js';
-import type { ListStoriesQuery } from '../validation/story.validation.js';
+import type { ListStoriesQuery } from '../schemas/story.schema.js';
 
 const getStoryOrderBy = (
     orderBy: ListStoriesQuery['orderBy'],
@@ -18,7 +18,7 @@ const getStoryOrderBy = (
     }
 };
 
-const getStoryWhere = (search?: string): Prisma.StoryWhereInput => {
+const buildStoryWhere = (search?: string): Prisma.StoryWhereInput => {
     const trimmed = search?.trim();
     if (!trimmed) return {};
 
@@ -36,7 +36,7 @@ export class StoryRepository {
     }
 
     async findAll(query: ListStoriesQuery): Promise<{ data: Story[]; total?: number }> {
-        const where = getStoryWhere(query.search);
+        const where = buildStoryWhere(query.search);
         const orderBy = getStoryOrderBy(query.orderBy);
 
         const [data, total] = await Promise.all([
