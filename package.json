@@ -14,7 +14,7 @@
         "format:check": "prettier . --check",
         "typecheck": "tsc --noEmit",
         "prepare": "husky",
-        "swagger": "tsx src/swagger.ts",
+        "swagger": "tsx src/config/swagger.ts",
         "prestart": "npm run swagger"
     },
     "lint-staged": {

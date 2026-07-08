@@ -4,6 +4,19 @@ import { UnauthorizedError } from '../common/errors.js';
 import { env } from '../config/env.js';
 import { UserService } from '../services/user.services.js';
 import type { UserDTO } from '../dtos/user.dto.js';
+import type { Role } from '../constants/role.type.js';
+
+export interface AuthenticatedUser {
+    id: string;
+    role: Role;
+    record?: UserDTO;
+}
+
+declare module 'express-serve-static-core' {
+    interface Request {
+        user?: AuthenticatedUser;
+    }
+}
 
 declare module 'express' {
     interface Request {
@@ -11,15 +24,9 @@ declare module 'express' {
     }
 }
 
-export interface AuthenticatedUser {
-    id: string;
-    role: 'ADMIN' | 'USER';
-    record?: UserDTO;
-}
-
 interface AccessTokenPayload extends jwt.JwtPayload {
     sub: string;
-    role?: 'ADMIN' | 'USER';
+    role?: Role;
 }
 
 const userService = new UserService();

@@ -3,21 +3,6 @@ import type { z } from 'zod';
 import { ValidationError } from '../common/errors.js';
 import { formatZodIssues } from '../utils/error-formatters.js';
 
-declare module 'express' {
-    interface Request {
-        validatedBody?: unknown;
-        validatedParams?: unknown;
-        validatedQuery?: unknown;
-    }
-}
-
-export const getValidatedBody = <T>(req: Request): T => req.validatedBody as T;
-
-export const getValidatedParams = <T extends Record<string, string>>(req: Request): T =>
-    req.validatedParams as T;
-
-export const getValidatedQuery = <T>(req: Request): T => req.validatedQuery as T;
-
 type SplitValidationSchema = {
     params?: z.ZodTypeAny;
     body?: z.ZodTypeAny;
@@ -34,53 +19,44 @@ export function validate(schema: z.ZodType | SplitValidationSchema): RequestHand
     return (req: Request, res: Response, next: NextFunction) => {
         if (isSplitValidationSchema(schema)) {
             if (schema.params) {
-                const paramsResult = schema.params.safeParse(req.params);
-
-                if (!paramsResult.success) {
+                const result = schema.params.safeParse(req.params);
+                if (!result.success) {
                     return next(
                         new ValidationError(
                             'Validation failed',
-                            formatZodIssues(paramsResult.error.issues),
-                            paramsResult.error,
+                            formatZodIssues(result.error.issues),
+                            result.error,
                         ),
                     );
                 }
-
-                req.validatedParams = paramsResult.data;
+                req.params = result.data as Request['params'];
             }
-
             if (schema.body) {
-                const bodyResult = schema.body.safeParse(req.body);
-
-                if (!bodyResult.success) {
+                const result = schema.body.safeParse(req.body);
+                if (!result.success) {
                     return next(
                         new ValidationError(
                             'Validation failed',
-                            formatZodIssues(bodyResult.error.issues),
-                            bodyResult.error,
+                            formatZodIssues(result.error.issues),
+                            result.error,
                         ),
                     );
                 }
-
-                req.validatedBody = bodyResult.data;
+                req.body = result.data as Request['body'];
             }
-
             if (schema.query) {
-                const queryResult = schema.query.safeParse(req.query);
-
-                if (!queryResult.success) {
+                const result = schema.query.safeParse(req.query);
+                if (!result.success) {
                     return next(
                         new ValidationError(
                             'Validation failed',
-                            formatZodIssues(queryResult.error.issues),
-                            queryResult.error,
+                            formatZodIssues(result.error.issues),
+                            result.error,
                         ),
                     );
                 }
-
-                req.validatedQuery = queryResult.data;
+                Object.assign(req.query, result.data);
             }
-
             return next();
         }
 
@@ -89,7 +65,6 @@ export function validate(schema: z.ZodType | SplitValidationSchema): RequestHand
             params: req.params,
             query: req.query,
         });
-
         if (!result.success) {
             return next(
                 new ValidationError(
@@ -99,11 +74,10 @@ export function validate(schema: z.ZodType | SplitValidationSchema): RequestHand
                 ),
             );
         }
-
-        const validatedData = result.data as Record<string, unknown>;
-        req.validatedBody = validatedData.body;
-        req.validatedParams = validatedData.params;
-        req.validatedQuery = validatedData.query;
+        const data = result.data as { body: unknown; params: unknown; query: unknown };
+        if (data.body !== undefined) req.body = data.body as Request['body'];
+        if (data.params !== undefined) req.params = data.params as Request['params'];
+        if (data.query !== undefined) Object.assign(req.query, data.query);
         return next();
     };
 }

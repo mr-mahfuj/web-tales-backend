@@ -5,19 +5,19 @@ import { ConflictError, NotFoundError, ValidationError } from '../common/errors.
 import type { RegisterDto, ChangePasswordDto, LoginDto } from '../dtos/auth.dto.js';
 import { env } from '../config/env.js';
 import { UserService } from './user.services.js';
+import type { Role } from '../constants/role.type.js';
 
 const authRepository = new AuthRepository();
 const userService = new UserService();
 
-function signToken(userId: string, role: 'ADMIN' | 'USER' = 'USER') {
+function signToken(userId: string, role: Role = 'USER') {
     return jwt.sign({ sub: userId, role }, env.jwtSecret, { expiresIn: env.jwtExpiresIn });
 }
 
 export class AuthService {
     async register(data: RegisterDto) {
-        if (await userService.userRepository.existsByEmail(data.email)) throw new ConflictError();
-        if (await userService.userRepository.existsByUsername(data.username))
-            throw new ConflictError();
+        if (await userService.existsByEmail(data.email)) throw new ConflictError();
+        if (await userService.existsByUsername(data.username)) throw new ConflictError();
 
         const hashedPassword = await bcrypt.hash(data.password, env.saltRounds);
 
@@ -37,7 +37,7 @@ export class AuthService {
     }
 
     async login(data: LoginDto) {
-        const user = await userService.userRepository.findByEmail(data.email);
+        const user = await userService.getUserByEmail(data.email);
         if (!user) {
             throw new ValidationError();
         }
