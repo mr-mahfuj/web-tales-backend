@@ -1,25 +1,32 @@
 import type { Request, Response } from 'express';
 import { StatusCode } from '../constants/status-code.enum.js';
 import type { CreateStoryDTO, UpdateStoryDTO } from '../dtos/story.dto.js';
+import type { ListStoriesQuery } from '../schemas/story.schema.js';
 import { StoryService } from '../services/story.service.js';
-
-const getValidatedBody = <T>(req: Request): T => req.validatedBody as T;
-const getValidatedParams = <T extends Record<string, string>>(req: Request): T =>
-    req.validatedParams as T;
+import { mapStoryListResponse } from '../utils/story-list.mapper.js';
+import {
+    getValidatedBody,
+    getValidatedParams,
+    getValidatedQuery,
+} from '../middleware/validate.middleware.js';
 
 const storyService = new StoryService();
 
 export class StoryController {
     async createStory(req: Request, res: Response) {
-        const story = await storyService.createStory(getValidatedBody<CreateStoryDTO>(req));
+        const story = await storyService.createStory(
+            req.user!.id,
+            getValidatedBody<CreateStoryDTO>(req),
+        );
 
         return res.status(StatusCode.Created).json(story);
     }
 
-    async getAllStories(_req: Request, res: Response) {
-        const stories = await storyService.getAllStories();
+    async getAllStories(req: Request, res: Response) {
+        const query = getValidatedQuery<ListStoriesQuery>(req);
+        const result = await storyService.getAllStories(query);
 
-        return res.status(StatusCode.Ok).json(stories);
+        return res.status(StatusCode.Ok).json(mapStoryListResponse(result, query));
     }
 
     async getStoryById(req: Request, res: Response) {
@@ -33,6 +40,7 @@ export class StoryController {
         const { storyId } = getValidatedParams<{ storyId: string }>(req);
         const updatedStory = await storyService.updateStory(
             storyId,
+            { id: req.user!.id, role: req.user!.role },
             getValidatedBody<UpdateStoryDTO>(req),
         );
 
@@ -41,7 +49,10 @@ export class StoryController {
 
     async deleteStory(req: Request, res: Response) {
         const { storyId } = getValidatedParams<{ storyId: string }>(req);
-        await storyService.delete(storyId);
+        await storyService.delete(storyId, {
+            id: req.user!.id,
+            role: req.user!.role,
+        });
 
         return res.status(StatusCode.Ok).json({
             message: 'Story deleted successfully',

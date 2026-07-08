@@ -1,89 +1,119 @@
 import type { Prisma } from '@prisma/client';
-import type { CreateUserDTO, UpdateUserDTO, UserDTO } from '../dtos/user.dto.js';
+import { type User } from '@prisma/client';
 import prisma from '../config/prisma.js';
-import { toUserDTO } from '../utils/user.mapper.js';
+import type { CreateUserDTO, UpdateUserDTO } from '../dtos/user.dto.js';
+import type { ListUsersQuery } from '../schemas/user.schema.js';
+
+const getUserOrderBy = (
+    orderBy?: ListUsersQuery['orderBy'],
+): Prisma.UserOrderByWithRelationInput => {
+    switch (orderBy) {
+        case 'username':
+            return { username: 'asc' };
+        case 'name':
+            return { name: 'asc' };
+        case 'email':
+            return { email: 'asc' };
+        case 'joinDate':
+        default:
+            return { joinDate: 'desc' };
+    }
+};
+
+const getUserWhere = (search?: string): Prisma.UserWhereInput => {
+    const trimmed = search?.trim();
+
+    return {
+        isDeleted: false,
+        ...(trimmed && {
+            OR: [
+                { username: { contains: trimmed, mode: 'insensitive' } },
+                { name: { contains: trimmed, mode: 'insensitive' } },
+                { email: { contains: trimmed, mode: 'insensitive' } },
+            ],
+        }),
+    };
+};
 
 export class UserRepository {
-    private async execute<T>(operation: () => Promise<T>): Promise<T> {
-        return await operation();
+    async create(data: CreateUserDTO): Promise<User> {
+        return prisma.user.create({ data });
     }
 
-    async create(data: CreateUserDTO): Promise<UserDTO> {
-        return this.execute(async () => {
-            const user = await prisma.user.create({
-                data,
-            });
+    async findAll(query: ListUsersQuery): Promise<{ data: User[]; total?: number }> {
+        const where = getUserWhere(query.search);
+        const orderBy = getUserOrderBy(query.orderBy);
 
-            return toUserDTO(user);
-        });
-    }
-
-    async findAll(): Promise<UserDTO[]> {
-        return this.execute(async () => {
-            const users = await prisma.user.findMany({
-                where: {
-                    isDeleted: false,
-                },
-                orderBy: {
-                    id: 'asc',
-                },
-            });
-
-            return users.map(toUserDTO);
-        });
-    }
-
-    async findById(userId: string): Promise<UserDTO | null> {
-        return this.execute(async () => {
-            const user = await prisma.user.findFirst({
-                where: {
-                    id: userId,
-                    isDeleted: false,
-                },
-            });
-
-            return user ? toUserDTO(user) : null;
-        });
-    }
-
-    async findByEmail(email: string): Promise<UserDTO | null> {
-        return this.execute(async () => {
-            const user = await prisma.user.findFirst({
-                where: {
-                    email,
-                    isDeleted: false,
-                },
-            });
-
-            return user ? toUserDTO(user) : null;
-        });
-    }
-
-    async update(userId: string, data: UpdateUserDTO): Promise<UserDTO> {
-        return this.execute(async () => {
-            const user = await prisma.user.update({
-                where: {
-                    id: userId,
-                },
-                data: data as Prisma.UserUpdateInput,
-            });
-
-            return toUserDTO(user);
-        });
-    }
-
-    async softDelete(userId: string): Promise<UserDTO> {
-        return this.execute(async () => {
-            const user = await prisma.user.update({
-                where: {
-                    id: userId,
-                },
-                data: {
+        const [data, total] = await Promise.all([
+            prisma.user.findMany({
+                where,
+                orderBy,
+                skip: query.offset,
+                take: query.limit,
+                select: {
+                    id: true,
+                    username: true,
+                    name: true,
+                    email: true,
+                    joinDate: true,
+                    role: true,
                     isDeleted: true,
                 },
-            });
+            }),
+            query.count ? prisma.user.count({ where }) : Promise.resolve(undefined),
+        ]);
 
-            return toUserDTO(user);
+        return {
+            data,
+            ...(total !== undefined && { total }),
+        };
+    }
+
+    async findById(userId: string): Promise<User | null> {
+        return prisma.user.findFirst({
+            where: { id: userId, isDeleted: false },
+        });
+    }
+
+    async findByEmail(email: string): Promise<User | null> {
+        return prisma.user.findFirst({
+            where: { email, isDeleted: false },
+        });
+    }
+
+    async findByUsername(username: string): Promise<User | null> {
+        return prisma.user.findFirst({
+            where: { username, isDeleted: false },
+        });
+    }
+
+    async existsByEmail(email: string): Promise<boolean> {
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true },
+        });
+        return user !== null;
+    }
+
+    async existsByUsername(username: string): Promise<boolean> {
+        const user = await prisma.user.findUnique({
+            where: { username },
+            select: { id: true },
+        });
+        return user !== null;
+    }
+
+    async update(userId: string, data: UpdateUserDTO): Promise<User> {
+        return prisma.user.update({
+            where: { id: userId },
+            data: data as Prisma.UserUpdateInput,
+        });
+    }
+
+    async softDelete(userId: string): Promise<User> {
+        return prisma.user.update({
+            where: { id: userId },
+            data: { isDeleted: true },
         });
     }
 }

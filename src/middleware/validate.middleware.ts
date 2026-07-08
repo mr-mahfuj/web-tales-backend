@@ -1,6 +1,6 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import type { z } from 'zod';
-import { ValidationError } from '../common/errors/ValidationError.js';
+import { ValidationError } from '../common/errors.js';
 import { formatZodIssues } from '../utils/error-formatters.js';
 
 declare module 'express' {
@@ -10,6 +10,13 @@ declare module 'express' {
         validatedQuery?: unknown;
     }
 }
+
+export const getValidatedBody = <T>(req: Request): T => req.validatedBody as T;
+
+export const getValidatedParams = <T extends Record<string, string>>(req: Request): T =>
+    req.validatedParams as T;
+
+export const getValidatedQuery = <T>(req: Request): T => req.validatedQuery as T;
 
 type SplitValidationSchema = {
     params?: z.ZodTypeAny;

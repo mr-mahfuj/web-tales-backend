@@ -1,63 +1,73 @@
 import type { Prisma } from '@prisma/client';
-import type { CreateStoryDTO, UpdateStoryDTO, StoryDTO } from '../dtos/story.dto.js';
+import { type Story } from '@prisma/client';
+import type { CreateStoryDTO, UpdateStoryDTO } from '../dtos/story.dto.js';
 import prisma from '../config/prisma.js';
-import { toStoryDTO } from '../utils/story.mapper.js';
+import type { ListStoriesQuery } from '../schemas/story.schema.js';
+
+const getStoryOrderBy = (
+    orderBy: ListStoriesQuery['orderBy'],
+): Prisma.StoryOrderByWithRelationInput => {
+    switch (orderBy) {
+        case 'updatedAt':
+            return { updatedAt: 'desc' };
+        case 'title':
+            return { title: 'asc' };
+        case 'createdAt':
+        default:
+            return { createdAt: 'desc' };
+    }
+};
+
+const buildStoryWhere = (search?: string): Prisma.StoryWhereInput => {
+    const trimmed = search?.trim();
+    if (!trimmed) return {};
+
+    return {
+        OR: [
+            { title: { contains: trimmed, mode: 'insensitive' } },
+            { body: { contains: trimmed, mode: 'insensitive' } },
+        ],
+    };
+};
 
 export class StoryRepository {
-    private async execute<T>(operation: () => Promise<T>): Promise<T> {
-        return await operation();
+    async create(data: CreateStoryDTO): Promise<Story> {
+        return prisma.story.create({ data });
     }
 
-    async create(data: CreateStoryDTO): Promise<StoryDTO> {
-        return this.execute(async () => {
-            const story = await prisma.story.create({
-                data,
-            });
+    async findAll(query: ListStoriesQuery): Promise<{ data: Story[]; total?: number }> {
+        const where = buildStoryWhere(query.search);
+        const orderBy = getStoryOrderBy(query.orderBy);
 
-            return toStoryDTO(story);
-        });
+        const [data, total] = await Promise.all([
+            prisma.story.findMany({
+                where,
+                orderBy,
+                skip: query.offset,
+                take: query.limit,
+            }),
+            query.count ? prisma.story.count({ where }) : Promise.resolve(undefined),
+        ]);
+
+        return {
+            data,
+            ...(total !== undefined ? { total } : {}),
+        };
     }
 
-    async findAll(): Promise<StoryDTO[]> {
-        return this.execute(async () => {
-            const stories = await prisma.story.findMany({
-                orderBy: {
-                    createdAt: 'desc',
-                },
-            });
-
-            return stories.map(toStoryDTO);
-        });
+    async findById(storyId: string): Promise<Story | null> {
+        return prisma.story.findUnique({ where: { storyId } });
     }
 
-    async findById(storyId: string): Promise<StoryDTO | null> {
-        return this.execute(async () => {
-            const story = await prisma.story.findUnique({
-                where: { storyId },
-            });
-
-            return story ? toStoryDTO(story) : null;
-        });
-    }
-
-    async update(storyId: string, data: UpdateStoryDTO): Promise<StoryDTO> {
-        return this.execute(async () => {
-            const story = await prisma.story.update({
-                where: { storyId },
-                data: data as Prisma.StoryUpdateInput,
-            });
-
-            return toStoryDTO(story);
+    async update(storyId: string, data: UpdateStoryDTO): Promise<Story> {
+        return prisma.story.update({
+            where: { storyId },
+            data: data as Prisma.StoryUpdateInput,
         });
     }
 
     async delete(storyId: string): Promise<boolean> {
-        return this.execute(async () => {
-            await prisma.story.delete({
-                where: { storyId },
-            });
-
-            return true;
-        });
+        await prisma.story.delete({ where: { storyId } });
+        return true;
     }
 }

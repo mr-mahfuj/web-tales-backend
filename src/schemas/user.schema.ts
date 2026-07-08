@@ -1,11 +1,9 @@
 import { z } from 'zod';
 import { NAME, USERNAME } from '../constants/user.constants.js';
+import { createListQuerySchema } from './list-query.schema.js';
+import { idSchema } from './id.schema.js';
 
-const userIdSchema = z.uuid({
-    message: 'Invalid user id',
-});
-
-const usernameSchema = z
+export const usernameSchema = z
     .string()
     .trim()
     .min(USERNAME.MIN, `Username must be at least ${USERNAME.MIN} characters`)
@@ -17,11 +15,13 @@ const nameSchema = z
     .min(NAME.MIN, 'Name is required')
     .max(NAME.MAX, `Name cannot exceed ${NAME.MAX} characters`);
 
-const emailSchema = z
+export const emailSchema = z
     .email({
         message: 'Invalid email address',
     })
     .transform((email) => email.trim().toLowerCase());
+
+const userOrderBySchema = z.enum(['joinDate', 'username', 'name', 'email']).default('joinDate');
 
 export const createUserBodySchema = z
     .object({
@@ -38,7 +38,7 @@ export const updateUserBodySchema = createUserBodySchema
     });
 
 export const userIdParamsSchema = z.object({
-    userId: userIdSchema,
+    userId: idSchema,
 });
 
 export const createUserSchema = {
@@ -57,3 +57,11 @@ export const getUserSchema = {
 export const deleteUserSchema = {
     params: userIdParamsSchema,
 };
+
+export const listUsersQuerySchema = createListQuerySchema(userOrderBySchema);
+
+export const getAllUsersSchema = {
+    query: listUsersQuerySchema,
+};
+
+export type ListUsersQuery = z.infer<typeof listUsersQuerySchema>;

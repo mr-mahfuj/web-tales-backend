@@ -1,0 +1,8 @@
+export const QUERY_CONSTANTS = {
+    DEFAULT_OFFSET: 0,
+    DEFAULT_LIMIT: 10,
+    MAX_LIMIT: 100,
+
+    MIN_SEARCH_LENGTH: 1,
+    MAX_SEARCH_LENGTH: 100,
+} as const;
