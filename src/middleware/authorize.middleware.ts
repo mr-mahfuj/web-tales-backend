@@ -2,11 +2,6 @@ import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import { ForbiddenError, NotFoundError } from '../common/errors.js';
 import type { AuthenticatedUser } from '../types/auth.type.js';
 import { Role } from '@prisma/client';
-
-export type OwnerIdResolver = (
-    req: Request,
-) => string | string[] | undefined | Promise<string | string[] | undefined>;
-
 export function requireRole(...roles: AuthenticatedUser['role'][]): RequestHandler {
     return (req: Request, _res: Response, next: NextFunction) => {
         if (!req.user) {

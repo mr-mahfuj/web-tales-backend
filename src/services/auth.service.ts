@@ -6,6 +6,9 @@ import type { RegisterDto, ChangePasswordDto, LoginDto } from '../dtos/auth.dto.
 import { env } from '../config/env.js';
 import { UserService } from './user.services.js';
 import { Role } from '@prisma/client';
+import { sendEmail } from '../utils/mailer.js';
+import { generateEmailVerificationToken } from '../utils/emailTokenGenerator.js';
+
 const authRepository = new AuthRepository();
 const userService = new UserService();
 
@@ -27,8 +30,18 @@ export class AuthService {
             hashedPassword,
         });
 
-        const token = signToken(user.id, user.role);
+        const emailVerificationToken = generateEmailVerificationToken(user.id, user.email);
 
+        await sendEmail(
+            user.email,
+            'Verify Email',
+            `<a href="http://${env.host}:${env.port}/auth/confirm-email/${emailVerificationToken}">
+        Verify Email
+    </a>`,
+            'Verify Your Email',
+        );
+
+        const token = signToken(user.id, user.role);
         return {
             token,
             user: { id: user.id, username: user.username, name: user.name, email: user.email },
@@ -37,24 +50,72 @@ export class AuthService {
 
     async login(data: LoginDto) {
         const user = await userService.getUserByEmail(data.email);
+
         if (!user) {
             throw new ValidationError();
         }
+
         const auth = await authRepository.findAuthByUserId(user.id);
+
         if (!auth) {
             throw new ValidationError();
         }
 
         const isPasswordValid = await bcrypt.compare(data.password, auth.password);
+
         if (!isPasswordValid) {
             throw new ValidationError();
+        }
+
+        if (!user.isEmailVerified) {
+            const emailVerificationToken = generateEmailVerificationToken(user.id, user.email);
+
+            await sendEmail(
+                user.email,
+                'Verify Email',
+                `<a href="http://${env.host}:${env.port}/auth/confirm-email/${emailVerificationToken}">
+                Verify Email
+            </a>`,
+                'Verify Your Email',
+            );
+
+            throw new ValidationError('Please verify your email before logging in');
         }
 
         const token = signToken(user.id, user.role);
 
         return {
             token,
-            user: { id: user.id, username: user.username, name: user.name, email: user.email },
+            user: {
+                id: user.id,
+                username: user.username,
+                name: user.name,
+                email: user.email,
+            },
+        };
+    }
+
+    async verifyEmail(token: string) {
+        const payload = jwt.verify(token, env.jwtSecret) as {
+            userId: string;
+            email: string;
+            type: string;
+        };
+
+        if (payload.type !== 'email-verification') {
+            throw new ValidationError();
+        }
+
+        const user = await userService.getUserById(payload.userId);
+
+        if (!user) {
+            throw new NotFoundError();
+        }
+
+        await authRepository.markEmailAsVerified(user.id);
+
+        return {
+            message: 'Email verified successfully',
         };
     }
 

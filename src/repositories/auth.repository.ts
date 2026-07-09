@@ -32,4 +32,11 @@ export class AuthRepository {
             },
         });
     }
+
+    async markEmailAsVerified(userId: string) {
+        return prisma.user.update({
+            where: { id: userId },
+            data: { isEmailVerified: true },
+        });
+    }
 }

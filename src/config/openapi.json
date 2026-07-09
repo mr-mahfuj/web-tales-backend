@@ -399,6 +399,33 @@
                 }
             }
         },
+        "/auth/confirm-email/{token}": {
+            "get": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "safeParse(req",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/auth/password": {
             "patch": {
                 "description": "",
