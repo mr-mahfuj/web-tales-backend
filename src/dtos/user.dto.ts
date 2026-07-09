@@ -5,7 +5,10 @@ import type { createUserBodySchema, updateUserBodySchema } from '../schemas/user
 export type CreateUserDTO = z.output<typeof createUserBodySchema>;
 export type UpdateUserDTO = z.output<typeof updateUserBodySchema>;
 
-type UserLike = Pick<User, 'id' | 'username' | 'name' | 'email' | 'joinDate' | 'role'>;
+type UserLike = Pick<
+    User,
+    'id' | 'username' | 'name' | 'email' | 'joinDate' | 'role' | 'isEmailVerified'
+>;
 
 export class UserDTO {
     readonly id: string;

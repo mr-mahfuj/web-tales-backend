@@ -42,6 +42,7 @@ const userListSelect = {
     email: true,
     joinDate: true,
     role: true,
+    isEmailVerified: true,
     isDeleted: true,
 } satisfies Prisma.UserSelect;
 
