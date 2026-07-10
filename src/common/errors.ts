@@ -139,6 +139,18 @@ export class UnauthorizedError extends AppError {
     }
 }
 
+export class TooManyRequestsError extends AppError {
+    constructor(message = 'Too Many Requests', details?: unknown, cause?: unknown) {
+        super(message, {
+            statusCode: 429,
+            code: 'TOO_MANY_REQUESTS',
+            details,
+            cause,
+            logLevel: 'warn',
+        });
+    }
+}
+
 export class ValidationError extends AppError {
     constructor(message = 'Validation Failed', details?: unknown, cause?: unknown) {
         super(message, {

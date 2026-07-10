@@ -2,7 +2,12 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AuthRepository } from '../repositories/auth.repository.js';
 import { ConflictError, NotFoundError, ValidationError } from '../common/errors.js';
-import type { RegisterDto, ChangePasswordDto, LoginDto } from '../dtos/auth.dto.js';
+import type {
+    RegisterDto,
+    ChangePasswordDto,
+    LoginDto,
+    ResendConfirmationEmailDto,
+} from '../dtos/auth.dto.js';
 import { env } from '../config/env.js';
 import { UserService } from './user.services.js';
 import { Role } from '@prisma/client';
@@ -121,5 +126,22 @@ export class AuthService {
         await authRepository.updatePassword(userId, hashedPassword);
 
         return { message: 'Password changed successfully' };
+    }
+
+    async resendConfirmationEmail(data: ResendConfirmationEmailDto) {
+        const user = await userService.getUserByEmail(data.email);
+
+        if (user && !user.isEmailVerified) {
+            await sendVerificationEmail({
+                userId: user.id,
+                email: user.email,
+                username: user.username,
+            });
+        }
+
+        return {
+            message:
+                'If an unverified account exists for that email, a new verification link has been sent.',
+        };
     }
 }

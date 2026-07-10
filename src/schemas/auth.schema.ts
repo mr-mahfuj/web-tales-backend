@@ -36,6 +36,13 @@ export const changePasswordBodySchema = z
         path: ['newPassword'],
     });
 
+export const resendConfirmationEmailBodySchema = z
+    .object({
+        email: emailSchema,
+    })
+    .strict();
+
 export const registerSchema = { body: registerBodySchema };
 export const loginSchema = { body: loginBodySchema };
 export const changePasswordSchema = { body: changePasswordBodySchema };
+export const resendConfirmationEmailSchema = { body: resendConfirmationEmailBodySchema };

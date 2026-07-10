@@ -1,7 +1,12 @@
 import type { Request, Response } from 'express';
 import { StatusCode } from '../constants/status-code.enum.js';
 import { AuthService } from '../services/auth.service.js';
-import type { ChangePasswordDto, LoginDto, RegisterDto } from '../dtos/auth.dto.js';
+import type {
+    ChangePasswordDto,
+    LoginDto,
+    RegisterDto,
+    ResendConfirmationEmailDto,
+} from '../dtos/auth.dto.js';
 
 const authService = new AuthService();
 type VerifyEmailParams = {
@@ -30,6 +35,13 @@ export const AuthController = {
         const result = await authService.changePassword(
             req.user!.id,
             req.body as ChangePasswordDto,
+        );
+        return res.status(StatusCode.Ok).json(result);
+    },
+
+    async resendConfirmationEmail(req: Request, res: Response) {
+        const result = await authService.resendConfirmationEmail(
+            req.body as ResendConfirmationEmailDto,
         );
         return res.status(StatusCode.Ok).json(result);
     },
