@@ -5,7 +5,7 @@ import { ConflictError, NotFoundError, ValidationError } from '../common/errors.
 import type { RegisterDto, ChangePasswordDto, LoginDto } from '../dtos/auth.dto.js';
 import { env } from '../config/env.js';
 import { UserService } from './user.services.js';
-import type { Role } from '../constants/role.type.js';
+import type { Role } from '../types/role.type.js';
 
 const authRepository = new AuthRepository();
 const userService = new UserService();

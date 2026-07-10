@@ -3,38 +3,42 @@ import { UserController } from '../controllers/user.controller.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
 import { requireRole, requireSelfOrAdmin } from '../middleware/authorize.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
-import { getAllUsersSchema, getUserSchema, updateUserSchema } from '../schemas/user.schema.js';
+import {
+    deleteUserSchema,
+    getAllUsersSchema,
+    getUserSchema,
+    updateUserSchema,
+} from '../schemas/user.schema.js';
 
 const router = Router();
-const userController = new UserController();
 
 router.get(
     '/',
     authenticateToken,
     requireRole('ADMIN'),
     validate(getAllUsersSchema),
-    userController.getAllUsers,
+    UserController.getAllUsers,
 );
 router.get(
     '/:userId',
     authenticateToken,
     requireSelfOrAdmin(),
     validate(getUserSchema),
-    userController.getUserById,
+    UserController.getUserById,
 );
 router.patch(
     '/:userId',
     authenticateToken,
     requireSelfOrAdmin(),
     validate(updateUserSchema),
-    userController.updateUser,
+    UserController.updateUser,
 );
 router.delete(
     '/:userId',
     authenticateToken,
     requireSelfOrAdmin(),
-    validate(getUserSchema),
-    userController.deleteUser,
+    validate(deleteUserSchema),
+    UserController.deleteUser,
 );
 
 export default router;

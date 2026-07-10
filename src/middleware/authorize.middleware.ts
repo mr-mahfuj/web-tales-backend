@@ -1,10 +1,6 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import { ForbiddenError, NotFoundError } from '../common/errors.js';
-import type { AuthenticatedUser } from './auth.middleware.js';
-
-export type OwnerIdResolver = (
-    req: Request,
-) => string | string[] | undefined | Promise<string | string[] | undefined>;
+import type { AuthenticatedUser } from '../types/auth.type.js';
 
 export function requireRole(...roles: AuthenticatedUser['role'][]): RequestHandler {
     return (req: Request, _res: Response, next: NextFunction) => {
@@ -20,8 +16,14 @@ export function requireRole(...roles: AuthenticatedUser['role'][]): RequestHandl
     };
 }
 
-export function requireOwnerOrAdmin(ownerIdOf: OwnerIdResolver): RequestHandler {
-    return async (req: Request, _res: Response, next: NextFunction) => {
+export type OwnerIdResolver<P extends Record<string, string>> = (
+    req: Request<P>,
+) => Promise<string | undefined> | string | undefined;
+
+export function requireOwnerOrAdmin<P extends Record<string, string> = Record<string, string>>(
+    ownerIdOf: OwnerIdResolver<P>,
+): RequestHandler<P> {
+    return async (req: Request<P>, _res: Response, next: NextFunction) => {
         if (!req.user) {
             next(new ForbiddenError('Authentication required'));
             return;
@@ -34,17 +36,11 @@ export function requireOwnerOrAdmin(ownerIdOf: OwnerIdResolver): RequestHandler 
         try {
             const ownerId = await ownerIdOf(req);
 
-            if (ownerId === undefined || ownerId === null) {
+            if (!ownerId) {
                 next(new NotFoundError('Resource not found'));
                 return;
             }
-
-            const matched =
-                typeof ownerId === 'string'
-                    ? ownerId === req.user.id
-                    : ownerId.includes(req.user.id);
-
-            if (matched) {
+            if (ownerId === req.user.id) {
                 next();
                 return;
             }
@@ -55,7 +51,7 @@ export function requireOwnerOrAdmin(ownerIdOf: OwnerIdResolver): RequestHandler 
     };
 }
 
-export function requireSelfOrAdmin(paramName = 'userId'): RequestHandler {
+export function requireSelfOrAdmin(): RequestHandler {
     return (req: Request, _res: Response, next: NextFunction) => {
         if (!req.user) {
             next(new ForbiddenError('Authentication required'));
@@ -65,8 +61,8 @@ export function requireSelfOrAdmin(paramName = 'userId'): RequestHandler {
             next();
             return;
         }
-        const targetUserId = req.params[paramName];
-        if (targetUserId && targetUserId === req.user.id) {
+        const targetUserId = req.params['userId'];
+        if (typeof targetUserId === 'string' && targetUserId === req.user.id) {
             next();
             return;
         }

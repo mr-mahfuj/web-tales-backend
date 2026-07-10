@@ -13,7 +13,6 @@ import {
 } from '../schemas/story.schema.js';
 
 const router = Router();
-const storyController = new StoryController();
 const storyRepository = new StoryRepository();
 
 const loadStoryOwner = async (storyId: string) => {
@@ -21,22 +20,22 @@ const loadStoryOwner = async (storyId: string) => {
     return story?.userId;
 };
 
-router.post('/', authenticateToken, validate(createStorySchema), storyController.createStory);
-router.get('/', validate(getAllStoriesSchema), storyController.getAllStories);
-router.get('/:storyId', validate(getStorySchema), storyController.getStoryById);
+router.post('/', authenticateToken, validate(createStorySchema), StoryController.createStory);
+router.get('/', validate(getAllStoriesSchema), StoryController.getAllStories);
+router.get('/:storyId', validate(getStorySchema), StoryController.getStoryById);
 router.patch(
     '/:storyId',
     authenticateToken,
+    requireOwnerOrAdmin<{ storyId: string }>((req) => loadStoryOwner(req.params.storyId)),
     validate(updateStorySchema),
-    requireOwnerOrAdmin((req) => loadStoryOwner(req.params.storyId as string)),
-    storyController.updateStory,
+    StoryController.updateStory,
 );
 router.delete(
     '/:storyId',
     authenticateToken,
+    requireOwnerOrAdmin<{ storyId: string }>((req) => loadStoryOwner(req.params.storyId)),
     validate(deleteStorySchema),
-    requireOwnerOrAdmin((req) => loadStoryOwner(req.params.storyId as string)),
-    storyController.deleteStory,
+    StoryController.deleteStory,
 );
 
 export default router;

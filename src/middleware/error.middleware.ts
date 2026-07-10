@@ -5,16 +5,7 @@ import { StatusCode } from '../constants/status-code.enum.js';
 import { formatZodIssues } from '../utils/error-formatters.js';
 import { logError } from '../utils/error-logger.js';
 import { ZodError } from 'zod';
-
-type ErrorResponse = {
-    success: false;
-    error: {
-        message: string;
-        code: string;
-        details?: unknown;
-        stack?: string;
-    };
-};
+import type { ErrorResponse } from '../types/api-response.type.js';
 
 type NormalizedError = {
     name: string;

@@ -5,6 +5,6 @@ import type {
     registerBodySchema,
 } from '../schemas/auth.schema.js';
 
-export type RegisterDto = z.infer<typeof registerBodySchema>;
-export type LoginDto = z.infer<typeof loginBodySchema>;
-export type ChangePasswordDto = z.infer<typeof changePasswordBodySchema>;
+export type RegisterDto = z.output<typeof registerBodySchema>;
+export type LoginDto = z.output<typeof loginBodySchema>;
+export type ChangePasswordDto = z.output<typeof changePasswordBodySchema>;

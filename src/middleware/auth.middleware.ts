@@ -3,26 +3,7 @@ import jwt from 'jsonwebtoken';
 import { UnauthorizedError } from '../common/errors.js';
 import { env } from '../config/env.js';
 import { UserService } from '../services/user.services.js';
-import type { UserDTO } from '../dtos/user.dto.js';
-import type { Role } from '../constants/role.type.js';
-
-export interface AuthenticatedUser {
-    id: string;
-    role: Role;
-    record?: UserDTO;
-}
-
-declare module 'express-serve-static-core' {
-    interface Request {
-        user?: AuthenticatedUser;
-    }
-}
-
-declare module 'express' {
-    interface Request {
-        user?: AuthenticatedUser;
-    }
-}
+import type { Role } from '../types/role.type.js';
 
 interface AccessTokenPayload extends jwt.JwtPayload {
     sub: string;

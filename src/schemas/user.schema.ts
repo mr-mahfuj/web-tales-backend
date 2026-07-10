@@ -41,6 +41,8 @@ export const userIdParamsSchema = z.object({
     userId: idSchema,
 });
 
+export type UserIdParams = z.infer<typeof userIdParamsSchema>;
+
 export const createUserSchema = {
     body: createUserBodySchema,
 };

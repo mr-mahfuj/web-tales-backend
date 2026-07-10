@@ -1,83 +1,74 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
-import type { z } from 'zod';
 import { ValidationError } from '../common/errors.js';
 import { formatZodIssues } from '../utils/error-formatters.js';
+import type { ValidationSchema, Validated } from '../types/validation.type.js'; // ← moved
 
-type SplitValidationSchema = {
-    params?: z.ZodTypeAny;
-    body?: z.ZodTypeAny;
-    query?: z.ZodTypeAny;
-};
+function validateRequest<S extends ValidationSchema>(req: Request, schema: S): Validated<S> {
+    const validated: Record<string, unknown> = {};
 
-function isSplitValidationSchema(
-    schema: z.ZodType | SplitValidationSchema,
-): schema is SplitValidationSchema {
-    return typeof (schema as z.ZodType).safeParse !== 'function';
-}
-
-export function validate(schema: z.ZodType | SplitValidationSchema): RequestHandler {
-    return (req: Request, res: Response, next: NextFunction) => {
-        if (isSplitValidationSchema(schema)) {
-            if (schema.params) {
-                const result = schema.params.safeParse(req.params);
-                if (!result.success) {
-                    return next(
-                        new ValidationError(
-                            'Validation failed',
-                            formatZodIssues(result.error.issues),
-                            result.error,
-                        ),
-                    );
-                }
-                req.params = result.data as Request['params'];
-            }
-            if (schema.body) {
-                const result = schema.body.safeParse(req.body);
-                if (!result.success) {
-                    return next(
-                        new ValidationError(
-                            'Validation failed',
-                            formatZodIssues(result.error.issues),
-                            result.error,
-                        ),
-                    );
-                }
-                req.body = result.data as Request['body'];
-            }
-            if (schema.query) {
-                const result = schema.query.safeParse(req.query);
-                if (!result.success) {
-                    return next(
-                        new ValidationError(
-                            'Validation failed',
-                            formatZodIssues(result.error.issues),
-                            result.error,
-                        ),
-                    );
-                }
-                Object.assign(req.query, result.data);
-            }
-            return next();
-        }
-
-        const result = schema.safeParse({
-            body: req.body,
-            params: req.params,
-            query: req.query,
-        });
+    if (schema.params) {
+        const result = schema.params.safeParse(req.params);
         if (!result.success) {
-            return next(
-                new ValidationError(
-                    'Validation failed',
-                    formatZodIssues(result.error.issues),
-                    result.error,
-                ),
+            throw new ValidationError(
+                'Validation failed',
+                formatZodIssues(result.error.issues),
+                result.error,
             );
         }
-        const data = result.data as { body: unknown; params: unknown; query: unknown };
-        if (data.body !== undefined) req.body = data.body as Request['body'];
-        if (data.params !== undefined) req.params = data.params as Request['params'];
-        if (data.query !== undefined) Object.assign(req.query, data.query);
-        return next();
+        validated.params = result.data;
+    }
+
+    if (schema.body) {
+        const result = schema.body.safeParse(req.body);
+        if (!result.success) {
+            throw new ValidationError(
+                'Validation failed',
+                formatZodIssues(result.error.issues),
+                result.error,
+            );
+        }
+        validated.body = result.data;
+        req.body = result.data;
+    }
+
+    if (schema.query) {
+        const result = schema.query.safeParse(req.query);
+        if (!result.success) {
+            throw new ValidationError(
+                'Validation failed',
+                formatZodIssues(result.error.issues),
+                result.error,
+            );
+        }
+        validated.query = result.data;
+    }
+
+    return validated as Validated<S>;
+}
+
+export function validate<S extends ValidationSchema>(schema: S): RequestHandler {
+    return (req: Request, _res: Response, next: NextFunction) => {
+        try {
+            req.validated = validateRequest(req, schema);
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+}
+
+export function withValidation<S extends ValidationSchema>(
+    schema: S,
+    handler: (req: Request & { validated: Validated<S> }, res: Response, next: NextFunction) => any,
+): RequestHandler {
+    return (req, res, next) => {
+        try {
+            req.validated = validateRequest(req, schema);
+            Promise.resolve(handler(req as Request & { validated: Validated<S> }, res, next)).catch(
+                next,
+            );
+        } catch (err) {
+            next(err);
+        }
     };
 }
