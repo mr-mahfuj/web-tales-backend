@@ -59,7 +59,11 @@ export function validate<S extends ValidationSchema>(schema: S): RequestHandler 
 
 export function withValidation<S extends ValidationSchema>(
     schema: S,
-    handler: (req: Request & { validated: Validated<S> }, res: Response, next: NextFunction) => any,
+    handler: (
+        req: Request & { validated: Validated<S> },
+        res: Response,
+        next: NextFunction,
+    ) => unknown,
 ): RequestHandler {
     return (req, res, next) => {
         try {

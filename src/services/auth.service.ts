@@ -6,8 +6,7 @@ import type { RegisterDto, ChangePasswordDto, LoginDto } from '../dtos/auth.dto.
 import { env } from '../config/env.js';
 import { UserService } from './user.services.js';
 import { Role } from '@prisma/client';
-import { sendEmail } from '../utils/mailer.js';
-import { generateEmailVerificationToken } from '../utils/emailTokenGenerator.js';
+import { sendVerificationEmail } from '../utils/mailer.js';
 
 const authRepository = new AuthRepository();
 const userService = new UserService();
@@ -30,16 +29,11 @@ export class AuthService {
             hashedPassword,
         });
 
-        const emailVerificationToken = generateEmailVerificationToken(user.id, user.email);
-
-        await sendEmail(
-            user.email,
-            'Verify Email',
-            `<a href="http://${env.host}:${env.port}/auth/confirm-email/${emailVerificationToken}">
-        Verify Email
-    </a>`,
-            'Verify Your Email',
-        );
+        await sendVerificationEmail({
+            userId: user.id,
+            email: user.email,
+            username: user.username,
+        });
 
         const token = signToken(user.id, user.role);
         return {
@@ -68,16 +62,11 @@ export class AuthService {
         }
 
         if (!user.isEmailVerified) {
-            const emailVerificationToken = generateEmailVerificationToken(user.id, user.email);
-
-            await sendEmail(
-                user.email,
-                'Verify Email',
-                `<a href="http://${env.host}:${env.port}/auth/confirm-email/${emailVerificationToken}">
-                Verify Email
-            </a>`,
-                'Verify Your Email',
-            );
+            await sendVerificationEmail({
+                userId: user.id,
+                email: user.email,
+                username: user.username,
+            });
 
             throw new ValidationError('Please verify your email before logging in');
         }

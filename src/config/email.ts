@@ -10,11 +10,3 @@ export const transporter = nodemailer.createTransport({
         pass: env.smtpPass,
     },
 });
-
-transporter.verify((error, success) => {
-    if (error) {
-        console.error('SMTP connection failed:', error);
-    } else {
-        console.log('SMTP server is ready to send emails');
-    }
-});

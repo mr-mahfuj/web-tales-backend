@@ -14,12 +14,15 @@ const envSchema = z.object({
     SMTP_USER: z.string().min(1, 'SMTP Mail is required'),
     SMTP_PASS: z.string().min(1, 'SMTP Password is required'),
     SMTP_HOST: z.string().min(1, 'SMTP Host is required'),
+    EMAIL_CONFIRMATION_TOKEN_EXPIRES_IN: z
+        .string()
+        .min(1, 'Email confirmation token expiration time is required.')
+        .default('2m'),
 });
 
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
-    console.error('Invalid environment variables:', parsed.error.flatten().fieldErrors);
     process.exit(1);
 }
 
@@ -35,4 +38,5 @@ export const env = {
     smtpUser: parsed.data.SMTP_USER,
     smtpPass: parsed.data.SMTP_PASS,
     smtpHost: parsed.data.SMTP_HOST,
+    tokenExpiresIn: parsed.data.EMAIL_CONFIRMATION_TOKEN_EXPIRES_IN as StringValue,
 };

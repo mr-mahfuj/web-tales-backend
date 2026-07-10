@@ -1,5 +1,5 @@
 import { type CreateUserDTO, type UpdateUserDTO, UserDTO } from '../dtos/user.dto.js';
-import { ConflictError, NotFoundError, ValidationError } from '../common/errors.js';
+import { ConflictError, NotFoundError } from '../common/errors.js';
 import { UserRepository } from '../repositories/user.repository.js';
 import type { ListUsersQuery } from '../schemas/user.schema.js';
 import { toListResponse, type ListResponse } from '../utils/pagination.mapper.js';

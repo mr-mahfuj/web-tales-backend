@@ -10,7 +10,7 @@ export function generateEmailVerificationToken(userId: string, email: string) {
         },
         env.jwtSecret,
         {
-            expiresIn: '2m',
+            expiresIn: env.tokenExpiresIn,
         },
     );
 }

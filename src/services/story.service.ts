@@ -1,5 +1,5 @@
 import { type CreateStoryDTO, type UpdateStoryDTO, StoryDTO } from '../dtos/story.dto.js';
-import { ForbiddenError, NotFoundError } from '../common/errors.js';
+import { NotFoundError } from '../common/errors.js';
 import { StoryRepository } from '../repositories/story.repository.js';
 import type { ListStoriesQuery } from '../schemas/story.schema.js';
 import { toListResponse, type ListResponse } from '../utils/pagination.mapper.js';
