@@ -55,4 +55,10 @@ export class StoryService {
 
         return true;
     }
+
+    async getStoryOwnerId(storyId: string): Promise<string | undefined> {
+        const normalizedStoryId = storyId.trim();
+        const story = await this.storyRepository.findById(normalizedStoryId);
+        return story?.userId;
+    }
 }

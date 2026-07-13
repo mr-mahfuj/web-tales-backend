@@ -3,7 +3,7 @@ import { StoryController } from '../controllers/story.controller.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
 import { requireOwnerOrAdmin } from '../middleware/authorize.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
-import { StoryRepository } from '../repositories/story.repository.js';
+import { StoryService } from '../services/story.service.js';
 import {
     createStorySchema,
     deleteStorySchema,
@@ -13,12 +13,7 @@ import {
 } from '../schemas/story.schema.js';
 
 const router = Router();
-const storyRepository = new StoryRepository();
-
-const loadStoryOwner = async (storyId: string) => {
-    const story = await storyRepository.findById(storyId.trim());
-    return story?.userId;
-};
+const storyService = new StoryService();
 
 router.post('/', authenticateToken, validate(createStorySchema), StoryController.createStory);
 router.get('/', validate(getAllStoriesSchema), StoryController.getAllStories);
@@ -26,14 +21,18 @@ router.get('/:storyId', validate(getStorySchema), StoryController.getStoryById);
 router.patch(
     '/:storyId',
     authenticateToken,
-    requireOwnerOrAdmin<{ storyId: string }>((req) => loadStoryOwner(req.params.storyId)),
+    requireOwnerOrAdmin<{ storyId: string }>((req) =>
+        storyService.getStoryOwnerId(req.params.storyId),
+    ),
     validate(updateStorySchema),
     StoryController.updateStory,
 );
 router.delete(
     '/:storyId',
     authenticateToken,
-    requireOwnerOrAdmin<{ storyId: string }>((req) => loadStoryOwner(req.params.storyId)),
+    requireOwnerOrAdmin<{ storyId: string }>((req) =>
+        storyService.getStoryOwnerId(req.params.storyId),
+    ),
     validate(deleteStorySchema),
     StoryController.deleteStory,
 );

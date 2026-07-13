@@ -3,12 +3,8 @@ import jwt from 'jsonwebtoken';
 import { UnauthorizedError } from '../common/errors.js';
 import { env } from '../config/env.js';
 import { UserService } from '../services/user.services.js';
-import type { Role } from '../types/role.type.js';
-
-interface AccessTokenPayload extends jwt.JwtPayload {
-    sub: string;
-    role?: Role;
-}
+import type { AccessTokenPayload } from '../types/authAccessToken.js';
+import { Role } from '@prisma/client';
 
 const userService = new UserService();
 
@@ -52,7 +48,7 @@ export async function authenticateToken(
 
     req.user = {
         id: payload.sub,
-        role: payload.role ?? record?.role ?? 'USER',
+        role: payload.role ?? record?.role ?? Role.USER,
         ...(record ? { record } : {}),
     };
 

@@ -5,12 +5,11 @@ import { ConflictError, NotFoundError, ValidationError } from '../common/errors.
 import type { RegisterDto, ChangePasswordDto, LoginDto } from '../dtos/auth.dto.js';
 import { env } from '../config/env.js';
 import { UserService } from './user.services.js';
-import type { Role } from '../types/role.type.js';
-
+import { Role } from '@prisma/client';
 const authRepository = new AuthRepository();
 const userService = new UserService();
 
-function signToken(userId: string, role: Role = 'USER') {
+function signToken(userId: string, role: Role = Role.ADMIN) {
     return jwt.sign({ sub: userId, role }, env.jwtSecret, { expiresIn: env.jwtExpiresIn });
 }
 

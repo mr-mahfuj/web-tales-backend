@@ -2,6 +2,7 @@ import type { Prisma, User } from '@prisma/client';
 import prisma from '../config/prisma.js';
 import type { CreateUserDTO, UpdateUserDTO } from '../dtos/user.dto.js';
 import type { ListUsersQuery } from '../schemas/user.schema.js';
+import { userListSelect } from '../types/user.select.js';
 
 const getUserOrderBy = (
     orderBy?: ListUsersQuery['orderBy'],
@@ -33,16 +34,6 @@ const getUserWhere = (search?: string): Prisma.UserWhereInput => {
         }),
     };
 };
-
-const userListSelect = {
-    id: true,
-    username: true,
-    name: true,
-    email: true,
-    joinDate: true,
-    role: true,
-    isDeleted: true,
-} satisfies Prisma.UserSelect;
 
 export class UserRepository {
     async create(data: CreateUserDTO): Promise<User> {
