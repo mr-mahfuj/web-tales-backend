@@ -1,33 +1,44 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/user.controller.js';
-import { validate } from '../middleware/validate.middleware.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
-import { requireOwnerOrAdmin } from '../middleware/authorize.middleware.js';
-import { getAllUsersSchema, getUserSchema, updateUserSchema } from '../schemas/user.schema.js';
+import { requireRole, requireSelfOrAdmin } from '../middleware/authorize.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import {
+    deleteUserSchema,
+    getAllUsersSchema,
+    getUserSchema,
+    updateUserSchema,
+} from '../schemas/user.schema.js';
 
 const router = Router();
-const userController = new UserController();
 
-router.get('/', validate(getAllUsersSchema), userController.getAllUsers.bind(userController));
+router.get(
+    '/',
+    authenticateToken,
+    requireRole('ADMIN'),
+    validate(getAllUsersSchema),
+    UserController.getAllUsers,
+);
 router.get(
     '/:userId',
     authenticateToken,
+    requireSelfOrAdmin(),
     validate(getUserSchema),
-    userController.getUserById.bind(userController),
+    UserController.getUserById,
 );
 router.patch(
     '/:userId',
     authenticateToken,
-    requireOwnerOrAdmin((req) => req.params.userId),
+    requireSelfOrAdmin(),
     validate(updateUserSchema),
-    userController.updateUser.bind(userController),
+    UserController.updateUser,
 );
 router.delete(
     '/:userId',
     authenticateToken,
-    requireOwnerOrAdmin((req) => req.params.userId),
-    validate(getUserSchema),
-    userController.deleteUser.bind(userController),
+    requireSelfOrAdmin(),
+    validate(deleteUserSchema),
+    UserController.deleteUser,
 );
 
 export default router;

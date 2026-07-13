@@ -35,6 +35,8 @@ export const storyIdParamsSchema = z.object({
     storyId: idSchema,
 });
 
+export type StoryIdParams = z.infer<typeof storyIdParamsSchema>;
+
 export const createStorySchema = {
     body: createStoryBodySchema,
 };

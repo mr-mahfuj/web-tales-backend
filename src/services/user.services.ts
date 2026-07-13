@@ -2,6 +2,7 @@ import { type CreateUserDTO, type UpdateUserDTO, UserDTO } from '../dtos/user.dt
 import { ConflictError, NotFoundError, ValidationError } from '../common/errors.js';
 import { UserRepository } from '../repositories/user.repository.js';
 import type { ListUsersQuery } from '../schemas/user.schema.js';
+import { toListResponse, type ListResponse } from '../utils/pagination.mapper.js';
 
 export class UserService {
     userRepository = new UserRepository();
@@ -17,13 +18,14 @@ export class UserService {
         return new UserDTO(await this.userRepository.create(data));
     }
 
-    async getAllUsers(query: ListUsersQuery): Promise<{ data: UserDTO[]; total?: number }> {
+    async getAllUsers(query: ListUsersQuery): Promise<ListResponse<UserDTO>> {
         const result = await this.userRepository.findAll(query);
 
-        return {
-            data: result.data.map((user) => new UserDTO(user)),
-            ...(result.total !== undefined ? { total: result.total } : {}),
-        };
+        return toListResponse(
+            result.data.map((user) => new UserDTO(user)),
+            query,
+            result.total,
+        );
     }
 
     async getUserById(userId: string): Promise<UserDTO> {
@@ -41,16 +43,6 @@ export class UserService {
 
         if (!user) {
             throw new NotFoundError('User not found', { email: email });
-        }
-
-        return new UserDTO(user);
-    }
-
-    async getUserByUsername(username: string): Promise<UserDTO> {
-        const user = await this.userRepository.findByUsername(username);
-
-        if (!user) {
-            throw new NotFoundError('User not found', { username: username });
         }
 
         return new UserDTO(user);
@@ -74,5 +66,13 @@ export class UserService {
         }
 
         return this.userRepository.softDelete(userId);
+    }
+
+    existsByUsername(username: string): Promise<boolean> {
+        return this.userRepository.existsByUsername(username);
+    }
+
+    existsByEmail(email: string): Promise<boolean> {
+        return this.userRepository.existsByEmail(email);
     }
 }
