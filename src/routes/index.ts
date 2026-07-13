@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import healthRouter from './health.route.js';
-import userRouter from './user.route.js';
-import storyRouter from './story.route.js';
-import docsRouter from './docs.route.js';
-import authRouter from './auth.route.js';
+import healthRouter from './healthRoute.js';
+import userRouter from './userRoute.js';
+import storyRouter from './storyRoute.js';
+import docsRouter from './docsRoute.js';
+import authRouter from './authRoute.js';
 
 const router = Router();
 

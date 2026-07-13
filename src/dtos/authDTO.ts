@@ -3,7 +3,7 @@ import type {
     changePasswordBodySchema,
     loginBodySchema,
     registerBodySchema,
-} from '../schemas/auth.schema.js';
+} from '../schemas/authSchema.js';
 
 export type RegisterDto = z.output<typeof registerBodySchema>;
 export type LoginDto = z.output<typeof loginBodySchema>;

@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/user.controller.js';
-import { authenticateToken } from '../middleware/auth.middleware.js';
-import { requireRole, requireSelfOrAdmin } from '../middleware/authorize.middleware.js';
-import { validate } from '../middleware/validate.middleware.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
+import { requireRole, requireSelfOrAdmin } from '../middleware/authorizeMiddleware.js';
+import { validate } from '../middleware/validateMiddleware.js';
 import {
     deleteUserSchema,
     getAllUsersSchema,
     getUserSchema,
     updateUserSchema,
-} from '../schemas/user.schema.js';
+} from '../schemas/userSchema.js';
 
 const router = Router();
 
@@ -22,22 +22,22 @@ router.get(
 router.get(
     '/:userId',
     authenticateToken,
-    requireSelfOrAdmin(),
     validate(getUserSchema),
+    requireSelfOrAdmin(),
     UserController.getUserById,
 );
 router.patch(
     '/:userId',
     authenticateToken,
-    requireSelfOrAdmin(),
     validate(updateUserSchema),
+    requireSelfOrAdmin(),
     UserController.updateUser,
 );
 router.delete(
     '/:userId',
     authenticateToken,
-    requireSelfOrAdmin(),
     validate(deleteUserSchema),
+    requireSelfOrAdmin(),
     UserController.deleteUser,
 );
 

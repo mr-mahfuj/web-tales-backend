@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { createStoryBodySchema, updateStoryBodySchema } from '../schemas/story.schema.js';
+import type { createStoryBodySchema, updateStoryBodySchema } from '../schemas/storySchema.js';
 import type { Story } from '@prisma/client';
 
 export type CreateStoryDTO = z.output<typeof createStoryBodySchema>;

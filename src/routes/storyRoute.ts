@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { StoryController } from '../controllers/story.controller.js';
-import { authenticateToken } from '../middleware/auth.middleware.js';
-import { requireOwnerOrAdmin } from '../middleware/authorize.middleware.js';
-import { validate } from '../middleware/validate.middleware.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
+import { requireOwnerOrAdmin } from '../middleware/authorizeMiddleware.js';
+import { validate } from '../middleware/validateMiddleware.js';
 import { StoryService } from '../services/story.service.js';
 import {
     createStorySchema,
@@ -10,7 +10,7 @@ import {
     getAllStoriesSchema,
     getStorySchema,
     updateStorySchema,
-} from '../schemas/story.schema.js';
+} from '../schemas/storySchema.js';
 
 const router = Router();
 const storyService = new StoryService();
@@ -21,19 +21,19 @@ router.get('/:storyId', validate(getStorySchema), StoryController.getStoryById);
 router.patch(
     '/:storyId',
     authenticateToken,
+    validate(updateStorySchema),
     requireOwnerOrAdmin<{ storyId: string }>((req) =>
         storyService.getStoryOwnerId(req.params.storyId),
     ),
-    validate(updateStorySchema),
     StoryController.updateStory,
 );
 router.delete(
     '/:storyId',
     authenticateToken,
+    validate(deleteStorySchema),
     requireOwnerOrAdmin<{ storyId: string }>((req) =>
         storyService.getStoryOwnerId(req.params.storyId),
     ),
-    validate(deleteStorySchema),
     StoryController.deleteStory,
 );
 

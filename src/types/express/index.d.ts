@@ -1,5 +1,5 @@
-import type { AuthenticatedUser } from '../auth.type.js';
-import type { ValidationSchema, Validated } from '../../middleware/validate.middleware.js';
+import type { AuthenticatedUser } from '../auth.js';
+import type { ValidationSchema, Validated } from '../../middleware/validateMiddleware.js';
 
 declare module 'express-serve-static-core' {
     interface Request {

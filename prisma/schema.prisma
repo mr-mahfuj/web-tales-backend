@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -19,6 +20,7 @@ model User {
   joinDate  DateTime @default(now())
   role      Role     @default(USER)
   isDeleted Boolean  @default(false)
+  isEmailVerified Boolean @default(false)
 
   auth      Auth?
   stories   Story[]

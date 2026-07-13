@@ -1,6 +1,6 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import { ForbiddenError, NotFoundError } from '../common/errors.js';
-import type { AuthenticatedUser } from '../types/auth.type.js';
+import type { AuthenticatedUser } from '../types/auth.js';
 import { Role } from '@prisma/client';
 
 export function requireRole(...roles: AuthenticatedUser['role'][]): RequestHandler {

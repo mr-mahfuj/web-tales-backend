@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import prisma from '../config/prisma.js';
-import { StatusCode } from '../constants/status-code.enum.js';
+import { StatusCode } from '../constants/status-code.js';
 
 const router = Router();
 

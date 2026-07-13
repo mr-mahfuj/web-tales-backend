@@ -1,5 +1,5 @@
 import type { Story } from '@prisma/client';
-import type { ListStoriesQuery } from '../schemas/story.schema.js';
+import type { ListStoriesQuery } from '../schemas/storySchema.js';
 
 export const mapStoryListResponse = (
     result: { data: Story[]; total?: number },

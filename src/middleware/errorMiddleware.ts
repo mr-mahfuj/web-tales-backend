@@ -1,11 +1,11 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { LogLevel } from '../common/errors.js';
 import { AppError } from '../common/errors.js';
-import { StatusCode } from '../constants/status-code.enum.js';
-import { formatZodIssues } from '../utils/error-formatters.js';
-import { logError } from '../utils/error-logger.js';
+import { StatusCode } from '../constants/status-code.js';
+import { formatZodIssues } from '../utils/errorFormatters.js';
+import { logError } from '../utils/errorLogger.js';
 import { ZodError } from 'zod';
-import type { ErrorResponse } from '../types/api-response.type.js';
+import type { ErrorResponse } from '../types/apiResponse.js';
 
 type NormalizedError = {
     name: string;

@@ -1,5 +1,5 @@
 {
-    "cSpell.words": ["autoincrement"],
+    "cSpell.words": ["autoincrement", "dtos"],
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "always"

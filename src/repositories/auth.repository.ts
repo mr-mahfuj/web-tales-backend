@@ -1,6 +1,6 @@
 import type { User } from '@prisma/client';
 import prisma from '../config/prisma.js';
-import type { UserWithAuth } from '../types/userWithAuth.type.js';
+import type { UserWithAuth } from '../types/userWithAuth.js';
 
 export class AuthRepository {
     async createUserWithAuth(data: UserWithAuth): Promise<User> {

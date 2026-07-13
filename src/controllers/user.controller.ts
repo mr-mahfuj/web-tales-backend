@@ -1,35 +1,43 @@
 import type { Request, Response } from 'express';
-import { StatusCode } from '../constants/status-code.enum.js';
-import type { UpdateUserDTO, UserDTO } from '../dtos/user.dto.js';
+import { StatusCode } from '../constants/status-code.js';
+import type { UserDTO } from '../dtos/userDTO.js';
 import { UserService } from '../services/user.services.js';
-import { toListResponse } from '../utils/list-response.js';
-import type { ListUsersQuery } from '../schemas/user.schema.js';
+import { toListResponse } from '../utils/listResponse.js';
+import type {
+    getAllUsersSchema,
+    getUserSchema,
+    updateUserSchema,
+    deleteUserSchema,
+} from '../schemas/userSchema.js';
+import type { Validated } from '../types/validation.js';
 
 const userService = new UserService();
 
+type ValidatedRequest<S> = Request & { validated?: Validated<S> };
+
 export const UserController = {
-    getAllUsers: async (req: Request, res: Response) => {
-        const query = req.query as unknown as ListUsersQuery;
+    getAllUsers: async (req: ValidatedRequest<typeof getAllUsersSchema>, res: Response) => {
+        const query = req.validated.query;
         const result = await userService.getAllUsers(query);
         return res
             .status(StatusCode.Ok)
             .json(toListResponse<UserDTO>(result.data, query, result.meta.total));
     },
 
-    getUserById: async (req: Request, res: Response) => {
-        const { userId } = req.params as { userId: string };
+    getUserById: async (req: ValidatedRequest<typeof getUserSchema>, res: Response) => {
+        const { userId } = req.validated.params;
         const user = await userService.getUserById(userId);
         return res.status(StatusCode.Ok).json(user);
     },
 
-    updateUser: async (req: Request, res: Response) => {
-        const { userId } = req.params as { userId: string };
-        const updatedUser = await userService.updateUser(userId, req.body as UpdateUserDTO);
+    updateUser: async (req: ValidatedRequest<typeof updateUserSchema>, res: Response) => {
+        const { userId } = req.validated.params;
+        const updatedUser = await userService.updateUser(userId, req.validated.body);
         return res.status(StatusCode.Ok).json(updatedUser);
     },
 
-    deleteUser: async (req: Request, res: Response) => {
-        const { userId } = req.params as { userId: string };
+    deleteUser: async (req: ValidatedRequest<typeof deleteUserSchema>, res: Response) => {
+        const { userId } = req.validated.params;
         await userService.softDelete(userId);
         return res.status(StatusCode.Ok).json({
             message: 'User deleted successfully',

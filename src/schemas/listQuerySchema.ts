@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { QUERY_CONSTANTS } from '../constants/pagination.constants.js';
+import { QUERY_CONSTANTS } from '../constants/pagination.js';
 
 const emptyToUndefined = (v: unknown) => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 

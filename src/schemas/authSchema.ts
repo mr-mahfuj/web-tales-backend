@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { PASSWORD } from '../constants/auth.constants.js';
-import { usernameSchema, emailSchema } from './user.schema.js';
+import { PASSWORD } from '../constants/auth.js';
+import { usernameSchema, emailSchema } from './userSchema.js';
 
 const passwordSchema = z
     .string()

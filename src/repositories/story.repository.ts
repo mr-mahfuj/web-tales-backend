@@ -1,8 +1,8 @@
 import type { Prisma } from '@prisma/client';
 import { type Story } from '@prisma/client';
-import type { CreateStoryDTO, UpdateStoryDTO } from '../dtos/story.dto.js';
+import type { CreateStoryDTO, UpdateStoryDTO } from '../dtos/storyDTO.js';
 import prisma from '../config/prisma.js';
-import type { ListStoriesQuery } from '../schemas/story.schema.js';
+import type { ListStoriesQuery } from '../schemas/storySchema.js';
 
 const getStoryOrderBy = (
     orderBy: ListStoriesQuery['orderBy'],

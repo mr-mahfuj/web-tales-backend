@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AuthRepository } from '../repositories/auth.repository.js';
 import { ConflictError, NotFoundError, ValidationError } from '../common/errors.js';
-import type { RegisterDto, ChangePasswordDto, LoginDto } from '../dtos/auth.dto.js';
+import type { RegisterDto, ChangePasswordDto, LoginDto } from '../dtos/authDTO.js';
 import { env } from '../config/env.js';
 import { UserService } from './user.services.js';
 import { Role } from '@prisma/client';
@@ -36,10 +36,11 @@ export class AuthService {
     }
 
     async login(data: LoginDto) {
-        const user = await userService.getUserByEmail(data.email);
+        const user = await userService.findUserByEmail(data.email);
         if (!user) {
             throw new ValidationError();
         }
+
         const auth = await authRepository.findAuthByUserId(user.id);
         if (!auth) {
             throw new ValidationError();
@@ -64,7 +65,7 @@ export class AuthService {
 
         const isPasswordValid = await bcrypt.compare(data.oldPassword, auth.password);
         if (!isPasswordValid) {
-            throw new NotFoundError();
+            throw new ValidationError('Invalid old password');
         }
 
         const hashedPassword = await bcrypt.hash(data.newPassword, env.saltRounds);

@@ -1,7 +1,7 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import { ValidationError } from '../common/errors.js';
-import { formatZodIssues } from '../utils/error-formatters.js';
-import type { ValidationSchema, Validated } from '../types/validation.type.js'; // ← moved
+import { formatZodIssues } from '../utils/errorFormatters.js';
+import type { ValidationSchema, Validated } from '../types/validation.js';
 
 function validateRequest<S extends ValidationSchema>(req: Request, schema: S): Validated<S> {
     const validated: Record<string, unknown> = {};
@@ -59,7 +59,11 @@ export function validate<S extends ValidationSchema>(schema: S): RequestHandler 
 
 export function withValidation<S extends ValidationSchema>(
     schema: S,
-    handler: (req: Request & { validated: Validated<S> }, res: Response, next: NextFunction) => any,
+    handler: (
+        req: Request & { validated: Validated<S> },
+        res: Response,
+        next: NextFunction,
+    ) => unknown,
 ): RequestHandler {
     return (req, res, next) => {
         try {

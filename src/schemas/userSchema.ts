@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { NAME, USERNAME } from '../constants/user.constants.js';
-import { createListQuerySchema } from './list-query.schema.js';
-import { idSchema } from './id.schema.js';
+import { NAME, USERNAME } from '../constants/user.js';
+import { createListQuerySchema } from './listQuerySchema.js';
+import { idSchema } from './idSchema.js';
 
 export const usernameSchema = z
     .string()

@@ -1,6 +1,6 @@
 import type { Role, User } from '@prisma/client';
 import type { z } from 'zod';
-import type { createUserBodySchema, updateUserBodySchema } from '../schemas/user.schema.js';
+import type { createUserBodySchema, updateUserBodySchema } from '../schemas/userSchema.js';
 
 export type CreateUserDTO = z.output<typeof createUserBodySchema>;
 export type UpdateUserDTO = z.output<typeof updateUserBodySchema>;
