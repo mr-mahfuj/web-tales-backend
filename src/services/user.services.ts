@@ -1,3 +1,4 @@
+import type { User } from '@prisma/client';
 import { type CreateUserDTO, type UpdateUserDTO, UserDTO } from '../dtos/userDTO.js';
 import { ConflictError, NotFoundError } from '../common/errors.js';
 import { UserRepository } from '../repositories/user.repository.js';
@@ -48,9 +49,13 @@ export class UserService {
         return new UserDTO(user);
     }
 
-    async findUserByEmail(email: string): Promise<UserDTO | null> {
-        const user = await this.userRepository.findByEmail(email);
-        return user ? new UserDTO(user) : null;
+    async findUserByEmail(email: string): Promise<User | null> {
+        return this.userRepository.findByEmail(email);
+    }
+
+    async markEmailVerified(userId: string): Promise<UserDTO> {
+        const user = await this.userRepository.markEmailVerified(userId);
+        return new UserDTO(user);
     }
 
     async updateUser(userId: string, data: UpdateUserDTO): Promise<UserDTO> {

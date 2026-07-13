@@ -39,3 +39,15 @@ export const changePasswordBodySchema = z
 export const registerSchema = { body: registerBodySchema };
 export const loginSchema = { body: loginBodySchema };
 export const changePasswordSchema = { body: changePasswordBodySchema };
+
+export const resendConfirmationEmailBodySchema = z
+    .object({
+        email: emailSchema,
+    })
+    .strict();
+
+export const resendConfirmationEmailSchema = {
+    body: resendConfirmationEmailBodySchema,
+};
+
+export type ResendConfirmationEmailDto = z.output<typeof resendConfirmationEmailBodySchema>;

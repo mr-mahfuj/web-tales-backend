@@ -1,11 +1,23 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AuthRepository } from '../repositories/auth.repository.js';
-import { ConflictError, NotFoundError, ValidationError } from '../common/errors.js';
-import type { RegisterDto, ChangePasswordDto, LoginDto } from '../dtos/authDTO.js';
+import {
+    ConflictError,
+    NotFoundError,
+    UnauthorizedError,
+    ValidationError,
+} from '../common/errors.js';
+import type {
+    RegisterDto,
+    ChangePasswordDto,
+    LoginDto,
+    ResendConfirmationEmailDto,
+} from '../dtos/authDTO.js';
 import { env } from '../config/env.js';
 import { UserService } from './user.services.js';
 import { Role } from '@prisma/client';
+import { sendVerificationEmail } from '../utils/mailer.js';
+
 const authRepository = new AuthRepository();
 const userService = new UserService();
 
@@ -27,10 +39,14 @@ export class AuthService {
             hashedPassword,
         });
 
-        const token = signToken(user.id, user.role);
+        await sendVerificationEmail({
+            userId: user.id,
+            email: user.email,
+            username: user.username,
+        });
 
         return {
-            token,
+            message: 'Registration successful. Please confirm your email address.',
             user: { id: user.id, username: user.username, name: user.name, email: user.email },
         };
     }
@@ -39,6 +55,10 @@ export class AuthService {
         const user = await userService.findUserByEmail(data.email);
         if (!user) {
             throw new ValidationError();
+        }
+
+        if (!user.isEmailVerified) {
+            throw new ValidationError('Please verify your email before logging in.');
         }
 
         const auth = await authRepository.findAuthByUserId(user.id);
@@ -59,7 +79,11 @@ export class AuthService {
         };
     }
 
-    async changePassword(userId: string, data: ChangePasswordDto) {
+    async changePassword(userId: string | undefined, data: ChangePasswordDto) {
+        if (!userId) {
+            throw new UnauthorizedError('Authentication required');
+        }
+
         const auth = await authRepository.findAuthByUserId(userId);
         if (!auth) throw new NotFoundError();
 
@@ -72,5 +96,51 @@ export class AuthService {
         await authRepository.updatePassword(userId, hashedPassword);
 
         return { message: 'Password changed successfully' };
+    }
+
+    async confirmEmail(token: string) {
+        let payload: { userId?: string; email?: string; type?: string };
+        try {
+            payload = jwt.verify(token, env.jwtSecret) as {
+                userId?: string;
+                email?: string;
+                type?: string;
+            };
+        } catch (error) {
+            throw new ValidationError('Invalid or expired email confirmation token');
+        }
+
+        if (payload.type !== 'email-verification' || !payload.userId || !payload.email) {
+            throw new ValidationError('Invalid email confirmation token');
+        }
+
+        const user = await userService.findUserByEmail(payload.email);
+        if (!user || user.id !== payload.userId) {
+            throw new NotFoundError('User not found.');
+        }
+
+        if (user.isEmailVerified) {
+            return { message: 'Email is already verified.' };
+        }
+
+        await userService.markEmailVerified(user.id);
+
+        return { message: 'Email confirmed successfully.' };
+    }
+
+    async resendConfirmationEmail(data: ResendConfirmationEmailDto) {
+        const user = await userService.findUserByEmail(data.email);
+
+        if (user && !user.isEmailVerified) {
+            await sendVerificationEmail({
+                userId: user.id,
+                email: user.email,
+                username: user.username,
+            });
+        }
+
+        return {
+            message: 'Verification link has been sent.',
+        };
     }
 }

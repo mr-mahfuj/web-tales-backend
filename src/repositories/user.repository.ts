@@ -105,6 +105,13 @@ export class UserRepository {
         });
     }
 
+    async markEmailVerified(userId: string): Promise<User> {
+        return prisma.user.update({
+            where: { id: userId },
+            data: { isEmailVerified: true },
+        });
+    }
+
     async softDelete(userId: string): Promise<User> {
         return prisma.user.update({
             where: { id: userId },
