@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { TITLE, BODY } from '../constants/story.js';
+import { TITLE, BODY, SUMMARY } from '../constants/story.js';
 import { CATEGORY } from '../constants/categoryFilter.js';
 import { createListQuerySchema } from './listQuerySchema.js';
 import { idSchema } from './idSchema.js';
@@ -28,6 +28,13 @@ export const createStoryBodySchema = z
         title: titleSchema,
         body: bodySchema,
         categoryIds: categoryIdsSchema,
+        summary: z
+            .string()
+            .trim()
+            .min(SUMMARY.MIN_CHAR_LENGTH)
+            .max(SUMMARY.MAX_CHAR_LENGTH)
+            .optional(),
+        generateSummary: z.boolean().optional(),
     })
     .strict();
 

@@ -162,3 +162,19 @@ export class ValidationError extends AppError {
         });
     }
 }
+
+export class AIServiceError extends AppError {
+    constructor(
+        message = 'AI service failed to generate summary',
+        details?: unknown,
+        cause?: unknown,
+    ) {
+        super(message, {
+            statusCode: 502,
+            code: 'AI_SERVICE_ERROR',
+            details,
+            cause,
+            logLevel: 'warn',
+        });
+    }
+}

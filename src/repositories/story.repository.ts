@@ -49,10 +49,11 @@ const buildStoryWhere = (search?: string, category?: string): Prisma.StoryWhereI
 
 export class StoryRepository {
     async create(data: CreateStoryDTO): Promise<Story> {
-        const { categoryIds, ...storyFields } = data;
+        const { categoryIds, summary, ...storyFields } = data;
         return prisma.story.create({
             data: {
                 ...storyFields,
+                ...(summary !== undefined ? { summary } : {}),
                 ...mapStoryCategoriesConnect(categoryIds),
             },
             include: { categories: { select: storyCategoriesSelect } },
@@ -88,11 +89,12 @@ export class StoryRepository {
     }
 
     async update(storyId: string, data: UpdateStoryDTO): Promise<Story> {
-        const { categoryIds, ...storyFields } = data;
+        const { categoryIds, summary, ...storyFields } = data;
         return prisma.story.update({
             where: { storyId },
             data: {
                 ...storyFields,
+                ...(summary !== undefined ? { summary } : {}),
                 ...mapStoryCategoriesSet(categoryIds),
             } as Prisma.StoryUpdateInput,
             include: { categories: { select: storyCategoriesSelect } },

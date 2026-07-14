@@ -45,4 +45,11 @@ export const StoryController = {
             message: 'Story deleted successfully',
         });
     },
+
+    generateSummary: async (req: ValidatedRequest<typeof getStorySchema>, res: Response) => {
+        const { storyId } = req.validated.params;
+        const regenerate = req.query.regenerate === 'true';
+        const story = await storyService.generateStorySummary(storyId, regenerate);
+        return res.status(StatusCode.Ok).json(story);
+    },
 };
