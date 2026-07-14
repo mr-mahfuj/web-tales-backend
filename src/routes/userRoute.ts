@@ -9,13 +9,14 @@ import {
     getUserSchema,
     updateUserSchema,
 } from '../schemas/userSchema.js';
+import { Role } from '@prisma/client';
 
 const router = Router();
 
 router.get(
     '/',
     authenticateToken,
-    requireRole('ADMIN'),
+    requireRole(Role.ADMIN),
     validate(getAllUsersSchema),
     UserController.getAllUsers,
 );

@@ -1,8 +1,6 @@
 import type { Request, Response } from 'express';
 import { StatusCode } from '../constants/status-code.js';
-import type { StoryDTO } from '../dtos/storyDTO.js';
 import { StoryService } from '../services/story.service.js';
-import { toListResponse } from '../utils/listResponse.js';
 import type {
     createStorySchema,
     getAllStoriesSchema,
@@ -24,10 +22,8 @@ export const StoryController = {
 
     getAllStories: async (req: ValidatedRequest<typeof getAllStoriesSchema>, res: Response) => {
         const query = req.validated.query;
-        const result = await storyService.getAllStories(query);
-        return res
-            .status(StatusCode.Ok)
-            .json(toListResponse<StoryDTO>(result.data, query, result.meta.total));
+        const stories = await storyService.getAllStories(query);
+        return res.status(StatusCode.Ok).json(stories);
     },
 
     getStoryById: async (req: ValidatedRequest<typeof getStorySchema>, res: Response) => {

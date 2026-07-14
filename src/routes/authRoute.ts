@@ -14,7 +14,7 @@ const router = Router();
 
 router.post('/login', validate(loginSchema), AuthController.login);
 router.post('/signup', validate(registerSchema), AuthController.register);
-router.post(
+router.get(
     '/confirm-email/:token',
     validate(emailVerificationTokenSchema),
     AuthController.confirmEmail,

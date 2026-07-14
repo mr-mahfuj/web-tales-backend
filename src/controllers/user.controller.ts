@@ -1,8 +1,6 @@
 import type { Request, Response } from 'express';
 import { StatusCode } from '../constants/status-code.js';
-import type { UserDTO } from '../dtos/userDTO.js';
 import { UserService } from '../services/user.services.js';
-import { toListResponse } from '../utils/listResponse.js';
 import type {
     getAllUsersSchema,
     getUserSchema,
@@ -18,10 +16,8 @@ type ValidatedRequest<S> = Request & { validated?: Validated<S> };
 export const UserController = {
     getAllUsers: async (req: ValidatedRequest<typeof getAllUsersSchema>, res: Response) => {
         const query = req.validated.query;
-        const result = await userService.getAllUsers(query);
-        return res
-            .status(StatusCode.Ok)
-            .json(toListResponse<UserDTO>(result.data, query, result.meta.total));
+        const users = await userService.getAllUsers(query);
+        return res.status(StatusCode.Ok).json(users);
     },
 
     getUserById: async (req: ValidatedRequest<typeof getUserSchema>, res: Response) => {

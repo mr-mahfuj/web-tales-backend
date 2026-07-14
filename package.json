@@ -17,6 +17,9 @@
         "swagger": "tsx src/config/swagger.ts",
         "prestart": "npm run swagger"
     },
+    "prisma": {
+        "seed": "tsx prisma/seed.ts"
+    },
     "lint-staged": {
         "*.{ts,js}": [
             "node node_modules/eslint/bin/eslint.js --fix",
