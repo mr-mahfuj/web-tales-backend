@@ -1,7 +1,10 @@
 import { z } from 'zod';
 import { TITLE, BODY } from '../constants/story.js';
+import { CATEGORY } from '../constants/categoryFilter.js';
 import { createListQuerySchema } from './listQuerySchema.js';
 import { idSchema } from './idSchema.js';
+
+const emptyToUndefined = (v: unknown) => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 
 const titleSchema = z
     .string()
@@ -17,11 +20,14 @@ const bodySchema = z
 
 const storyOrderBySchema = z.enum(['createdAt', 'updatedAt', 'title']).default('createdAt');
 
+const categoryIdsSchema = z.array(idSchema).optional();
+
 export const createStoryBodySchema = z
     .object({
         userId: idSchema,
         title: titleSchema,
         body: bodySchema,
+        categoryIds: categoryIdsSchema,
     })
     .strict();
 
@@ -54,7 +60,17 @@ export const deleteStorySchema = {
     params: storyIdParamsSchema,
 };
 
-export const listStoriesQuerySchema = createListQuerySchema(storyOrderBySchema);
+export const listStoriesQuerySchema = createListQuerySchema(storyOrderBySchema).extend({
+    category: z.preprocess(
+        emptyToUndefined,
+        z
+            .string()
+            .trim()
+            .min(CATEGORY.MIN, 'Category filter cannot be empty')
+            .max(CATEGORY.MAX, 'Category filter is too long')
+            .optional(),
+    ),
+});
 
 export const getAllStoriesSchema = {
     query: listStoriesQuerySchema,

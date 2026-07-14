@@ -47,6 +47,7 @@ export class CategoryRepository {
         });
         return category !== null;
     }
+
     async existsByName(name: string): Promise<boolean> {
         const category = await prisma.category.findUnique({
             where: { name },

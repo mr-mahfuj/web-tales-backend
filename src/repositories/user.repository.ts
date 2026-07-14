@@ -21,15 +21,13 @@ const getUserOrderBy = (
 };
 
 const getUserWhere = (search?: string): Prisma.UserWhereInput => {
-    const trimmed = search?.trim();
-
     return {
         isDeleted: false,
-        ...(trimmed && {
+        ...(search && {
             OR: [
-                { username: { contains: trimmed, mode: 'insensitive' } },
-                { name: { contains: trimmed, mode: 'insensitive' } },
-                { email: { contains: trimmed, mode: 'insensitive' } },
+                { username: { contains: search, mode: 'insensitive' } },
+                { name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
             ],
         }),
     };

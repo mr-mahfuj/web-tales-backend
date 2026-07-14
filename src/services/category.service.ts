@@ -22,15 +22,23 @@ export class CategoryService {
     }
 
     async updateCategory(id: string, data: UpdateCategoryDTO): Promise<CategoryDTO> {
-        if (!categoryRepository.existsById(id)) {
+        if (!(await categoryRepository.existsById(id))) {
             throw new NotFoundError('Category not found.');
         }
         return categoryRepository.update(id, data);
     }
 
     async deleteCategory(id: string) {
-        if (!categoryRepository.existsById(id)) {
+        if (!(await categoryRepository.existsById(id))) {
             throw new NotFoundError('Category not found.');
         }
+    }
+
+    existsById(id: string) {
+        categoryRepository.existsById(id);
+    }
+
+    existsByName(name: string) {
+        categoryRepository.existsByName(name);
     }
 }
