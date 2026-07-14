@@ -39,6 +39,7 @@ model Story {
   storyId   String   @id @default(uuid())
   title     String
   body      String
+  summary   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

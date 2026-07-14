@@ -12,6 +12,7 @@ export class StoryDTO {
     readonly storyId: string;
     readonly title: string;
     readonly body: string;
+    readonly sumary: string | null;
     readonly createdAt: Date;
     readonly updatedAt: Date;
     readonly categories: { id: string; name: string }[];
@@ -21,6 +22,7 @@ export class StoryDTO {
         this.storyId = story.storyId;
         this.title = story.title;
         this.body = story.body;
+        this.sumary = story.summary;
         this.createdAt = story.createdAt;
         this.updatedAt = story.updatedAt;
         this.categories = (story.categories ?? []).map((category) => ({
