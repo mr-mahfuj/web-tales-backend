@@ -1,0 +1,122 @@
+components:
+    parameters:
+        UserIdPath:
+            name: userId
+            in: path
+            required: true
+            description: UUID of the target user.
+            schema:
+                type: string
+                format: uuid
+            example: 8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e
+
+        StoryIdPath:
+            name: storyId
+            in: path
+            required: true
+            description: UUID of the target story.
+            schema:
+                type: string
+                format: uuid
+            example: 12cde2a3-4f56-4d12-9b6a-77f0c1a23bc5
+
+        CategoryIdPath:
+            name: categoryId
+            in: path
+            required: true
+            description: UUID of the target category.
+            schema:
+                type: string
+                format: uuid
+
+        EmailTokenPath:
+            name: token
+            in: path
+            required: true
+            description: Email verification token that was emailed to the user.
+            schema:
+                type: string
+            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+        OffsetQuery:
+            name: offset
+            in: query
+            required: false
+            description: Number of items to skip before returning results.
+            schema:
+                type: integer
+                minimum: 0
+                default: 0
+            example: 0
+
+        LimitQuery:
+            name: limit
+            in: query
+            required: false
+            description: Maximum number of items to return.
+            schema:
+                type: integer
+                minimum: 1
+                maximum: 100
+                default: 10
+            example: 10
+
+        SearchQuery:
+            name: search
+            in: query
+            required: false
+            description: Case-insensitive search across relevant text fields.
+            schema:
+                type: string
+                minLength: 1
+                maxLength: 100
+            example: john
+
+        CountQuery:
+            name: count
+            in: query
+            required: false
+            description: When `true`, includes the `total` count in the response `meta`.
+            schema:
+                type: boolean
+                default: false
+
+        UserOrderByQuery:
+            name: orderBy
+            in: query
+            required: false
+            description: Field used to sort users.
+            schema:
+                type: string
+                enum: [joinDate, username, name, email]
+                default: joinDate
+
+        StoryOrderByQuery:
+            name: orderBy
+            in: query
+            required: false
+            description: Field used to sort stories.
+            schema:
+                type: string
+                enum: [createdAt, updatedAt, title]
+                default: createdAt
+
+        StoryCategoryQuery:
+            name: category
+            in: query
+            required: false
+            description: Filter stories by category name (case-insensitive).
+            schema:
+                type: string
+                minLength: 1
+                maxLength: 10
+            example: technology
+
+        RegenerateQuery:
+            name: regenerate
+            in: query
+            required: false
+            description: Pass `true` to force regeneration of an existing summary.
+            schema:
+                type: boolean
+                default: false

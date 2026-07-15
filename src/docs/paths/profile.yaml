@@ -1,0 +1,111 @@
+paths:
+    /users/profile:
+        get:
+            tags: [Profile]
+            summary: Get the authenticated user profile
+            description: Returns the profile of the user whose token is presented.
+            security:
+                - bearerAuth: []
+            responses:
+                '200':
+                    description: Authenticated user's profile.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '404':
+                    $ref: '#/components/responses/NotFound'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+        patch:
+            tags: [Profile]
+            summary: Update the authenticated user's profile
+            description: |
+                Update your own username, name, or email. Changing the email triggers
+                a fresh verification email.
+            security:
+                - bearerAuth: []
+            requestBody:
+                $ref: '#/components/requestBodies/UpdateProfileRequest'
+            responses:
+                '200':
+                    description: Updated profile.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User'
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '404':
+                    $ref: '#/components/responses/NotFound'
+                '409':
+                    $ref: '#/components/responses/Conflict'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+    /users/change-password:
+        post:
+            tags: [Profile]
+            summary: Start the password change flow
+            description: |
+                Validates the current password and emails a one-time confirmation
+                token (15-minute TTL by default) to the user. Rate limited to
+                5 requests / 15 minutes per IP.
+            security:
+                - bearerAuth: []
+            requestBody:
+                $ref: '#/components/requestBodies/InitiatePasswordChangeRequest'
+            responses:
+                '200':
+                    description: Confirmation link dispatched.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: If your current password is correct, a confirmation link has been sent to your email.
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '404':
+                    $ref: '#/components/responses/NotFound'
+                '429':
+                    $ref: '#/components/responses/TooManyRequests'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+    /users/confirm-password-change:
+        post:
+            tags: [Profile]
+            summary: Finalize the password change
+            description: |
+                Consumes the email token and a new password. The new password must
+                differ from the current one. Rate limited to 10 requests / 15 minutes per IP.
+            security: []
+            requestBody:
+                $ref: '#/components/requestBodies/ConfirmPasswordChangeRequest'
+            responses:
+                '200':
+                    description: Password changed.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: Password changed successfully
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                '429':
+                    $ref: '#/components/responses/TooManyRequests'
+                default:
+                    $ref: '#/components/responses/InternalServerError'

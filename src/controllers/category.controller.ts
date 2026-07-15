@@ -25,7 +25,7 @@ export const CategoryController = {
         const { categoryId } = req.validated.params;
         const updatedCategory = await categoryService.updateCategory(
             categoryId,
-            req.validated.data,
+            req.validated.body,
         );
         return res.status(StatusCode.Ok).json(updatedCategory);
     },

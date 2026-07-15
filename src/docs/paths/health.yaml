@@ -1,0 +1,46 @@
+paths:
+    /health/:
+        get:
+            tags: [Health]
+            summary: Health check
+            description: |
+                Lightweight liveness/readiness probe used by load balancers and uptime monitors.
+                Returns `200` when both the API and the database are reachable, and `503`
+                when the database query fails.
+            security: []
+            responses:
+                '200':
+                    description: Service is up.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: UP
+                                    db:
+                                        type: string
+                                        example: UP
+                                    timeStamp:
+                                        type: string
+                                        format: date-time
+                                        example: '2026-07-15T10:30:00.000Z'
+                '503':
+                    description: Service is degraded.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: DOWN
+                                    db:
+                                        type: string
+                                        example: DOWN
+                                    timeStamp:
+                                        type: string
+                                        format: date-time
+                default:
+                    $ref: '#/components/responses/InternalServerError'

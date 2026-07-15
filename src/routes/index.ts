@@ -13,6 +13,6 @@ router.use('/users', userRouter);
 router.use('/stories', storyRouter);
 router.use('/api-docs', docsRouter);
 router.use('/auth', authRouter);
-router.use('category', categoryRouter);
+router.use('/categories', categoryRouter);
 
 export default router;

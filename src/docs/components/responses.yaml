@@ -1,0 +1,101 @@
+components:
+    responses:
+        BadRequest:
+            description: Request payload failed validation or is otherwise malformed.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ValidationError'
+                    example:
+                        success: false
+                        error:
+                            code: VALIDATION_ERROR
+                            message: Validation failed
+                            details:
+                                - field: body.email
+                                  message: Invalid email address
+                                  code: invalid_string
+
+        Unauthorized:
+            description: Authentication is missing or the token is invalid/expired.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/UnauthorizedError'
+                    example:
+                        success: false
+                        error:
+                            code: UNAUTHORIZED
+                            message: Missing or malformed authorization header
+
+        Forbidden:
+            description: The authenticated user is not allowed to perform this action.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ForbiddenError'
+                    example:
+                        success: false
+                        error:
+                            code: FORBIDDEN
+                            message: You can only modify your own resources
+
+        NotFound:
+            description: The requested resource does not exist.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/NotFoundError'
+                    example:
+                        success: false
+                        error:
+                            code: NOT_FOUND
+                            message: User not found
+
+        Conflict:
+            description: A related resource already exists with conflicting unique values.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ConflictError'
+                    example:
+                        success: false
+                        error:
+                            code: CONFLICT
+                            message: Email already exists
+
+        TooManyRequests:
+            description: Rate limit exceeded. Includes a `Retry-After` header in seconds.
+            headers:
+                Retry-After:
+                    description: Seconds until the next request will be accepted.
+                    schema:
+                        type: integer
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TooManyRequestsError'
+
+        AIServiceError:
+            description: The AI summary service failed or returned an unusable response.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/AIServiceError'
+                    example:
+                        success: false
+                        error:
+                            code: AI_SERVICE_ERROR
+                            message: Failed to reach AI service
+
+        InternalServerError:
+            description: Unexpected server error.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/InternalServerError'
+                    example:
+                        success: false
+                        error:
+                            code: INTERNAL_SERVER_ERROR
+                            message: Something went wrong

@@ -1,3 +1,3 @@
-import openapi from './openapi.json' with { type: 'json' };
+import swaggerSpec from './swagger.js';
 
-export default openapi;
+export default swaggerSpec;

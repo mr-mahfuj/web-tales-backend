@@ -1,0 +1,122 @@
+paths:
+    /categories/:
+        post:
+            tags: [Categories]
+            summary: Create a category
+            description: Creates a new category. Admin only.
+            security:
+                - bearerAuth: []
+            requestBody:
+                $ref: '#/components/requestBodies/CreateCategoryRequest'
+            responses:
+                '201':
+                    description: Category created.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Category'
+                            example:
+                                id: 9a2c1c08-19eb-4e74-9b54-1dc1e6b2f81a
+                                name: Technology
+                                description: Posts about modern web technologies.
+                                createdAt: '2026-07-15T10:30:00.000Z'
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '403':
+                    $ref: '#/components/responses/Forbidden'
+                '409':
+                    description: A category with this name already exists.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ConflictError'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+        get:
+            tags: [Categories]
+            summary: List categories
+            description: Returns every category in the system. Requires authentication.
+            security:
+                - bearerAuth: []
+            responses:
+                '200':
+                    description: Array of categories.
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Category'
+                            example:
+                                - id: 9a2c1c08-19eb-4e74-9b54-1dc1e6b2f81a
+                                  name: Technology
+                                  description: Posts about modern web technologies.
+                                  createdAt: '2026-07-15T10:30:00.000Z'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+    /categories/{categoryId}:
+        patch:
+            tags: [Categories]
+            summary: Update a category
+            description: Updates a category's name and/or description. Admin only.
+            security:
+                - bearerAuth: []
+            parameters:
+                - $ref: '#/components/parameters/CategoryIdPath'
+            requestBody:
+                $ref: '#/components/requestBodies/UpdateCategoryRequest'
+            responses:
+                '200':
+                    description: Updated category.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Category'
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '403':
+                    $ref: '#/components/responses/Forbidden'
+                '404':
+                    $ref: '#/components/responses/NotFound'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+        delete:
+            tags: [Categories]
+            summary: Delete a category
+            description: |
+                Removes a category. The endpoint currently returns a `404` for
+                unknown ids; the route handler is wired through `updateCategory`
+                which is a known bug in `category.controller.ts` that should be
+                reviewed alongside this change.
+            security:
+                - bearerAuth: []
+            parameters:
+                - $ref: '#/components/parameters/CategoryIdPath'
+            responses:
+                '200':
+                    description: Deletion acknowledged.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MessageResponse'
+                            example:
+                                message: Category deleted successfully
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '403':
+                    $ref: '#/components/responses/Forbidden'
+                '404':
+                    $ref: '#/components/responses/NotFound'
+                default:
+                    $ref: '#/components/responses/InternalServerError'

@@ -1,403 +1,2334 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-        "title": "Web Tales",
-        "description": "API Documentation",
-        "version": "1.0.0"
-    },
-    "servers": [
-        {
-            "url": "http://localhost:3000"
-        }
-    ],
-    "paths": {
-        "/health/": {
-            "get": {
-                "description": "",
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                }
-            }
-        },
-        "/users/": {
-            "get": {
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "safeParse(req",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                }
-            }
-        },
-        "/users/{userId}": {
-            "get": {
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "userId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "safeParse(req",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                }
-            },
-            "patch": {
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "userId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "safeParse(req",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                },
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "safeParse(req": {
-                                        "example": "any"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "userId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "safeParse(req",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                },
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "safeParse(req": {
-                                        "example": "any"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/stories/": {
-            "post": {
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "safeParse(req",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                },
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "safeParse(req": {
-                                        "example": "any"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "get": {
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "safeParse(req",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                }
-            }
-        },
-        "/stories/{storyId}": {
-            "get": {
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "storyId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "safeParse(req",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                }
-            },
-            "patch": {
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "storyId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "safeParse(req",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                },
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "safeParse(req": {
-                                        "example": "any"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "storyId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "safeParse(req",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                },
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "safeParse(req": {
-                                        "example": "any"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/login": {
-            "post": {
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "safeParse(req",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                },
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "safeParse(req": {
-                                        "example": "any"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/signup": {
-            "post": {
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "safeParse(req",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                },
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "safeParse(req": {
-                                        "example": "any"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/password": {
-            "patch": {
-                "description": "",
-                "parameters": [
-                    {
-                        "name": "safeParse(req",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "default": {
-                        "description": ""
-                    }
-                },
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "safeParse(req": {
-                                        "example": "any"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Web Tales API",
+    "version": "1.0.0",
+    "description": "REST API for the **Web Tales** blogging platform. Provides user accounts,\nemail-based authentication with JWT, stories, AI generated summaries, and\ncategories.\n\n## Authentication\n\nMost endpoints require a JWT obtained from `POST /auth/login`.\nSend it on every protected request as:\n\n```\nAuthorization: Bearer <token>\n```\n\nTokens expire per the `JWT_EXPIRES_IN` environment variable (default: 30 days).\nWhen you see a 🔒 **lock** icon in Swagger UI, the endpoint requires this header.\n\n## Error format\n\nAll errors share the same envelope:\n\n```json\n{\n  \"success\": false,\n  \"error\": {\n    \"message\": \"User not found\",\n    \"code\": \"NOT_FOUND\",\n    \"details\": { \"userId\": \"...\" }\n  }\n}\n```\n\nThe optional `details` field is included for validation errors (as a list of\nper-field issues) and for 5xx errors when `NODE_ENV=development`.",
+    "contact": {
+      "name": "Web Tales",
+      "url": "https://github.com/mr-mahfuj/web-tales-backend"
     }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Account creation, login, email confirmation, and password recovery."
+    },
+    {
+      "name": "Users",
+      "description": "Admin operations on user accounts."
+    },
+    {
+      "name": "Profile",
+      "description": "Authenticated users managing their own profile and password."
+    },
+    {
+      "name": "Stories",
+      "description": "CRUD on stories and AI-powered summary generation."
+    },
+    {
+      "name": "Categories",
+      "description": "Manage categories used to tag stories."
+    },
+    {
+      "name": "Health",
+      "description": "Liveness / readiness probe."
+    }
+  ],
+  "paths": {
+    "/health/": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health check",
+        "description": "Lightweight liveness/readiness probe used by load balancers and uptime monitors.\nReturns `200` when both the API and the database are reachable, and `503`\nwhen the database query fails.\n",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Service is up.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "UP"
+                    },
+                    "db": {
+                      "type": "string",
+                      "example": "UP"
+                    },
+                    "timeStamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2026-07-15T10:30:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service is degraded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "DOWN"
+                    },
+                    "db": {
+                      "type": "string",
+                      "example": "DOWN"
+                    },
+                    "timeStamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register a new account",
+        "description": "Creates a new user with the `USER` role, stores a bcrypt-hashed\npassword, and dispatches a verification email containing a\nsigned JWT confirmation token.\n",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/RegisterRequest"
+        },
+        "responses": {
+          "201": {
+            "description": "Account created. Email verification is pending.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponse"
+                },
+                "example": {
+                  "message": "Registration successful. Please confirm your email address.",
+                  "user": {
+                    "id": "8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e",
+                    "username": "johndoe",
+                    "name": "John Doe",
+                    "email": "john@example.com"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "409": {
+            "description": "Username or email is already in use.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Log in and obtain a JWT",
+        "description": "Verifies credentials and returns a JWT signed with `JWT_SECRET`.\nThe token is also embeded inside `req.user.id` on subsequent requests.\nEmail must be verified before login succeeds.\n",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/LoginRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                },
+                "example": {
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                  "user": {
+                    "id": "8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e",
+                    "username": "johndoe",
+                    "name": "John Doe",
+                    "email": "john@example.com"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Credentials are invalid or email is not verified.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/auth/confirm-email/{token}": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Confirm an email address",
+        "description": "Consumes a one-time email-verification token (JWT with\n`type: email-verification`) and marks the user's email as verified.\n",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/EmailTokenPath"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email verified successfully (or already verified).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Email confirmed successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Token is missing, malformed, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/auth/resend-confirmation": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Resend the email confirmation link",
+        "description": "Re-sends the verification email if the account exists and the email is\nnot already verified. Always returns the same response to avoid leaking\nwhich addresses are registered.\n",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ResendConfirmationRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Acknowledgement. The email will only be sent when relevant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Verification link has been sent."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/users/": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "List users (admin only)",
+        "description": "Returns a paginated list of user accounts. Supports search,\npagination, and sorting. Requires the `ADMIN` role.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OffsetQuery"
+          },
+          {
+            "$ref": "#/components/parameters/LimitQuery"
+          },
+          {
+            "$ref": "#/components/parameters/SearchQuery"
+          },
+          {
+            "$ref": "#/components/parameters/CountQuery"
+          },
+          {
+            "$ref": "#/components/parameters/UserOrderByQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A paginated list of users.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMeta"
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e",
+                      "username": "johndoe",
+                      "name": "John Doe",
+                      "email": "john@example.com",
+                      "joinDate": "2026-07-15T10:30:00.000Z",
+                      "role": "USER"
+                    }
+                  ],
+                  "meta": {
+                    "offset": 0,
+                    "limit": 10,
+                    "total": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get a user by id",
+        "description": "Returns a single user. Only the user themselves or an admin may read the record.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserIdPath"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update a user",
+        "description": "Admin or self-update of a user record. Changing the email triggers a\nfresh verification flow.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserIdPath"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateUserRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Updated user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Username or email conflicts with another user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Soft-delete a user",
+        "description": "Marks the user as deleted (the record is retained but hidden).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserIdPath"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deletion acknowledged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                },
+                "example": {
+                  "message": "User deleted successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/users/profile": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Get the authenticated user profile",
+        "description": "Returns the profile of the user whose token is presented.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authenticated user's profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Update the authenticated user's profile",
+        "description": "Update your own username, name, or email. Changing the email triggers\na fresh verification email.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateProfileRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Updated profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/users/change-password": {
+      "post": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Start the password change flow",
+        "description": "Validates the current password and emails a one-time confirmation\ntoken (15-minute TTL by default) to the user. Rate limited to\n5 requests / 15 minutes per IP.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/InitiatePasswordChangeRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Confirmation link dispatched.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "If your current password is correct, a confirmation link has been sent to your email."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/users/confirm-password-change": {
+      "post": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Finalize the password change",
+        "description": "Consumes the email token and a new password. The new password must\ndiffer from the current one. Rate limited to 10 requests / 15 minutes per IP.\n",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ConfirmPasswordChangeRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Password changed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/stories/": {
+      "post": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Create a story",
+        "description": "Creates a new story owned by the requesting user (or by `userId`\nif the caller is an admin). Categories must already exist.\nSetting `generateSummary: true` asks the server to call the\nGemini AI summary endpoint.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateStoryRequest"
+        },
+        "responses": {
+          "201": {
+            "description": "Story created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Story"
+                },
+                "example": {
+                  "userId": "8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e",
+                  "storyId": "12cde2a3-4f56-4d12-9b6a-77f0c1a23bc5",
+                  "title": "The Curious Case of the Missing Semicolon",
+                  "body": "It was a quiet evening in the repository when something started to drift...",
+                  "sumary": null,
+                  "createdAt": "2026-07-15T10:30:00.000Z",
+                  "updatedAt": "2026-07-15T10:30:00.000Z",
+                  "categories": [
+                    {
+                      "id": "9a2c1c08-19eb-4e74-9b54-1dc1e6b2f81a",
+                      "name": "Technology"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "List stories",
+        "description": "Public listing of stories with pagination, search, sort, and an optional category filter.",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OffsetQuery"
+          },
+          {
+            "$ref": "#/components/parameters/LimitQuery"
+          },
+          {
+            "$ref": "#/components/parameters/SearchQuery"
+          },
+          {
+            "$ref": "#/components/parameters/CountQuery"
+          },
+          {
+            "$ref": "#/components/parameters/StoryOrderByQuery"
+          },
+          {
+            "$ref": "#/components/parameters/StoryCategoryQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated stories.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Story"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMeta"
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "userId": "8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e",
+                      "storyId": "12cde2a3-4f56-4d12-9b6a-77f0c1a23bc5",
+                      "title": "The Curious Case of the Missing Semicolon",
+                      "body": "It was a quiet evening...",
+                      "sumary": "A detective story about a missing semi-colon in a JS repo.",
+                      "createdAt": "2026-07-15T10:30:00.000Z",
+                      "updatedAt": "2026-07-15T10:30:00.000Z",
+                      "categories": [
+                        {
+                          "id": "9a2c1c08-19eb-4e74-9b54-1dc1e6b2f81a",
+                          "name": "Technology"
+                        }
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "offset": 0,
+                    "limit": 10,
+                    "total": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/stories/{storyId}": {
+      "get": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Get a story by id",
+        "description": "Returns a single story by its UUID.",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/StoryIdPath"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Story found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Story"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Update a story",
+        "description": "Updates a story. Caller must be the story owner or have the `ADMIN`\nrole. Pass any subset of fields; at least one is required.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/StoryIdPath"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateStoryRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Updated story.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Story"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Delete a story",
+        "description": "Permanently deletes a story. Caller must be the story owner or an admin.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/StoryIdPath"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deletion acknowledged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                },
+                "example": {
+                  "message": "Story deleted successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/stories/{storyId}/summary": {
+      "post": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Generate (or regenerate) an AI summary for a story",
+        "description": "Calls the Gemini AI to produce a 2–3 sentence summary of the story body\nand persists it. If the story already has a summary, pass\n`?regenerate=true` to overwrite it. Rate limited to 5 requests / minute\nper IP.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/StoryIdPath"
+          },
+          {
+            "$ref": "#/components/parameters/RegenerateQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Story with the (possibly newly generated) summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Story"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "502": {
+            "$ref": "#/components/responses/AIServiceError"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/categories/": {
+      "post": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Create a category",
+        "description": "Creates a new category. Admin only.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateCategoryRequest"
+        },
+        "responses": {
+          "201": {
+            "description": "Category created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                },
+                "example": {
+                  "id": "9a2c1c08-19eb-4e74-9b54-1dc1e6b2f81a",
+                  "name": "Technology",
+                  "description": "Posts about modern web technologies.",
+                  "createdAt": "2026-07-15T10:30:00.000Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "description": "A category with this name already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "List categories",
+        "description": "Returns every category in the system. Requires authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of categories.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Category"
+                  }
+                },
+                "example": [
+                  {
+                    "id": "9a2c1c08-19eb-4e74-9b54-1dc1e6b2f81a",
+                    "name": "Technology",
+                    "description": "Posts about modern web technologies.",
+                    "createdAt": "2026-07-15T10:30:00.000Z"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/categories/{categoryId}": {
+      "patch": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Update a category",
+        "description": "Updates a category's name and/or description. Admin only.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CategoryIdPath"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateCategoryRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Updated category.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Delete a category",
+        "description": "Removes a category. The endpoint currently returns a `404` for\nunknown ids; the route handler is wired through `updateCategory`\nwhich is a known bug in `category.controller.ts` that should be\nreviewed alongside this change.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CategoryIdPath"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deletion acknowledged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                },
+                "example": {
+                  "message": "Category deleted successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "default": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Role": {
+        "type": "string",
+        "enum": [
+          "ADMIN",
+          "USER"
+        ],
+        "description": "Role assigned to a user account."
+      },
+      "User": {
+        "type": "object",
+        "description": "Public representation of a user account (no password).",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e"
+          },
+          "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 50,
+            "example": "johndoe"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "joinDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-07-15T10:30:00.000Z"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          }
+        }
+      },
+      "AuthUser": {
+        "type": "object",
+        "description": "User payload returned by the auth endpoints (login/signup).",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "username": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "description": "Category that can be attached to a story.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "9a2c1c08-19eb-4e74-9b54-1dc1e6b2f81a"
+          },
+          "name": {
+            "type": "string",
+            "example": "Technology"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "example": "Posts about modern web technologies."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CategoryRef": {
+        "type": "object",
+        "description": "Compact category reference embedded in a story.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "Story": {
+        "type": "object",
+        "description": "Full story resource.",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "storyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "example": "The Curious Case of the Missing Semicolon"
+          },
+          "body": {
+            "type": "string",
+            "example": "It was a quiet evening in the repository when something started to drift..."
+          },
+          "sumary": {
+            "type": "string",
+            "nullable": true,
+            "description": "AI generated summary (note: spelled `sumary` to match current DTO)."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryRef"
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "description": "Pagination metadata accompanying a list response.",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 0
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "example": 10
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of records matching the query. Only returned when `count=true`.",
+            "example": 42
+          }
+        }
+      },
+      "UserList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginatedEnvelope"
+          }
+        ]
+      },
+      "StoryList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginatedEnvelope"
+          }
+        ]
+      },
+      "PaginatedEnvelope": {
+        "type": "object",
+        "description": "Standard envelope returned by list endpoints.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {}
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "MessageResponse": {
+        "type": "object",
+        "description": "Generic acknowledgement returned by mutating endpoints.",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Resource deleted successfully"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "description": "Response body returned by `POST /auth/login`.",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT access token. Pass it on subsequent requests via `Authorization: Bearer <token>`.",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "user": {
+            "$ref": "#/components/schemas/AuthUser"
+          }
+        }
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "description": "Response body returned by `POST /auth/signup`.",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Registration successful. Please confirm your email address."
+          },
+          "user": {
+            "$ref": "#/components/schemas/AuthUser"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "description": "Error envelope returned for any non-2xx response.",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "User not found"
+              },
+              "code": {
+                "type": "string",
+                "description": "Stable machine-readable error code.",
+                "example": "NOT_FOUND"
+              },
+              "details": {
+                "description": "Optional structured context (omitted in production for 5xx errors).",
+                "oneOf": [
+                  {
+                    "type": "object"
+                  },
+                  {
+                    "type": "array"
+                  },
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "stack": {
+                "type": "string",
+                "description": "Stack trace, only included when `NODE_ENV=development`."
+              }
+            }
+          }
+        },
+        "required": [
+          "success",
+          "error"
+        ]
+      },
+      "ValidationIssue": {
+        "type": "object",
+        "description": "Single issue produced by request validation.",
+        "properties": {
+          "field": {
+            "type": "string",
+            "example": "body.email"
+          },
+          "message": {
+            "type": "string",
+            "example": "Invalid email address"
+          },
+          "code": {
+            "type": "string",
+            "example": "invalid_string"
+          }
+        }
+      },
+      "ValidationError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "details": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ValidationIssue"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "UnauthorizedError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "example": "UNAUTHORIZED"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ForbiddenError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "example": "FORBIDDEN"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "NotFoundError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "example": "NOT_FOUND"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ConflictError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "example": "CONFLICT"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TooManyRequestsError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "example": "TOO_MANY_REQUESTS"
+                  },
+                  "details": {
+                    "type": "object",
+                    "properties": {
+                      "retryAfter": {
+                        "type": "integer",
+                        "description": "Seconds until the next request will be accepted.",
+                        "example": 30
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "AIServiceError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "example": "AI_SERVICE_ERROR"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "InternalServerError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "example": "INTERNAL_SERVER_ERROR"
+                  },
+                  "stack": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "parameters": {
+      "UserIdPath": {
+        "name": "userId",
+        "in": "path",
+        "required": true,
+        "description": "UUID of the target user.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e"
+      },
+      "StoryIdPath": {
+        "name": "storyId",
+        "in": "path",
+        "required": true,
+        "description": "UUID of the target story.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "12cde2a3-4f56-4d12-9b6a-77f0c1a23bc5"
+      },
+      "CategoryIdPath": {
+        "name": "categoryId",
+        "in": "path",
+        "required": true,
+        "description": "UUID of the target category.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "EmailTokenPath": {
+        "name": "token",
+        "in": "path",
+        "required": true,
+        "description": "Email verification token that was emailed to the user.",
+        "schema": {
+          "type": "string"
+        },
+        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      },
+      "OffsetQuery": {
+        "name": "offset",
+        "in": "query",
+        "required": false,
+        "description": "Number of items to skip before returning results.",
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "example": 0
+      },
+      "LimitQuery": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "description": "Maximum number of items to return.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 10
+        },
+        "example": 10
+      },
+      "SearchQuery": {
+        "name": "search",
+        "in": "query",
+        "required": false,
+        "description": "Case-insensitive search across relevant text fields.",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "example": "john"
+      },
+      "CountQuery": {
+        "name": "count",
+        "in": "query",
+        "required": false,
+        "description": "When `true`, includes the `total` count in the response `meta`.",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "UserOrderByQuery": {
+        "name": "orderBy",
+        "in": "query",
+        "required": false,
+        "description": "Field used to sort users.",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "joinDate",
+            "username",
+            "name",
+            "email"
+          ],
+          "default": "joinDate"
+        }
+      },
+      "StoryOrderByQuery": {
+        "name": "orderBy",
+        "in": "query",
+        "required": false,
+        "description": "Field used to sort stories.",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "createdAt",
+            "updatedAt",
+            "title"
+          ],
+          "default": "createdAt"
+        }
+      },
+      "StoryCategoryQuery": {
+        "name": "category",
+        "in": "query",
+        "required": false,
+        "description": "Filter stories by category name (case-insensitive).",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10
+        },
+        "example": "technology"
+      },
+      "RegenerateQuery": {
+        "name": "regenerate",
+        "in": "query",
+        "required": false,
+        "description": "Pass `true` to force regeneration of an existing summary.",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "requestBodies": {
+      "RegisterRequest": {
+        "required": true,
+        "description": "Payload required to register a new account.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "username",
+                "name",
+                "email",
+                "password"
+              ],
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 50,
+                  "example": "johndoe"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "example": "John Doe"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "example": "john@example.com"
+                },
+                "password": {
+                  "type": "string",
+                  "format": "password",
+                  "minLength": 8,
+                  "description": "At least 8 characters, with upper, lower, and numeric characters.",
+                  "example": "Str0ngPass!"
+                }
+              }
+            },
+            "examples": {
+              "valid": {
+                "summary": "Valid signup",
+                "value": {
+                  "username": "johndoe",
+                  "name": "John Doe",
+                  "email": "john@example.com",
+                  "password": "Str0ngPass!"
+                }
+              }
+            }
+          }
+        }
+      },
+      "LoginRequest": {
+        "required": true,
+        "description": "Email and password used to obtain a JWT.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "email",
+                "password"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "example": "john@example.com"
+                },
+                "password": {
+                  "type": "string",
+                  "format": "password",
+                  "example": "Str0ngPass!"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ResendConfirmationRequest": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "email"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "example": "john@example.com"
+                }
+              }
+            }
+          }
+        }
+      },
+      "InitiatePasswordChangeRequest": {
+        "required": true,
+        "description": "Send the current password to start the password-change flow.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "oldPassword"
+              ],
+              "properties": {
+                "oldPassword": {
+                  "type": "string",
+                  "format": "password",
+                  "example": "OldP@ssword1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ConfirmPasswordChangeRequest": {
+        "required": true,
+        "description": "Provide the emailed token together with the new password.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "token",
+                "newPassword"
+              ],
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "description": "Token mailed to the user after initiating the change.",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                },
+                "newPassword": {
+                  "type": "string",
+                  "format": "password",
+                  "minLength": 8,
+                  "description": "Must differ from the previous password.",
+                  "example": "NewStr0ngPass!"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "required": true,
+        "description": "Partial update for an existing user (admin or self).",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 50
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UpdateProfileRequest": {
+        "required": true,
+        "description": "Update the authenticated user's own profile.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 50
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateStoryRequest": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "userId",
+                "title",
+                "body"
+              ],
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "UUID of the user who owns the story. Admins may create stories for any user; regular users may only create for themselves.",
+                  "example": "8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 100,
+                  "example": "The Curious Case of the Missing Semicolon"
+                },
+                "body": {
+                  "type": "string",
+                  "minLength": 100,
+                  "maxLength": 10000,
+                  "example": "It was a quiet evening in the repository when something started to drift..."
+                },
+                "categoryIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "example": [
+                    "9a2c1c08-19eb-4e74-9b54-1dc1e6b2f81a"
+                  ]
+                },
+                "summary": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "generateSummary": {
+                  "type": "boolean",
+                  "description": "When `true`, the server calls the AI service to generate a summary from the `body`.",
+                  "example": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "UpdateStoryRequest": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 100
+                },
+                "body": {
+                  "type": "string",
+                  "minLength": 100,
+                  "maxLength": 10000
+                },
+                "categoryIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "summary": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "generateSummary": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateCategoryRequest": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "example": "Technology"
+                },
+                "description": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "Posts about modern web technologies."
+                }
+              }
+            }
+          }
+        }
+      },
+      "UpdateCategoryRequest": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Request payload failed validation or is otherwise malformed.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "example": {
+              "success": false,
+              "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Validation failed",
+                "details": [
+                  {
+                    "field": "body.email",
+                    "message": "Invalid email address",
+                    "code": "invalid_string"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Authentication is missing or the token is invalid/expired.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UnauthorizedError"
+            },
+            "example": {
+              "success": false,
+              "error": {
+                "code": "UNAUTHORIZED",
+                "message": "Missing or malformed authorization header"
+              }
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "The authenticated user is not allowed to perform this action.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ForbiddenError"
+            },
+            "example": {
+              "success": false,
+              "error": {
+                "code": "FORBIDDEN",
+                "message": "You can only modify your own resources"
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "The requested resource does not exist.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/NotFoundError"
+            },
+            "example": {
+              "success": false,
+              "error": {
+                "code": "NOT_FOUND",
+                "message": "User not found"
+              }
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "A related resource already exists with conflicting unique values.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
+            },
+            "example": {
+              "success": false,
+              "error": {
+                "code": "CONFLICT",
+                "message": "Email already exists"
+              }
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "Rate limit exceeded. Includes a `Retry-After` header in seconds.",
+        "headers": {
+          "Retry-After": {
+            "description": "Seconds until the next request will be accepted.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TooManyRequestsError"
+            }
+          }
+        }
+      },
+      "AIServiceError": {
+        "description": "The AI summary service failed or returned an unusable response.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AIServiceError"
+            },
+            "example": {
+              "success": false,
+              "error": {
+                "code": "AI_SERVICE_ERROR",
+                "message": "Failed to reach AI service"
+              }
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Unexpected server error.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InternalServerError"
+            },
+            "example": {
+              "success": false,
+              "error": {
+                "code": "INTERNAL_SERVER_ERROR",
+                "message": "Something went wrong"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT issued by `POST /auth/login`. Send it on protected endpoints using:\n\n```\nAuthorization: Bearer <token>\n```\n\nTokens expire according to the `JWT_EXPIRES_IN` environment variable (default: 30 days).\n"
+      }
+    }
+  }
 }

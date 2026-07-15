@@ -1,0 +1,319 @@
+components:
+    schemas:
+        Role:
+            type: string
+            enum: [ADMIN, USER]
+            description: Role assigned to a user account.
+
+        User:
+            type: object
+            description: Public representation of a user account (no password).
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    example: 8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e
+                username:
+                    type: string
+                    minLength: 3
+                    maxLength: 50
+                    example: johndoe
+                name:
+                    type: string
+                    minLength: 1
+                    maxLength: 100
+                    example: John Doe
+                email:
+                    type: string
+                    format: email
+                    example: john@example.com
+                joinDate:
+                    type: string
+                    format: date-time
+                    example: '2026-07-15T10:30:00.000Z'
+                role:
+                    $ref: '#/components/schemas/Role'
+
+        AuthUser:
+            type: object
+            description: User payload returned by the auth endpoints (login/signup).
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                username:
+                    type: string
+                name:
+                    type: string
+                email:
+                    type: string
+                    format: email
+
+        Category:
+            type: object
+            description: Category that can be attached to a story.
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    example: 9a2c1c08-19eb-4e74-9b54-1dc1e6b2f81a
+                name:
+                    type: string
+                    example: Technology
+                description:
+                    type: string
+                    nullable: true
+                    example: Posts about modern web technologies.
+                createdAt:
+                    type: string
+                    format: date-time
+
+        CategoryRef:
+            type: object
+            description: Compact category reference embedded in a story.
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                name:
+                    type: string
+
+        Story:
+            type: object
+            description: Full story resource.
+            properties:
+                userId:
+                    type: string
+                    format: uuid
+                storyId:
+                    type: string
+                    format: uuid
+                title:
+                    type: string
+                    example: The Curious Case of the Missing Semicolon
+                body:
+                    type: string
+                    example: It was a quiet evening in the repository when something started to drift...
+                sumary:
+                    type: string
+                    nullable: true
+                    description: 'AI generated summary (note: spelled `sumary` to match current DTO).'
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+                categories:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CategoryRef'
+
+        PaginationMeta:
+            type: object
+            description: Pagination metadata accompanying a list response.
+            properties:
+                offset:
+                    type: integer
+                    minimum: 0
+                    example: 0
+                limit:
+                    type: integer
+                    minimum: 1
+                    maximum: 100
+                    example: 10
+                total:
+                    type: integer
+                    description: Total number of records matching the query. Only returned when `count=true`.
+                    example: 42
+
+        UserList:
+            allOf:
+                - $ref: '#/components/schemas/PaginatedEnvelope'
+
+        StoryList:
+            allOf:
+                - $ref: '#/components/schemas/PaginatedEnvelope'
+
+        PaginatedEnvelope:
+            type: object
+            description: Standard envelope returned by list endpoints.
+            properties:
+                data:
+                    type: array
+                    items: {}
+                meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+
+        MessageResponse:
+            type: object
+            description: Generic acknowledgement returned by mutating endpoints.
+            properties:
+                message:
+                    type: string
+                    example: Resource deleted successfully
+
+        LoginResponse:
+            type: object
+            description: Response body returned by `POST /auth/login`.
+            properties:
+                token:
+                    type: string
+                    description: 'JWT access token. Pass it on subsequent requests via `Authorization: Bearer <token>`.'
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                user:
+                    $ref: '#/components/schemas/AuthUser'
+
+        RegisterResponse:
+            type: object
+            description: Response body returned by `POST /auth/signup`.
+            properties:
+                message:
+                    type: string
+                    example: Registration successful. Please confirm your email address.
+                user:
+                    $ref: '#/components/schemas/AuthUser'
+
+        Error:
+            type: object
+            description: Error envelope returned for any non-2xx response.
+            properties:
+                success:
+                    type: boolean
+                    example: false
+                error:
+                    type: object
+                    properties:
+                        message:
+                            type: string
+                            example: User not found
+                        code:
+                            type: string
+                            description: Stable machine-readable error code.
+                            example: NOT_FOUND
+                        details:
+                            description: Optional structured context (omitted in production for 5xx errors).
+                            oneOf:
+                                - type: object
+                                - type: array
+                                - type: string
+                                - type: 'null'
+                        stack:
+                            type: string
+                            description: Stack trace, only included when `NODE_ENV=development`.
+            required: [success, error]
+
+        ValidationIssue:
+            type: object
+            description: Single issue produced by request validation.
+            properties:
+                field:
+                    type: string
+                    example: body.email
+                message:
+                    type: string
+                    example: Invalid email address
+                code:
+                    type: string
+                    example: invalid_string
+
+        ValidationError:
+            allOf:
+                - $ref: '#/components/schemas/Error'
+                - type: object
+                  properties:
+                      error:
+                          type: object
+                          properties:
+                              code:
+                                  example: VALIDATION_ERROR
+                              details:
+                                  type: array
+                                  items:
+                                      $ref: '#/components/schemas/ValidationIssue'
+
+        UnauthorizedError:
+            allOf:
+                - $ref: '#/components/schemas/Error'
+                - type: object
+                  properties:
+                      error:
+                          type: object
+                          properties:
+                              code:
+                                  example: UNAUTHORIZED
+
+        ForbiddenError:
+            allOf:
+                - $ref: '#/components/schemas/Error'
+                - type: object
+                  properties:
+                      error:
+                          type: object
+                          properties:
+                              code:
+                                  example: FORBIDDEN
+
+        NotFoundError:
+            allOf:
+                - $ref: '#/components/schemas/Error'
+                - type: object
+                  properties:
+                      error:
+                          type: object
+                          properties:
+                              code:
+                                  example: NOT_FOUND
+
+        ConflictError:
+            allOf:
+                - $ref: '#/components/schemas/Error'
+                - type: object
+                  properties:
+                      error:
+                          type: object
+                          properties:
+                              code:
+                                  example: CONFLICT
+
+        TooManyRequestsError:
+            allOf:
+                - $ref: '#/components/schemas/Error'
+                - type: object
+                  properties:
+                      error:
+                          type: object
+                          properties:
+                              code:
+                                  example: TOO_MANY_REQUESTS
+                              details:
+                                  type: object
+                                  properties:
+                                      retryAfter:
+                                          type: integer
+                                          description: Seconds until the next request will be accepted.
+                                          example: 30
+
+        AIServiceError:
+            allOf:
+                - $ref: '#/components/schemas/Error'
+                - type: object
+                  properties:
+                      error:
+                          type: object
+                          properties:
+                              code:
+                                  example: AI_SERVICE_ERROR
+
+        InternalServerError:
+            allOf:
+                - $ref: '#/components/schemas/Error'
+                - type: object
+                  properties:
+                      error:
+                          type: object
+                          properties:
+                              code:
+                                  example: INTERNAL_SERVER_ERROR
+                              stack:
+                                  type: string

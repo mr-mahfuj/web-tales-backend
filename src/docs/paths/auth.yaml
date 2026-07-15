@@ -1,0 +1,129 @@
+paths:
+    /auth/signup:
+        post:
+            tags: [Auth]
+            summary: Register a new account
+            description: |
+                Creates a new user with the `USER` role, stores a bcrypt-hashed
+                password, and dispatches a verification email containing a
+                signed JWT confirmation token.
+            security: []
+            requestBody:
+                $ref: '#/components/requestBodies/RegisterRequest'
+            responses:
+                '201':
+                    description: Account created. Email verification is pending.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RegisterResponse'
+                            example:
+                                message: Registration successful. Please confirm your email address.
+                                user:
+                                    id: 8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e
+                                    username: johndoe
+                                    name: John Doe
+                                    email: john@example.com
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                '409':
+                    description: Username or email is already in use.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ConflictError'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+    /auth/login:
+        post:
+            tags: [Auth]
+            summary: Log in and obtain a JWT
+            description: |
+                Verifies credentials and returns a JWT signed with `JWT_SECRET`.
+                The token is also embeded inside `req.user.id` on subsequent requests.
+                Email must be verified before login succeeds.
+            security: []
+            requestBody:
+                $ref: '#/components/requestBodies/LoginRequest'
+            responses:
+                '200':
+                    description: Login successful.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/LoginResponse'
+                            example:
+                                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                                user:
+                                    id: 8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e
+                                    username: johndoe
+                                    name: John Doe
+                                    email: john@example.com
+                '400':
+                    description: Credentials are invalid or email is not verified.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ValidationError'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+    /auth/confirm-email/{token}:
+        get:
+            tags: [Auth]
+            summary: Confirm an email address
+            description: |
+                Consumes a one-time email-verification token (JWT with
+                `type: email-verification`) and marks the user's email as verified.
+            security: []
+            parameters:
+                - $ref: '#/components/parameters/EmailTokenPath'
+            responses:
+                '200':
+                    description: Email verified successfully (or already verified).
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: Email confirmed successfully.
+                '400':
+                    description: Token is missing, malformed, or expired.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ValidationError'
+                '404':
+                    $ref: '#/components/responses/NotFound'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+    /auth/resend-confirmation:
+        post:
+            tags: [Auth]
+            summary: Resend the email confirmation link
+            description: |
+                Re-sends the verification email if the account exists and the email is
+                not already verified. Always returns the same response to avoid leaking
+                which addresses are registered.
+            security: []
+            requestBody:
+                $ref: '#/components/requestBodies/ResendConfirmationRequest'
+            responses:
+                '200':
+                    description: Acknowledgement. The email will only be sent when relevant.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: Verification link has been sent.
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
