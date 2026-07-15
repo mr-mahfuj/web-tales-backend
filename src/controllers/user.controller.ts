@@ -8,7 +8,6 @@ import type {
     deleteUserSchema,
 } from '../schemas/userSchema.js';
 import type { Validated } from '../types/validation.js';
-import type { changePasswordSchema } from '../schemas/authSchema.js';
 
 const userService = new UserService();
 
@@ -31,11 +30,6 @@ export const UserController = {
         const { userId } = req.validated.params;
         const updatedUser = await userService.updateUser(userId, req.validated.body);
         return res.status(StatusCode.Ok).json(updatedUser);
-    },
-
-    changePassword: async (req: ValidatedRequest<typeof changePasswordSchema>, res: Response) => {
-        const result = await userService.changePassword(req.user?.id, req.validated!.body);
-        return res.status(StatusCode.Ok).json(result);
     },
 
     deleteUser: async (req: ValidatedRequest<typeof deleteUserSchema>, res: Response) => {

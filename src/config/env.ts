@@ -19,6 +19,10 @@ const envSchema = z.object({
         .default('2m'),
     GOOGLE_GEMINI_API_KEY: z.string().min(1, 'Google Gemini Api Key is required.'),
     MODEL: z.string().default('gemini-flash-latest'),
+    PASSWORD_CHANGE_TOKEN_EXPIRES_IN: z
+        .string()
+        .min(1, 'Password Change Token expiration time is required.')
+        .default('15m'),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -40,7 +44,8 @@ export const env = {
     smtpUser: parsed.data.SMTP_USER,
     smtpPass: parsed.data.SMTP_PASS,
     smtpHost: parsed.data.SMTP_HOST,
-    tokenExpiresIn: parsed.data.EMAIL_CONFIRMATION_TOKEN_EXPIRES_IN as StringValue,
+    emailConfirmationTokenExpiresIn: parsed.data.EMAIL_CONFIRMATION_TOKEN_EXPIRES_IN as StringValue,
     geminiAPIKey: parsed.data.GOOGLE_GEMINI_API_KEY,
     aiModel: parsed.data.MODEL,
+    passwordChangeTokenExpiresIn: parsed.data.PASSWORD_CHANGE_TOKEN_EXPIRES_IN as StringValue,
 };

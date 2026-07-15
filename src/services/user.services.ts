@@ -1,20 +1,9 @@
 import type { User } from '@prisma/client';
 import { type CreateUserDTO, type UpdateUserDTO, UserDTO } from '../dtos/userDTO.js';
-import {
-    ConflictError,
-    NotFoundError,
-    UnauthorizedError,
-    ValidationError,
-} from '../common/errors.js';
+import { ConflictError, NotFoundError } from '../common/errors.js';
 import { UserRepository } from '../repositories/user.repository.js';
 import type { ListUsersQuery } from '../schemas/userSchema.js';
 import { toListResponse, type ListResponse } from '../utils/paginationMapper.js';
-import type { ChangePasswordDTO } from '../dtos/authDTO.js';
-import { env } from '../config/env.js';
-import bcrypt from 'bcrypt';
-import { AuthService } from './auth.service.js';
-
-const authService = new AuthService();
 
 export class UserService {
     userRepository = new UserRepository();
@@ -77,24 +66,6 @@ export class UserService {
         }
 
         return new UserDTO(await this.userRepository.update(userId, data));
-    }
-
-    async changePassword(userId: string | undefined, data: ChangePasswordDTO) {
-        if (!userId) {
-            throw new UnauthorizedError('Authentication required');
-        }
-
-        const auth = await authService.findAuthByUserId(userId);
-
-        const isPasswordValid = await bcrypt.compare(data.oldPassword, auth.password);
-        if (!isPasswordValid) {
-            throw new ValidationError('Invalid old password');
-        }
-
-        const hashedPassword = await bcrypt.hash(data.newPassword, env.saltRounds);
-        await authService.updatePassword(userId, hashedPassword);
-
-        return { message: 'Password changed successfully' };
     }
 
     async softDelete(userId: string): Promise<UserDTO> {

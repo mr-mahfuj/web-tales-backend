@@ -25,20 +25,23 @@ export const loginBodySchema = z
     })
     .strict();
 
-export const changePasswordBodySchema = z
+export const initiatePasswordChangeBodySchema = z
     .object({
         oldPassword: z.string().min(PASSWORD.REQUIRED, 'Old password is required'),
+    })
+    .strict();
+
+export const confirmPasswordChangeBodySchema = z
+    .object({
+        token: z.string().min(1, 'Token is required'),
         newPassword: passwordSchema,
     })
-    .strict()
-    .refine((data) => data.oldPassword !== data.newPassword, {
-        message: 'New password must be different from the old password',
-        path: ['newPassword'],
-    });
+    .strict();
 
 export const registerSchema = { body: registerBodySchema };
 export const loginSchema = { body: loginBodySchema };
-export const changePasswordSchema = { body: changePasswordBodySchema };
+export const initiatePasswordChangeSchema = { body: initiatePasswordChangeBodySchema };
+export const confirmPasswordChangeSchema = { body: confirmPasswordChangeBodySchema };
 
 export const resendConfirmationEmailBodySchema = z
     .object({

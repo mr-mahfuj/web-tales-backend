@@ -1,16 +1,22 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/user.controller.js';
+import { AuthController } from '../controllers/auth.controller.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { requireRole, requireSelfOrAdmin } from '../middleware/authorizeMiddleware.js';
 import { validate } from '../middleware/validateMiddleware.js';
+import { rateLimit } from '../middleware/rateLimitMiddleware.js';
 import {
     deleteUserSchema,
     getAllUsersSchema,
     getUserSchema,
     updateUserSchema,
 } from '../schemas/userSchema.js';
+import {
+    confirmPasswordChangeSchema,
+    initiatePasswordChangeSchema,
+} from '../schemas/authSchema.js';
 import { Role } from '@prisma/client';
-import { changePasswordSchema } from '../schemas/authSchema.js';
+import { PASSWORD_RATE_LIMITS } from '../constants/rateLimit.js';
 
 const router = Router();
 
@@ -42,11 +48,20 @@ router.delete(
     requireSelfOrAdmin(),
     UserController.deleteUser,
 );
-router.patch(
-    '/password',
+
+router.post(
+    '/change-password',
     authenticateToken,
-    validate(changePasswordSchema),
-    UserController.changePassword,
+    rateLimit(PASSWORD_RATE_LIMITS.CHANGE_PASSWORD),
+    validate(initiatePasswordChangeSchema),
+    AuthController.initiatePasswordChange,
+);
+
+router.post(
+    '/confirm-password-change',
+    rateLimit(PASSWORD_RATE_LIMITS.CONFIRM_PASSWORD_CHANGE),
+    validate(confirmPasswordChangeSchema),
+    AuthController.confirmPasswordChange,
 );
 
 export default router;

@@ -3,6 +3,7 @@ import { SUMMARY } from '../constants/story.js';
 import { AIServiceError } from '../common/errors.js';
 import type { SummaryResult } from '../types/summaryResult.js';
 import type { GeminiResponse } from '../types/aiResponse.js';
+import { AI_CONFIG } from '../constants/aiConfig.js';
 
 const SUMMARY_PROMPT =
     'Summarize the following story in 2-3 concise sentences (max 80 words). ' +
@@ -40,8 +41,8 @@ export class AIService {
                     },
                 ],
                 generationConfig: {
-                    temperature: 0.3,
-                    maxOutputTokens: 150,
+                    temperature: AI_CONFIG.temperature,
+                    maxOutputTokens: AI_CONFIG.maxOutputTokens,
                 },
             }),
         });

@@ -5,7 +5,8 @@ import type { Validated } from '../types/validation.js';
 import type {
     registerSchema,
     loginSchema,
-    changePasswordSchema,
+    initiatePasswordChangeSchema,
+    confirmPasswordChangeSchema,
     resendConfirmationEmailSchema,
 } from '../schemas/authSchema.js';
 import type { emailVerificationTokenSchema } from '../schemas/emailVerificationTokenSchema.js';
@@ -40,6 +41,22 @@ export const AuthController = {
         res: Response,
     ) {
         const result = await authService.resendConfirmationEmail(req.validated!.body);
+        return res.status(StatusCode.Ok).json(result);
+    },
+
+    initiatePasswordChange: async (
+        req: ValidatedRequest<typeof initiatePasswordChangeSchema>,
+        res: Response,
+    ) => {
+        const result = await authService.initiatePasswordChange(req.user!.id, req.validated!.body);
+        return res.status(StatusCode.Ok).json(result);
+    },
+
+    confirmPasswordChange: async (
+        req: ValidatedRequest<typeof confirmPasswordChangeSchema>,
+        res: Response,
+    ) => {
+        const result = await authService.confirmPasswordChange(req.validated!.body);
         return res.status(StatusCode.Ok).json(result);
     },
 };
