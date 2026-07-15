@@ -10,6 +10,7 @@ import {
     updateUserSchema,
 } from '../schemas/userSchema.js';
 import { Role } from '@prisma/client';
+import { changePasswordSchema } from '../schemas/authSchema.js';
 
 const router = Router();
 
@@ -40,6 +41,12 @@ router.delete(
     validate(deleteUserSchema),
     requireSelfOrAdmin(),
     UserController.deleteUser,
+);
+router.patch(
+    '/password',
+    authenticateToken,
+    validate(changePasswordSchema),
+    UserController.changePassword,
 );
 
 export default router;

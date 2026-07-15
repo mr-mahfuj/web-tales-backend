@@ -50,4 +50,4 @@ export const resendConfirmationEmailSchema = {
     body: resendConfirmationEmailBodySchema,
 };
 
-export type ResendConfirmationEmailDto = z.output<typeof resendConfirmationEmailBodySchema>;
+export type ResendConfirmationEmailDTO = z.output<typeof resendConfirmationEmailBodySchema>;

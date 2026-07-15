@@ -6,7 +6,7 @@ import type {
     resendConfirmationEmailBodySchema,
 } from '../schemas/authSchema.js';
 
-export type RegisterDto = z.output<typeof registerBodySchema>;
-export type LoginDto = z.output<typeof loginBodySchema>;
-export type ChangePasswordDto = z.output<typeof changePasswordBodySchema>;
-export type ResendConfirmationEmailDto = z.output<typeof resendConfirmationEmailBodySchema>;
+export type RegisterDTO = z.output<typeof registerBodySchema>;
+export type LoginDTO = z.output<typeof loginBodySchema>;
+export type ChangePasswordDTO = z.output<typeof changePasswordBodySchema>;
+export type ResendConfirmationEmailDTO = z.output<typeof resendConfirmationEmailBodySchema>;

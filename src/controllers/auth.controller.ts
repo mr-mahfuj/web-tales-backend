@@ -26,11 +26,6 @@ export const AuthController = {
         return res.status(StatusCode.Ok).json(result);
     },
 
-    changePassword: async (req: ValidatedRequest<typeof changePasswordSchema>, res: Response) => {
-        const result = await authService.changePassword(req.user?.id, req.validated!.body);
-        return res.status(StatusCode.Ok).json(result);
-    },
-
     confirmEmail: async (
         req: ValidatedRequest<typeof emailVerificationTokenSchema>,
         res: Response,

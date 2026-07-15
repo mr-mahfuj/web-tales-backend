@@ -1,18 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AuthRepository } from '../repositories/auth.repository.js';
-import {
-    ConflictError,
-    NotFoundError,
-    UnauthorizedError,
-    ValidationError,
-} from '../common/errors.js';
-import type {
-    RegisterDto,
-    ChangePasswordDto,
-    LoginDto,
-    ResendConfirmationEmailDto,
-} from '../dtos/authDTO.js';
+import { ConflictError, NotFoundError, ValidationError } from '../common/errors.js';
+import type { RegisterDTO, LoginDTO, ResendConfirmationEmailDTO } from '../dtos/authDTO.js';
 import { env } from '../config/env.js';
 import { UserService } from './user.services.js';
 import { Role } from '@prisma/client';
@@ -26,7 +16,7 @@ function signToken(userId: string, role: Role = Role.ADMIN) {
 }
 
 export class AuthService {
-    async register(data: RegisterDto) {
+    async register(data: RegisterDTO) {
         if (await userService.existsByEmail(data.email)) throw new ConflictError();
         if (await userService.existsByUsername(data.username)) throw new ConflictError();
 
@@ -51,7 +41,7 @@ export class AuthService {
         };
     }
 
-    async login(data: LoginDto) {
+    async login(data: LoginDTO) {
         const user = await userService.findUserByEmail(data.email);
         if (!user) {
             throw new ValidationError();
@@ -77,25 +67,6 @@ export class AuthService {
             token,
             user: { id: user.id, username: user.username, name: user.name, email: user.email },
         };
-    }
-
-    async changePassword(userId: string | undefined, data: ChangePasswordDto) {
-        if (!userId) {
-            throw new UnauthorizedError('Authentication required');
-        }
-
-        const auth = await authRepository.findAuthByUserId(userId);
-        if (!auth) throw new NotFoundError();
-
-        const isPasswordValid = await bcrypt.compare(data.oldPassword, auth.password);
-        if (!isPasswordValid) {
-            throw new ValidationError('Invalid old password');
-        }
-
-        const hashedPassword = await bcrypt.hash(data.newPassword, env.saltRounds);
-        await authRepository.updatePassword(userId, hashedPassword);
-
-        return { message: 'Password changed successfully' };
     }
 
     async confirmEmail(token: string) {
@@ -128,7 +99,7 @@ export class AuthService {
         return { message: 'Email confirmed successfully.' };
     }
 
-    async resendConfirmationEmail(data: ResendConfirmationEmailDto) {
+    async resendConfirmationEmail(data: ResendConfirmationEmailDTO) {
         const user = await userService.findUserByEmail(data.email);
 
         if (user && !user.isEmailVerified) {
@@ -142,5 +113,15 @@ export class AuthService {
         return {
             message: 'Verification link has been sent.',
         };
+    }
+
+    async findAuthByUserId(userId: string) {
+        const auth = await authRepository.findAuthByUserId(userId);
+        if (!auth) throw new NotFoundError();
+        return auth;
+    }
+
+    async updatePassword(userId: string, hashedPassword: string) {
+        return authRepository.updatePassword(userId, hashedPassword);
     }
 }

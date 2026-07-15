@@ -24,11 +24,5 @@ router.post(
     validate(resendConfirmationEmailSchema),
     AuthController.resendConfirmationEmail,
 );
-router.patch(
-    '/password',
-    authenticateToken,
-    validate(changePasswordSchema),
-    AuthController.changePassword,
-);
 
 export default router;
