@@ -6,12 +6,17 @@ import type {
     getUserSchema,
     updateUserSchema,
     deleteUserSchema,
+    updateUserProfileSchema,
 } from '../schemas/userSchema.js';
 import type { Validated } from '../types/validation.js';
 
 const userService = new UserService();
 
 type ValidatedRequest<S> = Request & { validated?: Validated<S> };
+
+type AuthedValidatedRequest<S> = ValidatedRequest<S> & {
+    user?: { id: string };
+};
 
 export const UserController = {
     getAllUsers: async (req: ValidatedRequest<typeof getAllUsersSchema>, res: Response) => {
@@ -26,8 +31,8 @@ export const UserController = {
         return res.status(StatusCode.Ok).json(user);
     },
 
-    getUserProfile: async (req: ValidatedRequest<typeof getUserSchema>, res: Response) => {
-        const { userId } = req.validated.params;
+    getProfile: async (req: AuthedValidatedRequest<never>, res: Response) => {
+        const userId = req.user!.id;
         const user = await userService.getUserProfile(userId);
         return res.status(StatusCode.Ok).json(user);
     },
@@ -38,8 +43,11 @@ export const UserController = {
         return res.status(StatusCode.Ok).json(updatedUser);
     },
 
-    updateUserProfile: async (req: ValidatedRequest<typeof updateUserSchema>, res: Response) => {
-        const { userId } = req.validated.params;
+    updateProfile: async (
+        req: AuthedValidatedRequest<typeof updateUserProfileSchema>,
+        res: Response,
+    ) => {
+        const userId = req.user!.id;
         const updatedUser = await userService.updateUserProfile(userId, req.validated.body);
         return res.status(StatusCode.Ok).json(updatedUser);
     },

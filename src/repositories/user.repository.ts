@@ -96,6 +96,22 @@ export class UserRepository {
         return user !== null;
     }
 
+    async existsByEmailExcludingUser(email: string, userId: string): Promise<boolean> {
+        const user = await prisma.user.findFirst({
+            where: { email, isDeleted: false, NOT: { id: userId } },
+            select: { id: true },
+        });
+        return user !== null;
+    }
+
+    async existsByUsernameExcludingUser(username: string, userId: string): Promise<boolean> {
+        const user = await prisma.user.findFirst({
+            where: { username, isDeleted: false, NOT: { id: userId } },
+            select: { id: true },
+        });
+        return user !== null;
+    }
+
     async update(userId: string, data: UpdateUserDTO): Promise<User> {
         return prisma.user.update({
             where: { id: userId },

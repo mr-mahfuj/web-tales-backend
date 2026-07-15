@@ -37,6 +37,17 @@ export const updateUserBodySchema = createUserBodySchema
         message: 'At least one field must be provided',
     });
 
+export const updateUserProfileBodySchema = z
+    .object({
+        name: nameSchema.optional(),
+        username: usernameSchema.optional(),
+        email: emailSchema.optional(),
+    })
+    .strict()
+    .refine((body) => Object.keys(body).length > 0, {
+        message: 'At least one field must be provided',
+    });
+
 export const userIdParamsSchema = z.object({
     userId: idSchema,
 });
@@ -50,6 +61,10 @@ export const createUserSchema = {
 export const updateUserSchema = {
     params: userIdParamsSchema,
     body: updateUserBodySchema,
+};
+
+export const updateUserProfileSchema = {
+    body: updateUserProfileBodySchema,
 };
 
 export const getUserSchema = {
