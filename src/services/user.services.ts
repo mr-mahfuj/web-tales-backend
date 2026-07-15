@@ -1,5 +1,10 @@
 import type { User } from '@prisma/client';
-import { type CreateUserDTO, type UpdateUserDTO, UserDTO } from '../dtos/userDTO.js';
+import {
+    type CreateUserDTO,
+    type UpdateUserDTO,
+    type UpdateUserProfileDTO,
+    UserDTO,
+} from '../dtos/userDTO.js';
 import { ConflictError, NotFoundError } from '../common/errors.js';
 import { UserRepository } from '../repositories/user.repository.js';
 import type { ListUsersQuery } from '../schemas/userSchema.js';
@@ -49,6 +54,10 @@ export class UserService {
         return new UserDTO(user);
     }
 
+    getUserProfile(userId: string): Promise<UserDTO> {
+        return this.getUserById(userId);
+    }
+
     async findUserByEmail(email: string): Promise<User | null> {
         return this.userRepository.findByEmail(email);
     }
@@ -66,6 +75,10 @@ export class UserService {
         }
 
         return new UserDTO(await this.userRepository.update(userId, data));
+    }
+
+    updateUserProfile(userId: string, data: UpdateUserProfileDTO): Promise<UserDTO> {
+        return this.updateUser(userId, data);
     }
 
     async softDelete(userId: string): Promise<UserDTO> {

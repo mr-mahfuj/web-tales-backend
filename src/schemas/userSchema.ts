@@ -56,6 +56,8 @@ export const getUserSchema = {
     params: userIdParamsSchema,
 };
 
+export const getUserProfileSchema = getUserSchema;
+
 export const deleteUserSchema = {
     params: userIdParamsSchema,
 };

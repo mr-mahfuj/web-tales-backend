@@ -10,6 +10,7 @@ import {
     getAllUsersSchema,
     getUserSchema,
     updateUserSchema,
+    getUserProfileSchema,
 } from '../schemas/userSchema.js';
 import {
     confirmPasswordChangeSchema,
@@ -48,6 +49,22 @@ router.delete(
     validate(deleteUserSchema),
     requireSelfOrAdmin(),
     UserController.deleteUser,
+);
+
+router.get(
+    '/profile',
+    authenticateToken,
+    validate(getUserProfileSchema),
+    requireSelfOrAdmin(),
+    UserController.getUserProfile,
+);
+
+router.patch(
+    '/profile',
+    authenticateToken,
+    validate(getUserProfileSchema),
+    requireSelfOrAdmin(),
+    UserController.updateUserProfile,
 );
 
 router.post(

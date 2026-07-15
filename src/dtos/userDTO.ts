@@ -4,6 +4,7 @@ import type { createUserBodySchema, updateUserBodySchema } from '../schemas/user
 
 export type CreateUserDTO = z.output<typeof createUserBodySchema>;
 export type UpdateUserDTO = z.output<typeof updateUserBodySchema>;
+export type UpdateUserProfileDTO = z.output<typeof updateUserBodySchema>;
 
 type UserLike = Pick<User, 'id' | 'username' | 'name' | 'email' | 'joinDate' | 'role'>;
 

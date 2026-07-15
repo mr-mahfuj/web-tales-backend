@@ -26,9 +26,21 @@ export const UserController = {
         return res.status(StatusCode.Ok).json(user);
     },
 
+    getUserProfile: async (req: ValidatedRequest<typeof getUserSchema>, res: Response) => {
+        const { userId } = req.validated.params;
+        const user = await userService.getUserProfile(userId);
+        return res.status(StatusCode.Ok).json(user);
+    },
+
     updateUser: async (req: ValidatedRequest<typeof updateUserSchema>, res: Response) => {
         const { userId } = req.validated.params;
         const updatedUser = await userService.updateUser(userId, req.validated.body);
+        return res.status(StatusCode.Ok).json(updatedUser);
+    },
+
+    updateUserProfile: async (req: ValidatedRequest<typeof updateUserSchema>, res: Response) => {
+        const { userId } = req.validated.params;
+        const updatedUser = await userService.updateUserProfile(userId, req.validated.body);
         return res.status(StatusCode.Ok).json(updatedUser);
     },
 
