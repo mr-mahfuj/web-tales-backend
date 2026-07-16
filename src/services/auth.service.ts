@@ -167,6 +167,21 @@ export class AuthService {
         };
     }
 
+    async validatePasswordChangeToken(token: string) {
+        const payload = this.verifyPasswordChangeJwt(token);
+
+        const auth = await this.findAuthByUserId(payload.sub!);
+
+        if (auth.passwordChangeToken !== token || !auth.isPasswordChangeTokenValid) {
+            throw new ValidationError('Invalid or expired password change token');
+        }
+
+        return {
+            token,
+            redirectUrl: `${env.frontendUrl}/change-password?token=${token}`,
+        };
+    }
+
     async confirmPasswordChange(data: ConfirmPasswordChangeDTO) {
         const payload = this.verifyPasswordChangeJwt(data.token);
 
