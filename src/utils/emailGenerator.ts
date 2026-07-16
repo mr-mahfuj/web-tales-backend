@@ -3,7 +3,7 @@ import path from 'path';
 import { InternalServerError, NotFoundError } from '../common/errors.js';
 
 export const emailGenerator = (templateName: string, values: Record<string, string>): string => {
-    const templatePath = path.resolve(process.cwd(), 'src/templates/email', templateName);
+    const templatePath = path.resolve(process.cwd(), 'src/templates/', templateName);
 
     let template: string;
     try {

@@ -1,9 +1,7 @@
 import { transporter } from '../config/email.js';
 import { emailGenerator } from './emailGenerator.js';
 import { env } from '../config/env.js';
-import {
-    generateEmailVerificationToken,
-} from './emailTokenGenerator.js';
+import { generateEmailVerificationToken } from './emailTokenGenerator.js';
 import type {
     SendEmailParams,
     SendVerificationEmailParams,
@@ -55,7 +53,6 @@ export async function sendVerificationEmail({
 }
 
 export async function sendPasswordChangeConfirmationEmail({
-    userId,
     email,
     username,
     token,
