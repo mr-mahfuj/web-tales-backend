@@ -32,4 +32,34 @@ export class AuthRepository {
             },
         });
     }
+
+    async setPasswordChangeToken(userId: string, token: string) {
+        return prisma.auth.update({
+            where: { userId },
+            data: {
+                passwordChangeToken: token,
+                isPasswordChangeTokenValid: true,
+            },
+        });
+    }
+
+    async invalidatePasswordChangeToken(userId: string) {
+        return prisma.auth.update({
+            where: { userId },
+            data: {
+                isPasswordChangeTokenValid: false,
+            },
+        });
+    }
+
+    async consumePasswordChangeToken(userId: string, hashedPassword: string) {
+        return prisma.auth.update({
+            where: { userId },
+            data: {
+                password: hashedPassword,
+                passwordLastModificationTime: new Date(),
+                isPasswordChangeTokenValid: false,
+            },
+        });
+    }
 }

@@ -32,6 +32,9 @@ model Auth {
   password String
   passwordLastModificationTime DateTime
 
+  passwordChangeToken String?
+  isPasswordChangeTokenValid Boolean @default(false)
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

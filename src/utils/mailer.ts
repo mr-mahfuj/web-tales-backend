@@ -3,7 +3,6 @@ import { emailGenerator } from './emailGenerator.js';
 import { env } from '../config/env.js';
 import {
     generateEmailVerificationToken,
-    generatePasswordChangeToken,
 } from './emailTokenGenerator.js';
 import type {
     SendEmailParams,
@@ -59,9 +58,13 @@ export async function sendPasswordChangeConfirmationEmail({
     userId,
     email,
     username,
+    token,
 }: SendVerificationEmailParams) {
-    const token = generatePasswordChangeToken(userId, env.passwordChangeTokenExpiresIn);
-    const link = `http://${env.host}:${env.port}/users/confirm-password-change/${token}`;
+    if (!token) {
+        throw new Error('Password change token is required to build the confirmation link');
+    }
+
+    const link = `http://${env.host}:${env.port}/users/validate-password-change/${token}`;
 
     return sendEmail({
         to: email,

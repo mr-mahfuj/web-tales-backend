@@ -17,6 +17,7 @@ import {
     sendPasswordChangedNotification,
     sendVerificationEmail,
 } from '../utils/mailer.js';
+import { generatePasswordChangeToken } from '../utils/emailTokenGenerator.js';
 
 const authRepository = new AuthRepository();
 const userService = new UserService();
@@ -135,22 +136,67 @@ export class AuthService {
 
         const user = await userService.getUserById(userId);
 
+        const token = generatePasswordChangeToken(userId, env.passwordChangeTokenExpiresIn);
+
+        await authRepository.setPasswordChangeToken(userId, token);
+
         await sendPasswordChangeConfirmationEmail({
             userId,
             email: user.email,
             username: user.username,
+            token,
         });
 
         return {
-            message:
-                'If your current password is correct, a confirmation link has been sent to your email.',
+            message: 'A confirmation link has been sent to your email.',
+        };
+    }
+
+    async validatePasswordChangeToken(token: string) {
+        const payload = this.verifyPasswordChangeJwt(token);
+
+        const auth = await this.findAuthByUserId(payload.sub!);
+
+        if (auth.passwordChangeToken !== token || !auth.isPasswordChangeTokenValid) {
+            throw new ValidationError('Invalid or expired password change token');
+        }
+
+        return {
+            token,
+            redirectUrl: `${env.frontendUrl}/change-password?token=${token}`,
         };
     }
 
     async confirmPasswordChange(data: ConfirmPasswordChangeDTO) {
+        const payload = this.verifyPasswordChangeJwt(data.token);
+
+        const auth = await this.findAuthByUserId(payload.sub!);
+
+        if (auth.passwordChangeToken !== data.token || !auth.isPasswordChangeTokenValid) {
+            throw new ValidationError('Invalid or expired password change token');
+        }
+
+        const isSameAsCurrent = await bcrypt.compare(data.newPassword, auth.password);
+        if (isSameAsCurrent) {
+            throw new ValidationError('New password must be different from the old password');
+        }
+
+        const hashedPassword = await bcrypt.hash(data.newPassword, env.saltRounds);
+        await authRepository.consumePasswordChangeToken(payload.sub!, hashedPassword);
+
+        const user = await userService.getUserById(payload.sub!);
+        await sendPasswordChangedNotification({
+            email: user.email,
+            username: user.username,
+        });
+
+        return { message: 'Password changed successfully' };
+    }
+
+    private verifyPasswordChangeJwt(token: string): { sub?: string; type?: string } {
         let payload: { sub?: string; type?: string };
         try {
-            payload = jwt.verify(data.token, env.jwtSecret) as { sub?: string; type?: string };
+            payload = jwt.verify(token, env.jwtSecret) as { sub?: string; type?: string };
         } catch (error) {
             throw new ValidationError('Invalid or expired password change token');
         }
@@ -159,22 +205,7 @@ export class AuthService {
             throw new ValidationError('Invalid password change token');
         }
 
-        const auth = await this.findAuthByUserId(payload.sub);
-        const isSameAsCurrent = await bcrypt.compare(data.newPassword, auth.password);
-        if (isSameAsCurrent) {
-            throw new ValidationError('New password must be different from the old password');
-        }
-
-        const hashedPassword = await bcrypt.hash(data.newPassword, env.saltRounds);
-        await this.updatePassword(payload.sub, hashedPassword);
-
-        const user = await userService.getUserById(payload.sub);
-        await sendPasswordChangedNotification({
-            email: user.email,
-            username: user.username,
-        });
-
-        return { message: 'Password changed successfully' };
+        return payload;
     }
 
     async findAuthByUserId(userId: string) {

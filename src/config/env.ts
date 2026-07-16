@@ -4,6 +4,7 @@ import type { StringValue } from 'ms';
 const envSchema = z.object({
     HOST: z.string().default('localhost'),
     PORT: z.coerce.number().default(3000),
+    FRONTEND_URL: z.string().url().default('http://localhost:5173'),
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
     JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
@@ -35,6 +36,7 @@ if (!parsed.success) {
 export const env = {
     host: parsed.data.HOST,
     port: parsed.data.PORT,
+    frontendUrl: parsed.data.FRONTEND_URL,
     nodeEnv: parsed.data.NODE_ENV,
     databaseUrl: parsed.data.DATABASE_URL,
     jwtSecret: parsed.data.JWT_SECRET,

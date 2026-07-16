@@ -59,4 +59,13 @@ export const AuthController = {
         const result = await authService.confirmPasswordChange(req.validated!.body);
         return res.status(StatusCode.Ok).json(result);
     },
+
+    validatePasswordChangeToken: async (
+        req: ValidatedRequest<typeof emailVerificationTokenSchema>,
+        res: Response,
+    ) => {
+        const { token } = req.validated!.params;
+        const result = await authService.validatePasswordChangeToken(token);
+        return res.redirect(result.redirectUrl);
+    },
 };

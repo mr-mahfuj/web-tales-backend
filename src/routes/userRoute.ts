@@ -15,6 +15,7 @@ import {
     confirmPasswordChangeSchema,
     initiatePasswordChangeSchema,
 } from '../schemas/authSchema.js';
+import { emailVerificationTokenSchema } from '../schemas/emailVerificationTokenSchema.js';
 import { Role } from '@prisma/client';
 import { PASSWORD_RATE_LIMITS } from '../constants/rateLimit.js';
 
@@ -55,6 +56,13 @@ router.post(
     rateLimit(PASSWORD_RATE_LIMITS.CHANGE_PASSWORD),
     validate(initiatePasswordChangeSchema),
     AuthController.initiatePasswordChange,
+);
+
+router.get(
+    '/validate-password-change/:token',
+    rateLimit(PASSWORD_RATE_LIMITS.CONFIRM_PASSWORD_CHANGE),
+    validate(emailVerificationTokenSchema),
+    AuthController.validatePasswordChangeToken,
 );
 
 router.post(
