@@ -29,36 +29,31 @@ router.get(
     validate(getAllUsersSchema),
     UserController.getAllUsers,
 );
-router.get(
-    '/:userId',
-    authenticateToken,
-    validate(getUserSchema),
-    requireSelfOrAdmin(),
-    UserController.getUserById,
-);
-router.patch(
-    '/:userId',
-    authenticateToken,
-    validate(updateUserSchema),
-    requireSelfOrAdmin(),
-    UserController.updateUser,
-);
-router.delete(
-    '/:userId',
-    authenticateToken,
-    validate(deleteUserSchema),
-    requireSelfOrAdmin(),
-    UserController.deleteUser,
-);
+router
+    .route('/:userId')
+    .get(
+        authenticateToken,
+        validate(getUserSchema),
+        requireSelfOrAdmin(),
+        UserController.getUserById,
+    )
+    .patch(
+        authenticateToken,
+        validate(updateUserSchema),
+        requireSelfOrAdmin(),
+        UserController.updateUser,
+    )
+    .delete(
+        authenticateToken,
+        validate(deleteUserSchema),
+        requireSelfOrAdmin(),
+        UserController.deleteUser,
+    );
 
-router.get('/profile', authenticateToken, UserController.getProfile);
-
-router.patch(
-    '/profile',
-    authenticateToken,
-    validate(updateUserProfileSchema),
-    UserController.updateProfile,
-);
+router
+    .route('/profile')
+    .get(authenticateToken, UserController.getProfile)
+    .patch(authenticateToken, validate(updateUserProfileSchema), UserController.updateProfile);
 
 router.post(
     '/change-password',

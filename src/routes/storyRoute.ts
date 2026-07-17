@@ -22,18 +22,31 @@ const storyRateLimit = rateLimit({
     max: STORY_RATE_LIMITS.max,
 });
 
-router.post('/', authenticateToken, validate(createStorySchema), StoryController.createStory);
-router.get('/', validate(getAllStoriesSchema), StoryController.getAllStories);
-router.get('/:storyId', validate(getStorySchema), StoryController.getStoryById);
-router.patch(
-    '/:storyId',
-    authenticateToken,
-    validate(updateStorySchema),
-    requireOwnerOrAdmin<{ storyId: string }>((req) =>
-        storyService.getStoryOwnerId(req.params.storyId),
-    ),
-    StoryController.updateStory,
-);
+router
+    .route('/')
+    .post(authenticateToken, validate(createStorySchema), StoryController.createStory)
+    .get(validate(getAllStoriesSchema), StoryController.getAllStories);
+
+router
+    .route('/:storyId')
+    .get(validate(getStorySchema), StoryController.getStoryById)
+    .patch(
+        authenticateToken,
+        validate(updateStorySchema),
+        requireOwnerOrAdmin<{ storyId: string }>((req) =>
+            storyService.getStoryOwnerId(req.params.storyId),
+        ),
+        StoryController.updateStory,
+    )
+    .delete(
+        authenticateToken,
+        validate(deleteStorySchema),
+        requireOwnerOrAdmin<{ storyId: string }>((req) =>
+            storyService.getStoryOwnerId(req.params.storyId),
+        ),
+        StoryController.deleteStory,
+    );
+
 router.post(
     '/:storyId/summary',
     authenticateToken,
@@ -43,15 +56,6 @@ router.post(
         storyService.getStoryOwnerId(req.params.storyId),
     ),
     StoryController.generateSummary,
-);
-router.delete(
-    '/:storyId',
-    authenticateToken,
-    validate(deleteStorySchema),
-    requireOwnerOrAdmin<{ storyId: string }>((req) =>
-        storyService.getStoryOwnerId(req.params.storyId),
-    ),
-    StoryController.deleteStory,
 );
 
 export default router;

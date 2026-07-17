@@ -13,19 +13,16 @@ import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
-router.post(
-    '/',
-    authenticateToken,
-    requireRole(Role.ADMIN),
-    validate(createCategorySchema),
-    CategoryController.createCategory,
-);
-router.get(
-    '/',
-    authenticateToken,
-    validate(getCategorySchema),
-    CategoryController.getAllCategories,
-);
+router
+    .route('/')
+    .post(
+        authenticateToken,
+        requireRole(Role.ADMIN),
+        validate(createCategorySchema),
+        CategoryController.createCategory,
+    )
+    .get(authenticateToken, validate(getCategorySchema), CategoryController.getAllCategories);
+
 router.patch(
     '/:categoryId',
     authenticateToken,
@@ -33,12 +30,13 @@ router.patch(
     validate(updateCategorySchema),
     CategoryController.updateCategory,
 );
+
 router.delete(
     '/:categoryId',
     authenticateToken,
     requireRole(Role.ADMIN),
     validate(deleteCategorySchema),
-    CategoryController.updateCategory,
+    CategoryController.deleteCategory,
 );
 
 export default router;
