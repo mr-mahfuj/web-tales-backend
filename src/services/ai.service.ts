@@ -3,11 +3,7 @@ import { SUMMARY } from '../constants/story.js';
 import { AIServiceError } from '../common/errors.js';
 import type { SummaryResult } from '../types/summaryResult.js';
 import type { GeminiResponse } from '../types/aiResponse.js';
-import { AI_CONFIG } from '../constants/aiConfig.js';
-
-const SUMMARY_PROMPT =
-    'Summarize the following story in 2-3 concise sentences (max 80 words). ' +
-    'Return only the summary text with no preamble, labels, or markdown.';
+import { AI_CONFIG, SUMMARY_PROMPT } from '../constants/aiConfig.js';
 
 export class AIService {
     private readonly apiKey = env.geminiAPIKey;

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { StatusCode } from '../constants/status-code.js';
 import { CategoryService } from '../services/category.service.js';
-import type { Validated } from '../types/validation.js';
+import type { ValidatedRequest } from '../types/validation.js';
 import type {
     createCategorySchema,
     updateCategorySchema,
@@ -9,7 +9,6 @@ import type {
 } from '../schemas/categorySchema.js';
 
 const categoryService = new CategoryService();
-type ValidatedRequest<S> = Request & { validated?: Validated<S> };
 
 export const CategoryController = {
     createCategory: async (req: ValidatedRequest<typeof createCategorySchema>, res: Response) => {

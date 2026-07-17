@@ -8,15 +8,9 @@ import type {
     deleteUserSchema,
     updateUserProfileSchema,
 } from '../schemas/userSchema.js';
-import type { Validated } from '../types/validation.js';
+import type { AuthedValidatedRequest, Validated, ValidatedRequest } from '../types/validation.js';
 
 const userService = new UserService();
-
-type ValidatedRequest<S> = Request & { validated?: Validated<S> };
-
-type AuthedValidatedRequest<S> = ValidatedRequest<S> & {
-    user?: { id: string };
-};
 
 export const UserController = {
     getAllUsers: async (req: ValidatedRequest<typeof getAllUsersSchema>, res: Response) => {

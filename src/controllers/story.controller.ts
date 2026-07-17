@@ -1,4 +1,4 @@
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import { StatusCode } from '../constants/status-code.js';
 import { StoryService } from '../services/story.service.js';
 import type {
@@ -8,11 +8,9 @@ import type {
     updateStorySchema,
     deleteStorySchema,
 } from '../schemas/storySchema.js';
-import type { Validated } from '../types/validation.js';
+import type { ValidatedRequest } from '../types/validation.js';
 
 const storyService = new StoryService();
-
-type ValidatedRequest<S> = Request & { validated?: Validated<S> };
 
 export const StoryController = {
     createStory: async (req: ValidatedRequest<typeof createStorySchema>, res: Response) => {
