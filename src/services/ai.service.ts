@@ -1,13 +1,14 @@
 import { env } from '../config/env.js';
 import { SUMMARY } from '../constants/story.js';
-import { AIServiceError } from '../common/errors.js';
 import type { SummaryResult } from '../types/summaryResult.js';
 import type { GeminiResponse } from '../types/aiResponse.js';
 import { AI_CONFIG, SUMMARY_PROMPT } from '../constants/aiConfig.js';
 
+const DEFAULT_AI_MODEL = 'gemini-flash-latest';
+
 export class AIService {
     private readonly apiKey = env.geminiAPIKey;
-    private readonly model = env.aiModel;
+    private readonly model = env.aiModel?.trim() ? env.aiModel : DEFAULT_AI_MODEL;
     private readonly apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent`;
 
     async generateSummary(content: string): Promise<SummaryResult> {
@@ -16,8 +17,8 @@ export class AIService {
         let response: Response;
         try {
             response = await this.fetchSummaryFromAPI(truncatedContent);
-        } catch (cause) {
-            throw new AIServiceError('Failed to reach AI service', undefined, cause);
+        } catch {
+            return { summary: null, error: 'Failed to reach AI service' };
         }
 
         return this.handleAPIResponse(response);
@@ -47,13 +48,19 @@ export class AIService {
     private async handleAPIResponse(response: Response): Promise<SummaryResult> {
         if (!response.ok) {
             const errorBody = await response.text().catch(() => undefined);
-            throw new AIServiceError('AI service returned an error', {
-                status: response.status,
-                body: errorBody,
-            });
+            return {
+                summary: null,
+                error: `AI service returned status ${response.status}`,
+                details: { status: response.status, body: errorBody },
+            };
         }
 
-        const data = (await response.json()) as GeminiResponse;
+        let data: GeminiResponse;
+        try {
+            data = (await response.json()) as GeminiResponse;
+        } catch {
+            return { summary: null, error: 'Failed to parse AI response' };
+        }
 
         const text = data?.candidates?.[0]?.content?.parts
             ?.map((p) => p.text)

@@ -119,7 +119,6 @@ merged.paths = paths;
 const outputPath = path.resolve(__dirname, 'openapi.json');
 fs.writeFileSync(outputPath, JSON.stringify(merged, null, 2));
 
-// eslint-disable-next-line no-console
 console.log(`OpenAPI spec written to ${outputPath}`);
 
 export default merged;

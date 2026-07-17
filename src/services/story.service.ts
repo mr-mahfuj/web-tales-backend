@@ -34,6 +34,8 @@ export class StoryService {
             const result = await this.aiService.generateSummary(storyFields.body);
             if (result.summary) {
                 storyFields.summary = result.summary;
+            } else if (result.error) {
+                console.warn(`[AI] Summary bypass on create: ${result.error}`);
             }
         }
 
@@ -79,6 +81,8 @@ export class StoryService {
                 const result = await this.aiService.generateSummary(content);
                 if (result.summary) {
                     storyFields.summary = result.summary;
+                } else if (result.error) {
+                    console.warn(`[AI] Summary bypass on update: ${result.error}`);
                 }
             }
         }
