@@ -1,12 +1,12 @@
 import type { Request } from 'express';
-import { StatusCode } from '../../../src/constants/status-code.js';
+import { StatusCode } from '../../../src/constants/index.js';
 import { UserController } from '../../../src/controllers/user.controller.js';
 import {
     buildListUsersQuery,
     buildUpdateUserDTO,
     buildUpdateUserProfileDTO,
     buildUserDTO,
-} from '../../utils/test-helpers.js';
+} from '../../factories/user.factory.js';
 import { createMockRes } from '../../utils/express.mock.js';
 
 jest.mock('../../../src/services/user.services.js', () => {

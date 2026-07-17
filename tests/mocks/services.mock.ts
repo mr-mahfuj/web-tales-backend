@@ -1,6 +1,8 @@
 import type { UserService } from '../../src/services/user.services.js';
+import type { StoryService } from '../../src/services/story.service.js';
 
 export type UserServiceMock = jest.Mocked<UserService>;
+export type StoryServiceMock = jest.Mocked<StoryService>;
 
 export function createUserServiceMock(): UserServiceMock {
     return {
@@ -18,4 +20,17 @@ export function createUserServiceMock(): UserServiceMock {
         existsByEmail: jest.fn(),
         userRepository: {} as never,
     } as unknown as UserServiceMock;
+}
+
+export function createStoryServiceMock(): StoryServiceMock {
+    return {
+        createStory: jest.fn(),
+        getAllStorys: jest.fn(),
+        getStoryById: jest.fn(),
+        updateStory: jest.fn(),
+        generateStorySummary: jest.fn(),
+        delete: jest.fn(),
+        getStoryOwnerId: jest.fn(),
+        storyRepository: {} as never,
+    } as unknown as StoryServiceMock;
 }

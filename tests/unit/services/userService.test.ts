@@ -7,7 +7,7 @@ import {
     buildUpdateUserProfileDTO,
     buildUser,
     buildUserList,
-} from '../../utils/test-helpers.js';
+} from '../../factories/user.factory.js';
 import {
     createUserRepositoryMock,
     type UserRepositoryMock,

@@ -4,8 +4,6 @@ import type { GeminiResponse } from '../types/aiResponse.js';
 import { AI_CONFIG, DEFAULT_AI_MODEL, SUMMARY_PROMPT } from '../constants/index.js';
 import { AIServiceError } from '../common/errors.js';
 
-const DEFAULT_AI_MODEL = 'gemini-flash-latest';
-
 export class AIService {
     private readonly apiKey = env.geminiAPIKey;
     private readonly apiUrl = env.apiUrl;
