@@ -7,7 +7,7 @@ import {
     mapStoryCategoriesConnect,
     mapStoryCategoriesSet,
 } from '../utils/storyCategoriesMapper.js';
-import { storyCategoriesSelect } from '../utils/story.select.js';
+import { storyCategoriesSelect } from '../utils/storyCategorySelect.js';
 
 const getStoryOrderBy = (
     orderBy: ListStoriesQuery['orderBy'],

@@ -1,4 +1,4 @@
-import { transporter } from '../config/email.js';
+import { transporter } from '../config/emailTransporter.js';
 import { emailGenerator } from './emailGenerator.js';
 import { env } from '../config/env.js';
 import { generateEmailVerificationToken } from './emailTokenGenerator.js';
