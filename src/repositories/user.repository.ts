@@ -20,7 +20,7 @@ const getUserOrderBy = (
     }
 };
 
-const getUserWhere = (search?: string): Prisma.UserWhereInput => {
+const buildUserWhere = (search?: string): Prisma.UserWhereInput => {
     return {
         isDeleted: false,
         ...(search && {
@@ -42,7 +42,7 @@ export class UserRepository {
         data: Prisma.UserGetPayload<{ select: typeof userListSelect }>[];
         total?: number;
     }> {
-        const where = getUserWhere(query.search);
+        const where = buildUserWhere(query.search);
         const orderBy = getUserOrderBy(query.orderBy);
 
         const [data, total] = await Promise.all([

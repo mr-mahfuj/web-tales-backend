@@ -46,7 +46,7 @@ export const StoryController = {
 
     generateSummary: async (req: ValidatedRequest<typeof getStorySchema>, res: Response) => {
         const { storyId } = req.validated.params;
-        const regenerate = req.query.regenerate === 'true';
+        const { regenerate } = req.validated.regenerate;
         const story = await storyService.generateStorySummary(storyId, regenerate);
         return res.status(StatusCode.Ok).json(story);
     },

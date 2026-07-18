@@ -90,14 +90,15 @@ export class StoryService {
         return new StoryDTO(await this.storyRepository.update(storyId, storyFields));
     }
 
-    async generateStorySummary(storyId: string, regenerate = false): Promise<StoryDTO> {
+    async generateStorySummary(storyId: string, regenerate = 'false'): Promise<StoryDTO> {
+        const regenerateSummary = regenerate === 'true';
         const story = await this.storyRepository.findById(storyId);
 
         if (!story) {
             throw new NotFoundError('Story not found', { storyId: storyId });
         }
 
-        if (story.summary && !regenerate) {
+        if (story.summary && !regenerateSummary) {
             return new StoryDTO(story);
         }
 
