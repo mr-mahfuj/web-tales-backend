@@ -27,18 +27,7 @@ export async function authenticateToken(
         throw new UnauthorizedError('Missing or malformed authorization header');
     }
 
-    let payload: AccessTokenPayload;
-    try {
-        payload = jwt.verify(token, env.jwtSecret) as AccessTokenPayload;
-    } catch (err) {
-        if (err instanceof jwt.TokenExpiredError) {
-            throw new UnauthorizedError('Token has expired');
-        }
-        if (err instanceof jwt.JsonWebTokenError) {
-            throw new UnauthorizedError('Invalid token');
-        }
-        throw err;
-    }
+    const payload = jwt.verify(token, env.jwtSecret) as AccessTokenPayload;
 
     if (!payload.sub) {
         throw new UnauthorizedError('Invalid token payload');

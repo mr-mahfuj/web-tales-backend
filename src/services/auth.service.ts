@@ -81,16 +81,11 @@ export class AuthService {
     }
 
     async confirmEmail(token: string) {
-        let payload: { userId?: string; email?: string; type?: string };
-        try {
-            payload = jwt.verify(token, env.jwtSecret) as {
-                userId?: string;
-                email?: string;
-                type?: string;
-            };
-        } catch (error) {
-            throw new ValidationError('Invalid or expired email confirmation token');
-        }
+        const payload = jwt.verify(token, env.jwtSecret) as {
+            userId?: string;
+            email?: string;
+            type?: string;
+        };
 
         if (payload.type !== 'email-verification' || !payload.userId || !payload.email) {
             throw new ValidationError('Invalid email confirmation token');
@@ -194,12 +189,7 @@ export class AuthService {
     }
 
     private verifyPasswordChangeJwt(token: string): { sub?: string; type?: string } {
-        let payload: { sub?: string; type?: string };
-        try {
-            payload = jwt.verify(token, env.jwtSecret) as { sub?: string; type?: string };
-        } catch (error) {
-            throw new ValidationError('Invalid or expired password change token');
-        }
+        const payload = jwt.verify(token, env.jwtSecret) as { sub?: string; type?: string };
 
         if (payload.type !== 'password-change' || !payload.sub) {
             throw new ValidationError('Invalid password change token');

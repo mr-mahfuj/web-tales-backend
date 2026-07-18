@@ -13,21 +13,16 @@ export async function sendEmail({ to, subject, templateName, values }: SendEmail
         .map(([key, value]) => `${key}: ${value}`)
         .join('\n');
 
-    try {
-        const info = await transporter.sendMail({
-            from: `"Web Tales" <${env.smtpUser}>`,
-            to,
-            subject,
-            html,
-            text,
-        });
+    const info = await transporter.sendMail({
+        from: `"Web Tales" <${env.smtpUser}>`,
+        to,
+        subject,
+        html,
+        text,
+    });
 
-        console.log('Email sent successfully:', info.messageId);
-        return info;
-    } catch (error) {
-        console.error('Email sending failed:', error);
-        throw error;
-    }
+    console.log('Email sent successfully:', info.messageId);
+    return info;
 }
 
 export async function sendVerificationEmail({

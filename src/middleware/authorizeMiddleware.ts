@@ -34,21 +34,17 @@ export function requireOwnerOrAdmin<P extends Record<string, string> = Record<st
             return;
         }
 
-        try {
-            const ownerId = await ownerIdOf(req);
+        const ownerId = await ownerIdOf(req);
 
-            if (!ownerId) {
-                next(new NotFoundError('Resource not found'));
-                return;
-            }
-            if (ownerId === req.user.id) {
-                next();
-                return;
-            }
-            next(new ForbiddenError('You can only modify your own resources'));
-        } catch (err) {
-            next(err);
+        if (!ownerId) {
+            next(new NotFoundError('Resource not found'));
+            return;
         }
+        if (ownerId === req.user.id) {
+            next();
+            return;
+        }
+        next(new ForbiddenError('You can only modify your own resources'));
     };
 }
 

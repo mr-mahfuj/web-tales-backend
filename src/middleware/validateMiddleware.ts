@@ -48,12 +48,8 @@ function validateRequest<S extends ValidationSchema>(req: Request, schema: S): V
 
 export function validate<S extends ValidationSchema>(schema: S): RequestHandler {
     return (req: Request, _res: Response, next: NextFunction) => {
-        try {
-            req.validated = validateRequest(req, schema);
-            next();
-        } catch (err) {
-            next(err);
-        }
+        req.validated = validateRequest(req, schema);
+        next();
     };
 }
 
@@ -66,13 +62,9 @@ export function withValidation<S extends ValidationSchema>(
     ) => unknown,
 ): RequestHandler {
     return (req, res, next) => {
-        try {
-            req.validated = validateRequest(req, schema);
-            Promise.resolve(handler(req as Request & { validated: Validated<S> }, res, next)).catch(
-                next,
-            );
-        } catch (err) {
-            next(err);
-        }
+        req.validated = validateRequest(req, schema);
+        Promise.resolve(handler(req as Request & { validated: Validated<S> }, res, next)).catch(
+            next,
+        );
     };
 }

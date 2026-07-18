@@ -14,12 +14,7 @@ export class AIService {
     async generateSummary(content: string): Promise<SummaryResult> {
         const truncatedContent = this.truncateContent(content);
 
-        let response: Response;
-        try {
-            response = await this.fetchSummaryFromAPI(truncatedContent);
-        } catch {
-            return { summary: null, error: 'Failed to reach AI service' };
-        }
+        const response = await this.fetchSummaryFromAPI(truncatedContent);
 
         return this.handleAPIResponse(response);
     }
@@ -55,12 +50,7 @@ export class AIService {
             };
         }
 
-        let data: GeminiResponse;
-        try {
-            data = (await response.json()) as GeminiResponse;
-        } catch {
-            return { summary: null, error: 'Failed to parse AI response' };
-        }
+        const data = (await response.json()) as GeminiResponse;
 
         const text = data?.candidates?.[0]?.content?.parts
             ?.map((p) => p.text)
