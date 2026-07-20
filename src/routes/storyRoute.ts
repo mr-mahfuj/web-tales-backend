@@ -4,7 +4,6 @@ import { authenticateToken } from '../middleware/authMiddleware.js';
 import { requireOwnerOrAdmin } from '../middleware/authorizeMiddleware.js';
 import { validate } from '../middleware/validateMiddleware.js';
 import { rateLimit } from '../middleware/rateLimitMiddleware.js';
-import { StoryService } from '../services/story.service.js';
 import {
     createStorySchema,
     deleteStorySchema,
@@ -15,7 +14,6 @@ import {
 import { STORY_RATE_LIMITS } from '../constants/rateLimit.js';
 
 const router = Router();
-const storyService = new StoryService();
 
 const storyRateLimit = rateLimit({
     windowMs: STORY_RATE_LIMITS.windowMs,
@@ -33,17 +31,13 @@ router
     .patch(
         authenticateToken,
         validate(updateStorySchema),
-        requireOwnerOrAdmin<{ storyId: string }>((req) =>
-            storyService.getStoryOwnerId(req.params.storyId),
-        ),
+        requireOwnerOrAdmin('story', 'storyId', 'userId'),
         StoryController.updateStory,
     )
     .delete(
         authenticateToken,
         validate(deleteStorySchema),
-        requireOwnerOrAdmin<{ storyId: string }>((req) =>
-            storyService.getStoryOwnerId(req.params.storyId),
-        ),
+        requireOwnerOrAdmin('story', 'storyId', 'userId'),
         StoryController.deleteStory,
     );
 
@@ -52,9 +46,7 @@ router.post(
     authenticateToken,
     storyRateLimit,
     validate(getStorySchema),
-    requireOwnerOrAdmin<{ storyId: string }>((req) =>
-        storyService.getStoryOwnerId(req.params.storyId),
-    ),
+    requireOwnerOrAdmin('story', 'storyId', 'userId'),
     StoryController.generateSummary,
 );
 

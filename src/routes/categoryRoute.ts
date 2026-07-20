@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { CategoryController } from '../controllers/category.controller.js';
-import { requireRole } from '../middleware/authorizeMiddleware.js';
+import { requireAdmin } from '../middleware/authorizeMiddleware.js';
 import { validate } from '../middleware/validateMiddleware.js';
 import {
     createCategorySchema,
@@ -8,7 +8,6 @@ import {
     updateCategorySchema,
     deleteCategorySchema,
 } from '../schemas/categorySchema.js';
-import { Role } from '@prisma/client';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = Router();
@@ -17,7 +16,7 @@ router
     .route('/')
     .post(
         authenticateToken,
-        requireRole(Role.ADMIN),
+        requireAdmin(),
         validate(createCategorySchema),
         CategoryController.createCategory,
     )
@@ -26,7 +25,7 @@ router
 router.patch(
     '/:categoryId',
     authenticateToken,
-    requireRole(Role.ADMIN),
+    requireAdmin(),
     validate(updateCategorySchema),
     CategoryController.updateCategory,
 );
@@ -34,7 +33,7 @@ router.patch(
 router.delete(
     '/:categoryId',
     authenticateToken,
-    requireRole(Role.ADMIN),
+    requireAdmin(),
     validate(deleteCategorySchema),
     CategoryController.deleteCategory,
 );

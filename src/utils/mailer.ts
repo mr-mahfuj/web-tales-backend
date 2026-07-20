@@ -21,7 +21,6 @@ export async function sendEmail({ to, subject, templateName, values }: SendEmail
         text,
     });
 
-    console.log('Email sent successfully:', info.messageId);
     return info;
 }
 

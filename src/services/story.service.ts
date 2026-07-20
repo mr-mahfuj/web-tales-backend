@@ -30,7 +30,7 @@ export class StoryService {
 
         const { generateSummary, ...storyFields } = data;
 
-        if (generateSummary) {
+        if (generateSummary && storyFields.body) {
             const result = await this.aiService.generateSummary(storyFields.body);
             if (result.summary) {
                 storyFields.summary = result.summary;
@@ -75,15 +75,12 @@ export class StoryService {
 
         const { generateSummary, ...storyFields } = data;
 
-        if (generateSummary) {
-            const content = storyFields.body ?? '';
-            if (content) {
-                const result = await this.aiService.generateSummary(content);
-                if (result.summary) {
-                    storyFields.summary = result.summary;
-                } else if (result.error) {
-                    console.warn(`[AI] Summary bypass on update: ${result.error}`);
-                }
+        if (generateSummary && storyFields.body) {
+            const result = await this.aiService.generateSummary(storyFields.body);
+            if (result.summary) {
+                storyFields.summary = result.summary;
+            } else if (result.error) {
+                console.warn(`[AI] Summary bypass on update: ${result.error}`);
             }
         }
 

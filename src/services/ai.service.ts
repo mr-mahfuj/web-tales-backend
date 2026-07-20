@@ -1,10 +1,8 @@
 import { env } from '../config/env.js';
-import { SUMMARY } from '../constants/story.js';
 import type { SummaryResult } from '../types/summaryResult.js';
 import type { GeminiResponse } from '../types/aiResponse.js';
-import { AI_CONFIG, SUMMARY_PROMPT } from '../constants/aiConfig.js';
-
-const DEFAULT_AI_MODEL = 'gemini-flash-latest';
+import { AI_CONFIG, DEFAULT_AI_MODEL, SUMMARY_PROMPT } from '../constants/aiConfig.js';
+import { AIServiceError } from '../common/errors.js';
 
 export class AIService {
     private readonly apiKey = env.geminiAPIKey;
@@ -12,11 +10,25 @@ export class AIService {
     private readonly apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent`;
 
     async generateSummary(content: string): Promise<SummaryResult> {
-        const truncatedContent = this.truncateContent(content);
+        const response = await this.fetchSummaryFromAPI(content);
 
-        const response = await this.fetchSummaryFromAPI(truncatedContent);
+        if (!response.ok) {
+            const errorBody = await response.text().catch(() => undefined);
+            throw new AIServiceError(undefined, { status: response.status, body: errorBody });
+        }
 
-        return this.handleAPIResponse(response);
+        const data = (await response.json()) as GeminiResponse;
+
+        const text = data?.candidates?.[0]?.content?.parts
+            ?.map((p) => p.text)
+            .join('')
+            .trim();
+
+        if (!text) {
+            throw new AIServiceError(undefined, { reason: 'empty_response' });
+        }
+
+        return { summary: text };
     }
 
     private async fetchSummaryFromAPI(content: string): Promise<Response> {
@@ -38,36 +50,5 @@ export class AIService {
                 },
             }),
         });
-    }
-
-    private async handleAPIResponse(response: Response): Promise<SummaryResult> {
-        if (!response.ok) {
-            const errorBody = await response.text().catch(() => undefined);
-            return {
-                summary: null,
-                error: `AI service returned status ${response.status}`,
-                details: { status: response.status, body: errorBody },
-            };
-        }
-
-        const data = (await response.json()) as GeminiResponse;
-
-        const text = data?.candidates?.[0]?.content?.parts
-            ?.map((p) => p.text)
-            .join('')
-            .trim();
-
-        if (!text) {
-            return { summary: null, error: 'AI returned no content' };
-        }
-
-        return { summary: text };
-    }
-
-    private truncateContent(content: string): string {
-        if (content.length <= SUMMARY.MAX_INPUT_CHARS) {
-            return content;
-        }
-        return content.slice(0, SUMMARY.MAX_INPUT_CHARS);
     }
 }

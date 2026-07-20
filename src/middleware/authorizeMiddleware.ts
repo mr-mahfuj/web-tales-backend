@@ -1,7 +1,9 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import { ForbiddenError, NotFoundError } from '../common/errors.js';
 import type { AuthenticatedUser } from '../types/auth.js';
-import { Role } from '@prisma/client';
+import { Role, PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export function requireRole(...roles: AuthenticatedUser['role'][]): RequestHandler {
     return (req: Request, _res: Response, next: NextFunction) => {
@@ -17,14 +19,14 @@ export function requireRole(...roles: AuthenticatedUser['role'][]): RequestHandl
     };
 }
 
-export type OwnerIdResolver<P extends Record<string, string>> = (
-    req: Request<P>,
-) => Promise<string | undefined> | string | undefined;
+export const requireAdmin = (): RequestHandler => requireRole(Role.ADMIN);
 
-export function requireOwnerOrAdmin<P extends Record<string, string> = Record<string, string>>(
-    ownerIdOf: OwnerIdResolver<P>,
-): RequestHandler<P> {
-    return async (req: Request<P>, _res: Response, next: NextFunction) => {
+export function requireOwnerOrAdmin(
+    model: Extract<keyof PrismaClient, string>,
+    paramName: string,
+    ownerField: string,
+): RequestHandler {
+    return async (req: Request, _res: Response, next: NextFunction) => {
         if (!req.user) {
             next(new ForbiddenError('Authentication required'));
             return;
@@ -34,16 +36,34 @@ export function requireOwnerOrAdmin<P extends Record<string, string> = Record<st
             return;
         }
 
-        const ownerId = await ownerIdOf(req);
-
-        if (!ownerId) {
+        const resourceId = req.params[paramName];
+        if (typeof resourceId !== 'string') {
             next(new NotFoundError('Resource not found'));
             return;
         }
-        if (ownerId === req.user.id) {
+
+        const delegate = prisma[model] as unknown as {
+            findUnique: (args: {
+                where: { id: string };
+                select: Record<string, true>;
+            }) => Promise<Record<string, unknown> | null>;
+        };
+
+        const record = await delegate.findUnique({
+            where: { id: resourceId },
+            select: { [ownerField]: true },
+        });
+
+        if (!record) {
+            next(new NotFoundError('Resource not found'));
+            return;
+        }
+
+        if (record[ownerField] === req.user.id) {
             next();
             return;
         }
+
         next(new ForbiddenError('You can only modify your own resources'));
     };
 }

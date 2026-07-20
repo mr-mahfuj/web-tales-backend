@@ -20,7 +20,12 @@ const bodySchema = z
 
 const storyOrderBySchema = z.enum(['createdAt', 'updatedAt', 'title']).default('createdAt');
 
-const categoryIdsSchema = z.array(idSchema).optional();
+const categoryIdsSchema = z
+    .array(idSchema)
+    .refine((ids) => new Set(ids).size === ids.length, {
+        message: 'Duplicate category IDs are not allowed.',
+    })
+    .optional();
 
 export const createStoryBodySchema = z
     .object({
