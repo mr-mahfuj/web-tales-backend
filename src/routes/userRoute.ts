@@ -17,7 +17,7 @@ import {
     initiatePasswordChangeSchema,
 } from '../schemas/authSchema.js';
 import { emailVerificationTokenSchema } from '../schemas/emailVerificationTokenSchema.js';
-import { PASSWORD_RATE_LIMITS } from '../constants/rateLimit.js';
+import { PASSWORD_RATE_LIMITS } from '../constants/index.js';
 
 const router = Router();
 

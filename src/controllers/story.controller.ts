@@ -1,5 +1,5 @@
 import type { Response } from 'express';
-import { StatusCode } from '../constants/status-code.js';
+import { StatusCode } from '../constants/index.js';
 import { StoryService } from '../services/story.service.js';
 import type {
     createStorySchema,

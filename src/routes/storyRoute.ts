@@ -11,7 +11,7 @@ import {
     getStorySchema,
     updateStorySchema,
 } from '../schemas/storySchema.js';
-import { STORY_RATE_LIMITS } from '../constants/rateLimit.js';
+import { STORY_RATE_LIMITS } from '../constants/index.js';
 
 const router = Router();
 

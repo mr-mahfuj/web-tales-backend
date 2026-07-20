@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { LogLevel } from '../common/errors.js';
 import { AppError } from '../common/errors.js';
-import { StatusCode } from '../constants/status-code.js';
+import { ERROR_MESSAGES, StatusCode } from '../constants/index.js';
 import { formatZodIssues } from '../utils/errorFormatters.js';
 import { logError } from '../utils/errorLogger.js';
 import { ZodError } from 'zod';
@@ -43,7 +43,7 @@ function normalizeError(error: unknown): NormalizedError {
             name: error.name,
             statusCode: StatusCode.BadRequest,
             code: 'VALIDATION_ERROR',
-            message: 'Validation failed',
+            message: ERROR_MESSAGES.VALIDATION_FAILED,
             details: formatZodIssues(error.issues),
             stack: error.stack,
             logLevel: 'warn',
@@ -57,7 +57,7 @@ function normalizeError(error: unknown): NormalizedError {
             name: error.name,
             statusCode: StatusCode.InternalServerError,
             code: error.name ? error.name.toUpperCase() : 'INTERNAL_SERVER_ERROR',
-            message: error.message || 'Something went wrong',
+            message: error.message || ERROR_MESSAGES.SOMETHING_WENT_WRONG,
             details: undefined,
             stack: error.stack,
             logLevel: 'error',
@@ -70,7 +70,7 @@ function normalizeError(error: unknown): NormalizedError {
         name: 'UnknownError',
         statusCode: StatusCode.InternalServerError,
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'Something went wrong',
+        message: ERROR_MESSAGES.SOMETHING_WENT_WRONG,
         details: undefined,
         stack: undefined,
         logLevel: 'error',
@@ -85,7 +85,7 @@ export function errorHandler(err: unknown, req: Request, res: Response, _next: N
     const message =
         normalizedError.exposeMessage || isDevelopment
             ? normalizedError.message
-            : 'Something went wrong';
+            : ERROR_MESSAGES.SOMETHING_WENT_WRONG;
     const details =
         normalizedError.exposeDetails || isDevelopment ? normalizedError.details : undefined;
     const stack = isDevelopment ? normalizedError.stack : undefined;

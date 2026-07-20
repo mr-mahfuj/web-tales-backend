@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { NAME, USERNAME } from '../constants/user.js';
+import { NAME, USERNAME } from '../constants/index.js';
 import { createListQuerySchema } from './listQuerySchema.js';
 import { idSchema } from './idSchema.js';
 

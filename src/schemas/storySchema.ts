@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { TITLE, BODY, SUMMARY } from '../constants/story.js';
-import { CATEGORY } from '../constants/categoryFilter.js';
+import { TITLE, BODY, SUMMARY, CATEGORY } from '../constants/index.js';
 import { createListQuerySchema } from './listQuerySchema.js';
 import { idSchema } from './idSchema.js';
 

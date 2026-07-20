@@ -6,6 +6,7 @@ import {
     UserDTO,
 } from '../dtos/userDTO.js';
 import { ConflictError, NotFoundError } from '../common/errors.js';
+import { ERROR_MESSAGES } from '../constants/index.js';
 import { UserRepository } from '../repositories/user.repository.js';
 import type { ListUsersQuery } from '../schemas/userSchema.js';
 import { toListResponse, type ListResponse } from '../utils/paginationMapper.js';
@@ -15,11 +16,11 @@ export class UserService {
     userRepository = new UserRepository();
     async createUser(data: CreateUserDTO): Promise<UserDTO> {
         if (await this.userRepository.existsByEmail(data.email)) {
-            throw new ConflictError('Email already exists', { field: 'email' });
+            throw new ConflictError(ERROR_MESSAGES.EMAIL_ALREADY_EXISTS, { field: 'email' });
         }
 
         if (await this.userRepository.existsByUsername(data.username)) {
-            throw new ConflictError('Username already exists', { field: 'username' });
+            throw new ConflictError(ERROR_MESSAGES.USERNAME_ALREADY_EXISTS, { field: 'username' });
         }
 
         return new UserDTO(await this.userRepository.create(data));
@@ -39,7 +40,7 @@ export class UserService {
         const user = await this.userRepository.findById(userId);
 
         if (!user) {
-            throw new NotFoundError('User not found', { userId });
+            throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND, { userId });
         }
 
         return new UserDTO(user);
@@ -49,7 +50,7 @@ export class UserService {
         const user = await this.userRepository.findByEmail(email);
 
         if (!user) {
-            throw new NotFoundError('User not found', { email });
+            throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND, { email });
         }
 
         return new UserDTO(user);
@@ -72,7 +73,7 @@ export class UserService {
         const existingUser = await this.userRepository.findById(userId);
 
         if (!existingUser) {
-            throw new NotFoundError('User not found', { userId });
+            throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND, { userId });
         }
 
         return new UserDTO(await this.userRepository.update(userId, data));
@@ -82,19 +83,21 @@ export class UserService {
         const existingUser = await this.userRepository.findById(userId);
 
         if (!existingUser) {
-            throw new NotFoundError('User not found', { userId });
+            throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND, { userId });
         }
 
         if (data.username && data.username !== existingUser.username) {
             if (await this.userRepository.existsByUsernameExcludingUser(data.username, userId)) {
-                throw new ConflictError('Username already taken', { field: 'username' });
+                throw new ConflictError(ERROR_MESSAGES.USERNAME_ALREADY_TAKEN, {
+                    field: 'username',
+                });
             }
         }
 
         let emailChanged = false;
         if (data.email && data.email !== existingUser.email) {
             if (await this.userRepository.existsByEmailExcludingUser(data.email, userId)) {
-                throw new ConflictError('Email already in use', { field: 'email' });
+                throw new ConflictError(ERROR_MESSAGES.EMAIL_ALREADY_IN_USE, { field: 'email' });
             }
             emailChanged = true;
         }
@@ -120,7 +123,7 @@ export class UserService {
         const existingUser = await this.userRepository.findById(userId);
 
         if (!existingUser) {
-            throw new NotFoundError('User not found', { userId });
+            throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND, { userId });
         }
 
         return new UserDTO(await this.userRepository.softDelete(userId));

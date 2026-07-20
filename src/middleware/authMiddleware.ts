@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { UnauthorizedError } from '../common/errors.js';
+import { ERROR_MESSAGES } from '../constants/index.js';
 import { env } from '../config/env.js';
 import { UserService } from '../services/user.services.js';
 import type { AccessTokenPayload } from '../types/authAccessToken.js';
@@ -24,13 +25,13 @@ export async function authenticateToken(
     const token = extractToken(req);
 
     if (!token) {
-        throw new UnauthorizedError('Missing or malformed authorization header');
+        throw new UnauthorizedError(ERROR_MESSAGES.MISSING_AUTH_HEADER);
     }
 
     const payload = jwt.verify(token, env.jwtSecret) as AccessTokenPayload;
 
     if (!payload.sub) {
-        throw new UnauthorizedError('Invalid token payload');
+        throw new UnauthorizedError(ERROR_MESSAGES.INVALID_TOKEN_PAYLOAD);
     }
 
     const record = await userService.getUserById(payload.sub).catch(() => null);

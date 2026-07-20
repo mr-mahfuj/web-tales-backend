@@ -1,5 +1,6 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import { TooManyRequestsError } from '../common/errors.js';
+import { ERROR_MESSAGES } from '../constants/index.js';
 import type { Bucket, RateLimitOptions } from '../types/rateLimiterInterface.js';
 
 const buckets = new Map<string, Bucket>();
@@ -34,7 +35,7 @@ export function rateLimit(options: RateLimitOptions): RequestHandler {
             const retryAfter = Math.max(1, Math.ceil((bucket.resetAt - now) / 1000));
             _res.setHeader('Retry-After', retryAfter.toString());
             return next(
-                new TooManyRequestsError('Too many requests, please try again later', {
+                new TooManyRequestsError(ERROR_MESSAGES.RATE_LIMIT_EXCEEDED, {
                     retryAfter,
                 }),
             );

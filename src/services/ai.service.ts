@@ -1,7 +1,7 @@
 import { env } from '../config/env.js';
 import type { SummaryResult } from '../types/summaryResult.js';
 import type { GeminiResponse } from '../types/aiResponse.js';
-import { AI_CONFIG, DEFAULT_AI_MODEL, SUMMARY_PROMPT } from '../constants/aiConfig.js';
+import { AI_CONFIG, DEFAULT_AI_MODEL, SUMMARY_PROMPT } from '../constants/index.js';
 import { AIServiceError } from '../common/errors.js';
 
 export class AIService {

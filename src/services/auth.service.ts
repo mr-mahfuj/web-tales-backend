@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AuthRepository } from '../repositories/auth.repository.js';
 import { ConflictError, NotFoundError, ValidationError } from '../common/errors.js';
+import { ERROR_MESSAGES } from '../constants/index.js';
 import type {
     ConfirmPasswordChangeDTO,
     InitiatePasswordChangeDTO,
@@ -59,7 +60,7 @@ export class AuthService {
         }
 
         if (!user.isEmailVerified) {
-            throw new ValidationError('Please verify your email before logging in.');
+            throw new ValidationError();
         }
 
         const auth = await authRepository.findAuthByUserId(user.id);
@@ -88,16 +89,16 @@ export class AuthService {
         };
 
         if (payload.type !== 'email-verification' || !payload.userId || !payload.email) {
-            throw new ValidationError('Invalid email confirmation token');
+            throw new ValidationError(ERROR_MESSAGES.INVALID_EMAIL_CONFIRMATION_TOKEN);
         }
 
         const user = await userService.findUserByEmail(payload.email);
         if (!user || user.id !== payload.userId) {
-            throw new NotFoundError('User not found.');
+            throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
         }
 
         if (user.isEmailVerified) {
-            return { message: 'Email is already verified.' };
+            return { message: ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED };
         }
 
         await userService.markEmailVerified(user.id);
@@ -108,8 +109,8 @@ export class AuthService {
     async resendConfirmationEmail(data: ResendConfirmationEmailDTO) {
         const user = await userService.findUserByEmail(data.email);
 
-        if (!user) throw new NotFoundError('User not found.');
-        if (user.isEmailVerified) throw new ConflictError('Email is already verified.');
+        if (!user) throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
+        if (user.isEmailVerified) throw new ConflictError(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED);
         await sendVerificationEmail({
             userId: user.id,
             email: user.email,
@@ -125,7 +126,7 @@ export class AuthService {
 
         const isPasswordValid = await bcrypt.compare(data.oldPassword, auth.password);
         if (!isPasswordValid) {
-            throw new ValidationError('Invalid old password');
+            throw new ValidationError(ERROR_MESSAGES.INVALID_OLD_PASSWORD);
         }
 
         const user = await userService.getUserById(userId);
@@ -152,7 +153,7 @@ export class AuthService {
         const auth = await this.findAuthByUserId(payload.sub!);
 
         if (auth.passwordChangeToken !== token || !auth.isPasswordChangeTokenValid) {
-            throw new ValidationError('Invalid or expired password change token');
+            throw new ValidationError(ERROR_MESSAGES.INVALID_OR_EXPIRED_PASSWORD_CHANGE_TOKEN);
         }
 
         return {
@@ -167,12 +168,12 @@ export class AuthService {
         const auth = await this.findAuthByUserId(payload.sub!);
 
         if (auth.passwordChangeToken !== data.token || !auth.isPasswordChangeTokenValid) {
-            throw new ValidationError('Invalid or expired password change token');
+            throw new ValidationError(ERROR_MESSAGES.INVALID_OR_EXPIRED_PASSWORD_CHANGE_TOKEN);
         }
 
         const isSameAsCurrent = await bcrypt.compare(data.newPassword, auth.password);
         if (isSameAsCurrent) {
-            throw new ValidationError('New password must be different from the old password');
+            throw new ValidationError(ERROR_MESSAGES.PASSWORD_MUST_BE_DIFFERENT);
         }
 
         const hashedPassword = await bcrypt.hash(data.newPassword, env.saltRounds);
@@ -191,7 +192,7 @@ export class AuthService {
         const payload = jwt.verify(token, env.jwtSecret) as { sub?: string; type?: string };
 
         if (payload.type !== 'password-change' || !payload.sub) {
-            throw new ValidationError('Invalid password change token');
+            throw new ValidationError(ERROR_MESSAGES.INVALID_PASSWORD_CHANGE_TOKEN);
         }
 
         return payload;

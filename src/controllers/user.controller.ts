@@ -1,5 +1,5 @@
 import type { Response } from 'express';
-import { StatusCode } from '../constants/status-code.js';
+import { StatusCode } from '../constants/index.js';
 import { UserService } from '../services/user.services.js';
 import type {
     getAllUsersSchema,

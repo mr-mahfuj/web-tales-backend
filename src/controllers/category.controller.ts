@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { StatusCode } from '../constants/status-code.js';
+import { StatusCode } from '../constants/index.js';
 import { CategoryService } from '../services/category.service.js';
 import type { ValidatedRequest } from '../types/validation.js';
 import type {

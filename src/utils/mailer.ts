@@ -1,6 +1,7 @@
 import { transporter } from '../config/emailTransporter.js';
 import { emailGenerator } from './emailGenerator.js';
 import { env } from '../config/env.js';
+import { ERROR_MESSAGES } from '../constants/index.js';
 import { generateEmailVerificationToken } from './emailTokenGenerator.js';
 import type {
     SendEmailParams,
@@ -52,7 +53,7 @@ export async function sendPasswordChangeConfirmationEmail({
     token,
 }: SendVerificationEmailParams) {
     if (!token) {
-        throw new Error('Password change token is required to build the confirmation link');
+        throw new Error(ERROR_MESSAGES.PASSWORD_CHANGE_TOKEN_REQUIRED);
     }
 
     const link = `http://${env.host}:${env.port}/users/validate-password-change/${token}`;
