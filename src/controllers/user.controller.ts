@@ -1,4 +1,4 @@
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import { StatusCode } from '../constants/status-code.js';
 import { UserService } from '../services/user.services.js';
 import type {
@@ -8,7 +8,7 @@ import type {
     deleteUserSchema,
     updateUserProfileSchema,
 } from '../schemas/userSchema.js';
-import type { AuthedValidatedRequest, Validated, ValidatedRequest } from '../types/validation.js';
+import type { AuthedValidatedRequest, ValidatedRequest } from '../types/validation.js';
 
 const userService = new UserService();
 

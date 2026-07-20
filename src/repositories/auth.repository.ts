@@ -23,16 +23,6 @@ export class AuthRepository {
         return prisma.auth.findUnique({ where: { userId } });
     }
 
-    async updatePassword(userId: string, hashedPassword: string) {
-        return prisma.auth.update({
-            where: { userId },
-            data: {
-                password: hashedPassword,
-                passwordLastModificationTime: new Date(),
-            },
-        });
-    }
-
     async setPasswordChangeToken(userId: string, token: string) {
         return prisma.auth.update({
             where: { userId },
@@ -52,7 +42,7 @@ export class AuthRepository {
         });
     }
 
-    async consumePasswordChangeToken(userId: string, hashedPassword: string) {
+    async changePasswordAndConsumeToken(userId: string, hashedPassword: string) {
         return prisma.auth.update({
             where: { userId },
             data: {

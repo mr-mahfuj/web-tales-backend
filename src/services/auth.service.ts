@@ -108,14 +108,13 @@ export class AuthService {
     async resendConfirmationEmail(data: ResendConfirmationEmailDTO) {
         const user = await userService.findUserByEmail(data.email);
 
-        if (user && !user.isEmailVerified) {
-            await sendVerificationEmail({
-                userId: user.id,
-                email: user.email,
-                username: user.username,
-            });
-        }
-
+        if (!user) throw new NotFoundError('User not found.');
+        if (user.isEmailVerified) throw new ConflictError('Email is already verified.');
+        await sendVerificationEmail({
+            userId: user.id,
+            email: user.email,
+            username: user.username,
+        });
         return {
             message: 'Verification link has been sent.',
         };
@@ -177,7 +176,7 @@ export class AuthService {
         }
 
         const hashedPassword = await bcrypt.hash(data.newPassword, env.saltRounds);
-        await authRepository.consumePasswordChangeToken(payload.sub!, hashedPassword);
+        await authRepository.changePasswordAndConsumeToken(payload.sub!, hashedPassword);
 
         const user = await userService.getUserById(payload.sub!);
         await sendPasswordChangedNotification({
@@ -202,9 +201,5 @@ export class AuthService {
         const auth = await authRepository.findAuthByUserId(userId);
         if (!auth) throw new NotFoundError();
         return auth;
-    }
-
-    async updatePassword(userId: string, hashedPassword: string) {
-        return authRepository.updatePassword(userId, hashedPassword);
     }
 }

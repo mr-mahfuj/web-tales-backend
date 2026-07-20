@@ -22,20 +22,21 @@ router
     )
     .get(authenticateToken, validate(getCategorySchema), CategoryController.getAllCategories);
 
-router.patch(
-    '/:categoryId',
-    authenticateToken,
-    requireAdmin(),
-    validate(updateCategorySchema),
-    CategoryController.updateCategory,
-);
+router
+    .route('/:categoryId')
+    .patch(
+        authenticateToken,
+        requireAdmin(),
+        validate(updateCategorySchema),
+        CategoryController.updateCategory,
+    )
+    .delete(
+        authenticateToken,
+        requireAdmin(),
+        validate(deleteCategorySchema),
+        CategoryController.deleteCategory,
+    );
 
-router.delete(
-    '/:categoryId',
-    authenticateToken,
-    requireAdmin(),
-    validate(deleteCategorySchema),
-    CategoryController.deleteCategory,
-);
+router;
 
 export default router;

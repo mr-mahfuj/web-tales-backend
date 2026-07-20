@@ -23,21 +23,28 @@ export class StoryService {
         private readonly aiService = new AIService(),
     ) {}
 
+    private async resolveSummary(
+        generateSummary: boolean | undefined,
+        body: string | undefined,
+        context: 'create' | 'update',
+    ): Promise<string | undefined> {
+        if (!generateSummary || !body) return undefined;
+
+        const result = await this.aiService.generateSummary(body);
+        if (result.summary) return result.summary;
+
+        console.warn(`[AI] Summary bypass on ${context}: ${result.error}`);
+        return undefined;
+    }
+
     async createStory(data: CreateStoryDTO): Promise<StoryDTO> {
         if (data.categoryIds?.length) {
             await ensureCategoriesExist(data.categoryIds);
         }
 
         const { generateSummary, ...storyFields } = data;
-
-        if (generateSummary && storyFields.body) {
-            const result = await this.aiService.generateSummary(storyFields.body);
-            if (result.summary) {
-                storyFields.summary = result.summary;
-            } else if (result.error) {
-                console.warn(`[AI] Summary bypass on create: ${result.error}`);
-            }
-        }
+        const summary = await this.resolveSummary(generateSummary, storyFields.body, 'create');
+        if (summary) storyFields.summary = summary;
 
         return new StoryDTO(await this.storyRepository.create(storyFields));
     }
@@ -74,15 +81,8 @@ export class StoryService {
         }
 
         const { generateSummary, ...storyFields } = data;
-
-        if (generateSummary && storyFields.body) {
-            const result = await this.aiService.generateSummary(storyFields.body);
-            if (result.summary) {
-                storyFields.summary = result.summary;
-            } else if (result.error) {
-                console.warn(`[AI] Summary bypass on update: ${result.error}`);
-            }
-        }
+        const summary = await this.resolveSummary(generateSummary, storyFields.body, 'update');
+        if (summary) storyFields.summary = summary;
 
         return new StoryDTO(await this.storyRepository.update(storyId, storyFields));
     }

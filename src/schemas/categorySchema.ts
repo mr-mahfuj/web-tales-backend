@@ -3,17 +3,15 @@ import { idSchema } from './idSchema.js';
 
 const nameSchema = z.string().trim().min(1, 'Category name must be provided.');
 
-const descriptionSchema = z
-    .string()
-    .trim()
-    .min(1, 'Category description must be provided.')
-    .nullable()
-    .optional();
+const descriptionSchema = z.preprocess(
+    (val) => (typeof val === 'string' && val.trim() === '' ? null : val),
+    z.string().trim().nullable(),
+);
 
 export const createCategoryBodySchema = z
     .object({
         name: nameSchema,
-        description: descriptionSchema,
+        description: descriptionSchema.default(null),
     })
     .strict();
 
