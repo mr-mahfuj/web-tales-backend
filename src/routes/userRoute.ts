@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { UserController } from '../controllers/user.controller.js';
 import { AuthController } from '../controllers/auth.controller.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
-import { requireAdmin, requireOwnerOrAdmin } from '../middleware/authorizeMiddleware.js';
+import { requireAccess } from '../middleware/authorizeMiddleware.js';
 import { validate } from '../middleware/validateMiddleware.js';
 import { rateLimit } from '../middleware/rateLimitMiddleware.js';
 import {
@@ -18,13 +18,14 @@ import {
 } from '../schemas/authSchema.js';
 import { emailVerificationTokenSchema } from '../schemas/emailVerificationTokenSchema.js';
 import { PASSWORD_RATE_LIMITS } from '../constants/index.js';
+import { Role } from '@prisma/client';
 
 const router = Router();
 
 router.get(
     '/',
     authenticateToken,
-    requireAdmin(),
+    requireAccess(false, Role.ADMIN, Role.USER),
     validate(getAllUsersSchema),
     UserController.getAllUsers,
 );
@@ -33,19 +34,19 @@ router
     .get(
         authenticateToken,
         validate(getUserSchema),
-        requireOwnerOrAdmin('user', 'userId', 'id'),
+        requireAccess(true, Role.ADMIN, Role.USER),
         UserController.getUserById,
     )
     .patch(
         authenticateToken,
         validate(updateUserSchema),
-        requireOwnerOrAdmin('user', 'userId', 'id'),
+        requireAccess(true, Role.ADMIN, Role.USER),
         UserController.updateUser,
     )
     .delete(
         authenticateToken,
         validate(deleteUserSchema),
-        requireOwnerOrAdmin('user', 'userId', 'id'),
+        requireAccess(true, Role.ADMIN, Role.USER),
         UserController.deleteUser,
     );
 

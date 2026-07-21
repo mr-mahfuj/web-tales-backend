@@ -1,5 +1,5 @@
 import { type CreateStoryDTO, type UpdateStoryDTO, StoryDTO } from '../dtos/storyDTO.js';
-import { NotFoundError, ValidationError } from '../common/errors.js';
+import { AIServiceError, NotFoundError, ValidationError } from '../common/errors.js';
 import { ERROR_MESSAGES } from '../constants/index.js';
 import { StoryRepository } from '../repositories/story.repository.js';
 import type { ListStoriesQuery } from '../schemas/storySchema.js';
@@ -33,9 +33,7 @@ export class StoryService {
 
         const result = await this.aiService.generateSummary(body);
         if (result.summary) return result.summary;
-
-        console.warn(`[AI] Summary bypass on ${context}: ${result.error}`);
-        return undefined;
+        else throw new AIServiceError(ERROR_MESSAGES.AI_SERVICE_FAILED + context);
     }
 
     async createStory(data: CreateStoryDTO): Promise<StoryDTO> {

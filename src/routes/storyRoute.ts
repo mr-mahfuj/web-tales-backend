@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { StoryController } from '../controllers/story.controller.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
-import { requireOwnerOrAdmin } from '../middleware/authorizeMiddleware.js';
+import { requireAccess } from '../middleware/authorizeMiddleware.js';
 import { validate } from '../middleware/validateMiddleware.js';
 import { rateLimit } from '../middleware/rateLimitMiddleware.js';
 import {
@@ -12,6 +12,7 @@ import {
     updateStorySchema,
 } from '../schemas/storySchema.js';
 import { STORY_RATE_LIMITS } from '../constants/index.js';
+import { Role } from '@prisma/client';
 
 const router = Router();
 
@@ -31,13 +32,13 @@ router
     .patch(
         authenticateToken,
         validate(updateStorySchema),
-        requireOwnerOrAdmin('story', 'storyId', 'userId'),
+        requireAccess(true, Role.ADMIN, Role.USER),
         StoryController.updateStory,
     )
     .delete(
         authenticateToken,
         validate(deleteStorySchema),
-        requireOwnerOrAdmin('story', 'storyId', 'userId'),
+        requireAccess(true, Role.ADMIN, Role.USER),
         StoryController.deleteStory,
     );
 
@@ -46,7 +47,7 @@ router.post(
     authenticateToken,
     storyRateLimit,
     validate(getStorySchema),
-    requireOwnerOrAdmin('story', 'storyId', 'userId'),
+    requireAccess(true, Role.ADMIN, Role.USER),
     StoryController.generateSummary,
 );
 
