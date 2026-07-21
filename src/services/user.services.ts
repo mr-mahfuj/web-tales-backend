@@ -111,8 +111,6 @@ export class UserService {
                 userId: updatedUser.id,
                 email: updatedUser.email,
                 username: updatedUser.username,
-            }).catch((error) => {
-                console.error('Failed to send verification email after profile update:', error);
             });
         }
 

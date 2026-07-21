@@ -28,6 +28,7 @@ const envSchema = z.object({
         .string()
         .min(1, 'Password Change Token expiration time is required.')
         .default('15m'),
+    GOOGLE_GEMINI_API_URL: z.string().min(1, 'Gemini api url is required.'),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -54,4 +55,5 @@ export const env = {
     geminiAPIKey: parsed.data.GOOGLE_GEMINI_API_KEY,
     aiModel: parsed.data.MODEL,
     passwordChangeTokenExpiresIn: parsed.data.PASSWORD_CHANGE_TOKEN_EXPIRES_IN as StringValue,
+    apiUrl: parsed.data.GOOGLE_GEMINI_API_URL,
 };

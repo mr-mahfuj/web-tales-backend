@@ -1,7 +1,12 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AuthRepository } from '../repositories/auth.repository.js';
-import { ConflictError, NotFoundError, ValidationError } from '../common/errors.js';
+import {
+    ConflictError,
+    NotFoundError,
+    UnauthorizedError,
+    ValidationError,
+} from '../common/errors.js';
 import { ERROR_MESSAGES } from '../constants/index.js';
 import type {
     ConfirmPasswordChangeDTO,
@@ -24,7 +29,9 @@ const authRepository = new AuthRepository();
 const userService = new UserService();
 
 function signToken(userId: string, role: Role = Role.ADMIN) {
-    return jwt.sign({ sub: userId, role }, env.jwtSecret, { expiresIn: env.jwtExpiresIn });
+    return jwt.sign({ sub: userId, role }, env.jwtSecret, {
+        expiresIn: env.jwtExpiresIn,
+    });
 }
 
 export class AuthService {
@@ -48,36 +55,37 @@ export class AuthService {
         });
 
         return {
-            message: 'Registration successful. Please confirm your email address.',
-            user: { id: user.id, username: user.username, name: user.name, email: user.email },
+            user: {
+                id: user.id,
+                username: user.username,
+                name: user.name,
+                email: user.email,
+            },
         };
     }
 
     async login(data: LoginDTO) {
         const user = await userService.findUserByEmail(data.email);
-        if (!user) {
-            throw new ValidationError();
-        }
+        if (!user) throw new UnauthorizedError();
 
-        if (!user.isEmailVerified) {
-            throw new ValidationError();
-        }
+        if (!user.isEmailVerified) throw new UnauthorizedError();
 
         const auth = await authRepository.findAuthByUserId(user.id);
-        if (!auth) {
-            throw new ValidationError();
-        }
+        if (!auth) throw new UnauthorizedError();
 
         const isPasswordValid = await bcrypt.compare(data.password, auth.password);
-        if (!isPasswordValid) {
-            throw new ValidationError();
-        }
+        if (!isPasswordValid) throw new ValidationError();
 
         const token = signToken(user.id, user.role);
 
         return {
             token,
-            user: { id: user.id, username: user.username, name: user.name, email: user.email },
+            user: {
+                id: user.id,
+                username: user.username,
+                name: user.name,
+                email: user.email,
+            },
         };
     }
 
@@ -98,27 +106,25 @@ export class AuthService {
         }
 
         if (user.isEmailVerified) {
-            return { message: ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED };
+            throw new ConflictError(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED);
         }
 
         await userService.markEmailVerified(user.id);
-
-        return { message: 'Email confirmed successfully.' };
     }
 
     async resendConfirmationEmail(data: ResendConfirmationEmailDTO) {
         const user = await userService.findUserByEmail(data.email);
 
         if (!user) throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
-        if (user.isEmailVerified) throw new ConflictError(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED);
+        if (user.isEmailVerified) {
+            throw new ConflictError(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED);
+        }
+
         await sendVerificationEmail({
             userId: user.id,
             email: user.email,
             username: user.username,
         });
-        return {
-            message: 'Verification link has been sent.',
-        };
     }
 
     async initiatePasswordChange(userId: string, data: InitiatePasswordChangeDTO) {
@@ -141,10 +147,6 @@ export class AuthService {
             username: user.username,
             token,
         });
-
-        return {
-            message: 'A confirmation link has been sent to your email.',
-        };
     }
 
     async validatePasswordChangeToken(token: string) {
@@ -158,7 +160,6 @@ export class AuthService {
 
         return {
             token,
-            redirectUrl: `${env.frontendUrl}/change-password?token=${token}`,
         };
     }
 
@@ -177,19 +178,25 @@ export class AuthService {
         }
 
         const hashedPassword = await bcrypt.hash(data.newPassword, env.saltRounds);
+
         await authRepository.changePasswordAndConsumeToken(payload.sub!, hashedPassword);
 
         const user = await userService.getUserById(payload.sub!);
+
         await sendPasswordChangedNotification({
             email: user.email,
             username: user.username,
         });
-
-        return { message: 'Password changed successfully' };
     }
 
-    private verifyPasswordChangeJwt(token: string): { sub?: string; type?: string } {
-        const payload = jwt.verify(token, env.jwtSecret) as { sub?: string; type?: string };
+    private verifyPasswordChangeJwt(token: string): {
+        sub?: string;
+        type?: string;
+    } {
+        const payload = jwt.verify(token, env.jwtSecret) as {
+            sub?: string;
+            type?: string;
+        };
 
         if (payload.type !== 'password-change' || !payload.sub) {
             throw new ValidationError(ERROR_MESSAGES.INVALID_PASSWORD_CHANGE_TOKEN);

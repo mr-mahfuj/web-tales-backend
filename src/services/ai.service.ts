@@ -6,8 +6,7 @@ import { AIServiceError } from '../common/errors.js';
 
 export class AIService {
     private readonly apiKey = env.geminiAPIKey;
-    private readonly model = env.aiModel?.trim() ? env.aiModel : DEFAULT_AI_MODEL;
-    private readonly apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent`;
+    private readonly apiUrl = env.apiUrl;
 
     async generateSummary(content: string): Promise<SummaryResult> {
         const response = await this.fetchSummaryFromAPI(content);

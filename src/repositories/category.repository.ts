@@ -7,7 +7,7 @@ export class CategoryRepository {
         return prisma.category.create({
             data: {
                 name: data.name,
-                description: data.description ?? null,
+                description: data.description,
             },
         });
     }

@@ -29,32 +29,32 @@ export const AuthController = {
         res: Response,
     ) => {
         const { token } = req.validated!.params;
-        const result = await authService.confirmEmail(token);
-        return res.status(StatusCode.Ok).json(result);
+        await authService.confirmEmail(token);
+        return res.sendStatus(StatusCode.NoContent);
     },
 
-    async resendConfirmationEmail(
+    resendConfirmationEmail: async (
         req: ValidatedRequest<typeof resendConfirmationEmailSchema>,
         res: Response,
-    ) {
-        const result = await authService.resendConfirmationEmail(req.validated!.body);
-        return res.status(StatusCode.Ok).json(result);
+    ) => {
+        await authService.resendConfirmationEmail(req.validated!.body);
+        return res.sendStatus(StatusCode.NoContent);
     },
 
     initiatePasswordChange: async (
         req: ValidatedRequest<typeof initiatePasswordChangeSchema>,
         res: Response,
     ) => {
-        const result = await authService.initiatePasswordChange(req.user!.id, req.validated!.body);
-        return res.status(StatusCode.Ok).json(result);
+        await authService.initiatePasswordChange(req.user!.id, req.validated!.body);
+        return res.sendStatus(StatusCode.NoContent);
     },
 
     confirmPasswordChange: async (
         req: ValidatedRequest<typeof confirmPasswordChangeSchema>,
         res: Response,
     ) => {
-        const result = await authService.confirmPasswordChange(req.validated!.body);
-        return res.status(StatusCode.Ok).json(result);
+        await authService.confirmPasswordChange(req.validated!.body);
+        return res.sendStatus(StatusCode.NoContent);
     },
 
     validatePasswordChangeToken: async (
@@ -63,6 +63,6 @@ export const AuthController = {
     ) => {
         const { token } = req.validated!.params;
         const result = await authService.validatePasswordChangeToken(token);
-        return res.redirect(result.redirectUrl);
+        return res.status(StatusCode.Ok).json(result);
     },
 };
