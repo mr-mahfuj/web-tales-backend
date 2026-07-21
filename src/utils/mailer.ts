@@ -2,14 +2,19 @@ import { transporter } from '../config/emailTransporter.js';
 import { emailGenerator } from './emailGenerator.js';
 import { env } from '../config/env.js';
 import { ERROR_MESSAGES } from '../constants/index.js';
+import {
+    EMAIL_VERIFICATION_TEMPLATE,
+    CONFIRM_PASSWORD_CHANGE_TEMPLATE,
+    PASSWORD_CHANGED_NOTIFICATION_TEMPLATE,
+} from '../constants/templates.js';
 import { generateEmailVerificationToken } from './emailTokenGenerator.js';
 import type {
     SendEmailParams,
     SendVerificationEmailParams,
 } from '../types/emailVerificationValidation.js';
 
-export async function sendEmail({ to, subject, templateName, values }: SendEmailParams) {
-    const html = emailGenerator(templateName, values);
+export async function sendEmail({ to, subject, template, values }: SendEmailParams) {
+    const html = emailGenerator(template, values);
     const text = Object.entries(values)
         .map(([key, value]) => `${key}: ${value}`)
         .join('\n');
@@ -36,7 +41,7 @@ export async function sendVerificationEmail({
     return sendEmail({
         to: email,
         subject: 'Verify Your Email',
-        templateName: 'emailConfirmation.html',
+        template: EMAIL_VERIFICATION_TEMPLATE,
         values: {
             USERNAME: username,
             EXPIRY_TIME: env.emailConfirmationTokenExpiresIn.slice(0, -1),
@@ -61,7 +66,7 @@ export async function sendPasswordChangeConfirmationEmail({
     return sendEmail({
         to: email,
         subject: 'Confirm Your Password Change',
-        templateName: 'passwordChange.html',
+        template: CONFIRM_PASSWORD_CHANGE_TEMPLATE,
         values: {
             USERNAME: username,
             EXPIRY_TIME: env.passwordChangeTokenExpiresIn.slice(0, -1),
@@ -82,7 +87,7 @@ export function sendPasswordChangedNotification({
     return sendEmail({
         to: email,
         subject: 'Your Password Has Been Changed',
-        templateName: 'passwordChanged.html',
+        template: PASSWORD_CHANGED_NOTIFICATION_TEMPLATE,
         values: {
             USERNAME: username,
             CURRENT_YEAR: new Date().getFullYear().toString(),

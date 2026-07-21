@@ -132,3 +132,9 @@ export const ERROR_MESSAGES = {
     PASSWORD_CHANGE_TOKEN_REQUIRED:
         'Password change token is required to build the confirmation link',
 } as const;
+
+export {
+    CONFIRM_PASSWORD_CHANGE_TEMPLATE,
+    EMAIL_VERIFICATION_TEMPLATE,
+    PASSWORD_CHANGED_NOTIFICATION_TEMPLATE,
+} from './templates.js';

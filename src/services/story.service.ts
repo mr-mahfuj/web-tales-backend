@@ -11,7 +11,7 @@ const categoryService = new CategoryService();
 
 const ensureCategoriesExist = async (categoryIds: string[]): Promise<void> => {
     const uniqueIds = Array.from(new Set(categoryIds));
-    const checks = await Promise.all(uniqueIds.map((id) => categoryService.existsById(id)));
+    const checks = await Promise.all(uniqueIds.map((id) => categoryService.existsByIdCheck(id)));
     const missing = uniqueIds.filter((_, index) => !checks[index]);
     if (missing.length > 0) {
         throw new ValidationError(ERROR_MESSAGES.CATEGORIES_NOT_FOUND, { categoryIds: missing });

@@ -1,7 +1,7 @@
 export interface SendEmailParams {
     to: string;
     subject: string;
-    templateName: string;
+    template: string;
     values: Record<string, string>;
 }
 

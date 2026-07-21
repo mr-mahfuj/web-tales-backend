@@ -35,11 +35,11 @@ export class CategoryService {
         }
     }
 
-    existsById(id: string) {
+    existsByIdCheck(id: string) {
         categoryRepository.existsById(id);
     }
 
-    existsByName(name: string) {
+    existsByNameCheck(name: string) {
         categoryRepository.existsByName(name);
     }
 }
