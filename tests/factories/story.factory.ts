@@ -1,62 +1,47 @@
-import type { Story } from '@prisma/client';
-import { StoryDTO, type CreateStoryDTO, type UpdateStoryDTO } from '../../src/dtos/storyDTO.js';
-import type { ListStoriesQuery } from '../../src/schemas/storySchema.js';
-
-let counter = 0;
-const nextStoryId = () => `story-${++counter}`;
-const nextTitle = () => `story-titl-${counter}`;
-const nextBody = () => `story-body-${counter}`;
-const nextUserId = () => `story-user-${counter}`;
-const nextSummary = () => `story-summary-${counter}`;
-
-export function buildStory(overrides: Partial<Story> = {}): Story {
+export function buildCreateStoryDTO(overrides = {}) {
     return {
-        storyId: nextStoryId(),
-        title: nextTitle(),
-        body: nextBody(),
-        createdAt: new Date('2026-01-01T00:00:00.000Z'),
-        updatedAt: new Date('2026-01-01T00:00:00.000Z'),
-        userId: nextUserId(),
-        summary: nextSummary(),
+        userId: 'u-1',
+        title: 'A Great Story',
+        body: 'Once upon a time...',
+        categoryIds: [],
+        generateSummary: false,
+        ...overrides,
     };
 }
 
-export function buildStoryList(count = 3): Story[] {
-    return Array.from({ length: count }, (_, index) =>
-        buildStory({ title: `story-${index}`, body: `story-body-${index}` }),
+export function buildUpdateStoryDTO(overrides = {}) {
+    return {
+        title: 'Updated Title',
+        ...overrides,
+    };
+}
+
+export function buildStory(overrides = {}) {
+    return {
+        storyId: 's-1',
+        title: 'A Great Story',
+        body: 'Once upon a time...',
+        summary: null,
+        userId: 'u-1',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        ...overrides,
+    };
+}
+
+export function buildStoryList(count = 2) {
+    return Array.from({ length: count }, (_, i) =>
+        buildStory({ storyId: `s-${i + 1}`, title: `Story ${i + 1}` }),
     );
 }
 
-export function buildStoryDTO(overrides: Partial<Story> = {}): StoryDTO {
-    return new StoryDTO(buildStory(overrides));
-}
-
-export function buildCreateStoryDTO(overrides: Partial<CreateStoryDTO> = {}): CreateStoryDTO {
-    return {
-        userId: nextUserId(),
-        title: nextTitle(),
-        body: nextBody(),
-        categoryIds: [],
-        ...overrides,
-    };
-}
-
-export function buildUpdateStoryDTO(overrides: Partial<UpdateStoryDTO> = {}): UpdateStoryDTO {
-    return {
-        userId: nextUserId(),
-        title: nextTitle(),
-        body: nextBody(),
-        categoryIds: [],
-        ...overrides,
-    };
-}
-
-export function buildListStoriesQuery(overrides: Partial<ListStoriesQuery> = {}): ListStoriesQuery {
+/** @param {{ offset?: number; limit?: number; count?: boolean; orderBy?: 'title' | 'createdAt' | 'updatedAt'; search?: string; category?: string }} [overrides] */
+export function buildListStoriesQuery(overrides = {}) {
     return {
         offset: 0,
         limit: 10,
+        count: true,
         orderBy: 'createdAt',
-        count: false,
         ...overrides,
     };
 }
