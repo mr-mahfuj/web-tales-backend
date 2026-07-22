@@ -20,16 +20,14 @@ const getUserOrderBy = (
     }
 };
 
-const getUserWhere = (search?: string): Prisma.UserWhereInput => {
-    const trimmed = search?.trim();
-
+const buildUserWhere = (search?: string): Prisma.UserWhereInput => {
     return {
         isDeleted: false,
-        ...(trimmed && {
+        ...(search && {
             OR: [
-                { username: { contains: trimmed, mode: 'insensitive' } },
-                { name: { contains: trimmed, mode: 'insensitive' } },
-                { email: { contains: trimmed, mode: 'insensitive' } },
+                { username: { contains: search, mode: 'insensitive' } },
+                { name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
             ],
         }),
     };
@@ -44,7 +42,7 @@ export class UserRepository {
         data: Prisma.UserGetPayload<{ select: typeof userListSelect }>[];
         total?: number;
     }> {
-        const where = getUserWhere(query.search);
+        const where = buildUserWhere(query.search);
         const orderBy = getUserOrderBy(query.orderBy);
 
         const [data, total] = await Promise.all([
@@ -98,10 +96,33 @@ export class UserRepository {
         return user !== null;
     }
 
+    async existsByEmailExcludingUser(email: string, userId: string): Promise<boolean> {
+        const user = await prisma.user.findFirst({
+            where: { email, isDeleted: false, NOT: { id: userId } },
+            select: { id: true },
+        });
+        return user !== null;
+    }
+
+    async existsByUsernameExcludingUser(username: string, userId: string): Promise<boolean> {
+        const user = await prisma.user.findFirst({
+            where: { username, isDeleted: false, NOT: { id: userId } },
+            select: { id: true },
+        });
+        return user !== null;
+    }
+
     async update(userId: string, data: UpdateUserDTO): Promise<User> {
         return prisma.user.update({
             where: { id: userId },
             data: data as Prisma.UserUpdateInput,
+        });
+    }
+
+    async markEmailVerified(userId: string): Promise<User> {
+        return prisma.user.update({
+            where: { id: userId },
+            data: { isEmailVerified: true },
         });
     }
 

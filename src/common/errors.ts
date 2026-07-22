@@ -1,4 +1,5 @@
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+import { ERROR_MESSAGES } from '../constants/index.js';
 
 export interface AppErrorOptions {
     statusCode?: number;
@@ -56,7 +57,7 @@ export class AppError extends Error {
 }
 
 export class BadRequestError extends AppError {
-    constructor(message = 'Bad Request', details?: unknown, cause?: unknown) {
+    constructor(message: string = ERROR_MESSAGES.BAD_REQUEST, details?: unknown, cause?: unknown) {
         super(message, {
             statusCode: 400,
             code: 'BAD_REQUEST',
@@ -116,7 +117,11 @@ export class InternalServerError extends AppError {
 }
 
 export class NotFoundError extends AppError {
-    constructor(message = 'Resource Not Found', details?: unknown, cause?: unknown) {
+    constructor(
+        message: string = ERROR_MESSAGES.RESOURCE_NOT_FOUND,
+        details?: unknown,
+        cause?: unknown,
+    ) {
         super(message, {
             statusCode: 404,
             code: 'NOT_FOUND',
@@ -139,11 +144,47 @@ export class UnauthorizedError extends AppError {
     }
 }
 
+export class TooManyRequestsError extends AppError {
+    constructor(
+        message: string = ERROR_MESSAGES.RATE_LIMIT_EXCEEDED,
+        details?: unknown,
+        cause?: unknown,
+    ) {
+        super(message, {
+            statusCode: 429,
+            code: 'TOO_MANY_REQUESTS',
+            details,
+            cause,
+            logLevel: 'warn',
+        });
+    }
+}
+
 export class ValidationError extends AppError {
-    constructor(message = 'Validation Failed', details?: unknown, cause?: unknown) {
+    constructor(
+        message: string = ERROR_MESSAGES.VALIDATION_FAILED,
+        details?: unknown,
+        cause?: unknown,
+    ) {
         super(message, {
             statusCode: 400,
             code: 'VALIDATION_ERROR',
+            details,
+            cause,
+            logLevel: 'warn',
+        });
+    }
+}
+
+export class AIServiceError extends AppError {
+    constructor(
+        message: string = ERROR_MESSAGES.AI_SERVICE_FAILED,
+        details?: unknown,
+        cause?: unknown,
+    ) {
+        super(message, {
+            statusCode: 502,
+            code: 'AI_SERVICE_ERROR',
             details,
             cause,
             logLevel: 'warn',

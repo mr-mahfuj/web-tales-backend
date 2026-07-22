@@ -1,0 +1,13 @@
+tags:
+    - name: Auth
+      description: Account creation, login, email confirmation, and password recovery.
+    - name: Users
+      description: Admin operations on user accounts.
+    - name: Profile
+      description: Authenticated users managing their own profile and password.
+    - name: Stories
+      description: CRUD on stories and AI-powered summary generation.
+    - name: Categories
+      description: Manage categories used to tag stories.
+    - name: Health
+      description: Liveness / readiness probe.

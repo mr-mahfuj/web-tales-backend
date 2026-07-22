@@ -1,32 +1,68 @@
-import type { Request, Response } from 'express';
-import { StatusCode } from '../constants/status-code.js';
+import type { Response } from 'express';
+import { StatusCode } from '../constants/index.js';
 import { AuthService } from '../services/auth.service.js';
-import { UnauthorizedError } from '../common/errors.js';
-import type { Validated } from '../types/validation.js';
-import type { registerSchema, loginSchema, changePasswordSchema } from '../schemas/authSchema.js';
+import type {
+    registerSchema,
+    loginSchema,
+    initiatePasswordChangeSchema,
+    confirmPasswordChangeSchema,
+    resendConfirmationEmailSchema,
+} from '../schemas/authSchema.js';
+import type { emailVerificationTokenSchema } from '../schemas/emailVerificationTokenSchema.js';
+import type { ValidatedRequest } from '../types/validation.js';
 
 const authService = new AuthService();
 
-type ValidatedRequest<S> = Request & { validated?: Validated<S> };
-
 export const AuthController = {
     register: async (req: ValidatedRequest<typeof registerSchema>, res: Response) => {
-        const result = await authService.register(req.validated.body);
+        const result = await authService.register(req.validated!.body);
         return res.status(StatusCode.Created).json(result);
     },
 
     login: async (req: ValidatedRequest<typeof loginSchema>, res: Response) => {
-        const result = await authService.login(req.validated.body);
+        const result = await authService.login(req.validated!.body);
         return res.status(StatusCode.Ok).json(result);
     },
 
-    changePassword: async (req: ValidatedRequest<typeof changePasswordSchema>, res: Response) => {
-        const userId = req.user?.id;
-        if (!userId) {
-            throw new UnauthorizedError('Authentication required');
-        }
+    confirmEmail: async (
+        req: ValidatedRequest<typeof emailVerificationTokenSchema>,
+        res: Response,
+    ) => {
+        const { token } = req.validated!.params;
+        await authService.confirmEmail(token);
+        return res.sendStatus(StatusCode.NoContent);
+    },
 
-        const result = await authService.changePassword(userId, req.validated.body);
+    resendConfirmationEmail: async (
+        req: ValidatedRequest<typeof resendConfirmationEmailSchema>,
+        res: Response,
+    ) => {
+        await authService.resendConfirmationEmail(req.validated!.body);
+        return res.sendStatus(StatusCode.NoContent);
+    },
+
+    initiatePasswordChange: async (
+        req: ValidatedRequest<typeof initiatePasswordChangeSchema>,
+        res: Response,
+    ) => {
+        await authService.initiatePasswordChange(req.user!.id, req.validated!.body);
+        return res.sendStatus(StatusCode.NoContent);
+    },
+
+    confirmPasswordChange: async (
+        req: ValidatedRequest<typeof confirmPasswordChangeSchema>,
+        res: Response,
+    ) => {
+        await authService.confirmPasswordChange(req.validated!.body);
+        return res.sendStatus(StatusCode.NoContent);
+    },
+
+    validatePasswordChangeToken: async (
+        req: ValidatedRequest<typeof emailVerificationTokenSchema>,
+        res: Response,
+    ) => {
+        const { token } = req.validated!.params;
+        const result = await authService.validatePasswordChangeToken(token);
         return res.status(StatusCode.Ok).json(result);
     },
 };

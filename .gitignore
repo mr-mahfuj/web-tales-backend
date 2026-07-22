@@ -153,3 +153,4 @@ vite.config.ts.timestamp-*
 
 backend-doc/
 api.http
+.puku/

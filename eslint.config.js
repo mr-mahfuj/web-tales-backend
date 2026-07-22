@@ -19,7 +19,9 @@ export default tseslint.config(
 
         languageOptions: {
             parserOptions: {
-                projectService: true,
+                projectService: {
+                    allowDefaultProject: ['prisma/seed.ts'],
+                },
             },
             globals: globals.node,
         },

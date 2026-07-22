@@ -1,72 +1,59 @@
-import type { NextFunction, Request, RequestHandler, Response } from 'express';
-import { ForbiddenError, NotFoundError } from '../common/errors.js';
+import type { RequestHandler } from 'express';
+import { BadRequestError, ForbiddenError, NotFoundError } from '../common/errors.js';
+import { ERROR_MESSAGES } from '../constants/index.js';
 import type { AuthenticatedUser } from '../types/auth.js';
+import { StoryService } from '../services/story.service.js';
 import { Role } from '@prisma/client';
 
-export function requireRole(...roles: AuthenticatedUser['role'][]): RequestHandler {
-    return (req: Request, _res: Response, next: NextFunction) => {
-        if (!req.user) {
-            next(new ForbiddenError('Authentication required'));
-            return;
-        }
-        if (!roles.includes(req.user.role)) {
-            next(new ForbiddenError('Insufficient permissions'));
-            return;
-        }
-        next();
-    };
+const storyService = new StoryService();
+
+async function isOwner(storyId: string, userId: string): Promise<boolean> {
+    const story = await storyService.getStoryById(storyId);
+
+    if (!story) {
+        throw new NotFoundError(ERROR_MESSAGES.STORY_NOT_FOUND);
+    }
+
+    return story.userId === userId;
 }
 
-export type OwnerIdResolver<P extends Record<string, string>> = (
-    req: Request<P>,
-) => Promise<string | undefined> | string | undefined;
-
-export function requireOwnerOrAdmin<P extends Record<string, string> = Record<string, string>>(
-    ownerIdOf: OwnerIdResolver<P>,
-): RequestHandler<P> {
-    return async (req: Request<P>, _res: Response, next: NextFunction) => {
-        if (!req.user) {
-            next(new ForbiddenError('Authentication required'));
-            return;
-        }
-        if (req.user.role === Role.ADMIN) {
-            next();
-            return;
-        }
-
+export function requireAccess(
+    ownerAccess: boolean,
+    ...roles: AuthenticatedUser['role'][]
+): RequestHandler {
+    return async function requireAccessMiddleware(req, _res, next) {
         try {
-            const ownerId = await ownerIdOf(req);
+            if (!req.user) {
+                return next(new ForbiddenError(ERROR_MESSAGES.AUTHENTICATION_REQUIRED));
+            }
 
-            if (!ownerId) {
-                next(new NotFoundError('Resource not found'));
-                return;
+            if (!roles.includes(req.user.role)) {
+                return next(new ForbiddenError(ERROR_MESSAGES.INSUFFICIENT_PERMISSIONS));
             }
-            if (ownerId === req.user.id) {
-                next();
-                return;
+
+            if (req.user.role === Role.ADMIN) {
+                return next();
             }
-            next(new ForbiddenError('You can only modify your own resources'));
+
+            if (!ownerAccess) {
+                return next();
+            }
+
+            const { storyId } = req.params;
+
+            if (!storyId || typeof storyId !== 'string') {
+                return next(new BadRequestError());
+            }
+
+            const owner = await isOwner(storyId, req.user.userId);
+
+            if (!owner) {
+                return next(new ForbiddenError(ERROR_MESSAGES.INSUFFICIENT_PERMISSIONS));
+            }
+
+            return next();
         } catch (err) {
-            next(err);
+            return next(err);
         }
-    };
-}
-
-export function requireSelfOrAdmin(): RequestHandler {
-    return (req: Request, _res: Response, next: NextFunction) => {
-        if (!req.user) {
-            next(new ForbiddenError('Authentication required'));
-            return;
-        }
-        if (req.user.role === Role.ADMIN) {
-            next();
-            return;
-        }
-        const targetUserId = req.params['userId'];
-        if (typeof targetUserId === 'string' && targetUserId === req.user.id) {
-            next();
-            return;
-        }
-        next(new ForbiddenError('You can only access your own profile'));
     };
 }

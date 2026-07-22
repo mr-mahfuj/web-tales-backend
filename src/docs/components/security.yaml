@@ -1,0 +1,14 @@
+components:
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+            description: |
+                JWT issued by `POST /auth/login`. Send it on protected endpoints using:
+
+                ```
+                Authorization: Bearer <token>
+                ```
+
+                Tokens expire according to the `JWT_EXPIRES_IN` environment variable (default: 30 days).

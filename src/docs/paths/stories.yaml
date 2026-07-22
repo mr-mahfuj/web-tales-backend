@@ -1,0 +1,202 @@
+paths:
+    /stories/:
+        post:
+            tags: [Stories]
+            summary: Create a story
+            description: |
+                Creates a new story owned by the requesting user (or by `userId`
+                if the caller is an admin). Categories must already exist.
+                Setting `generateSummary: true` asks the server to call the
+                Gemini AI summary endpoint.
+            security:
+                - bearerAuth: []
+            requestBody:
+                $ref: '#/components/requestBodies/CreateStoryRequest'
+            responses:
+                '201':
+                    description: Story created.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Story'
+                            example:
+                                userId: 8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e
+                                storyId: 12cde2a3-4f56-4d12-9b6a-77f0c1a23bc5
+                                title: The Curious Case of the Missing Semicolon
+                                body: It was a quiet evening in the repository when something started to drift...
+                                sumary: null
+                                createdAt: '2026-07-15T10:30:00.000Z'
+                                updatedAt: '2026-07-15T10:30:00.000Z'
+                                categories:
+                                    - id: 9a2c1c08-19eb-4e74-9b54-1dc1e6b2f81a
+                                      name: Technology
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+        get:
+            tags: [Stories]
+            summary: List stories
+            description: Public listing of stories with pagination, search, sort, and an optional category filter.
+            security: []
+            parameters:
+                - $ref: '#/components/parameters/OffsetQuery'
+                - $ref: '#/components/parameters/LimitQuery'
+                - $ref: '#/components/parameters/SearchQuery'
+                - $ref: '#/components/parameters/CountQuery'
+                - $ref: '#/components/parameters/StoryOrderByQuery'
+                - $ref: '#/components/parameters/StoryCategoryQuery'
+            responses:
+                '200':
+                    description: Paginated stories.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Story'
+                                    meta:
+                                        $ref: '#/components/schemas/PaginationMeta'
+                            example:
+                                data:
+                                    - userId: 8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e
+                                      storyId: 12cde2a3-4f56-4d12-9b6a-77f0c1a23bc5
+                                      title: The Curious Case of the Missing Semicolon
+                                      body: It was a quiet evening...
+                                      sumary: A detective story about a missing semi-colon in a JS repo.
+                                      createdAt: '2026-07-15T10:30:00.000Z'
+                                      updatedAt: '2026-07-15T10:30:00.000Z'
+                                      categories:
+                                        - id: 9a2c1c08-19eb-4e74-9b54-1dc1e6b2f81a
+                                          name: Technology
+                                meta:
+                                    offset: 0
+                                    limit: 10
+                                    total: 1
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+    /stories/{storyId}:
+        get:
+            tags: [Stories]
+            summary: Get a story by id
+            description: Returns a single story by its UUID.
+            security: []
+            parameters:
+                - $ref: '#/components/parameters/StoryIdPath'
+            responses:
+                '200':
+                    description: Story found.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Story'
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                '404':
+                    $ref: '#/components/responses/NotFound'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+        patch:
+            tags: [Stories]
+            summary: Update a story
+            description: |
+                Updates a story. Caller must be the story owner or have the `ADMIN`
+                role. Pass any subset of fields; at least one is required.
+            security:
+                - bearerAuth: []
+            parameters:
+                - $ref: '#/components/parameters/StoryIdPath'
+            requestBody:
+                $ref: '#/components/requestBodies/UpdateStoryRequest'
+            responses:
+                '200':
+                    description: Updated story.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Story'
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '403':
+                    $ref: '#/components/responses/Forbidden'
+                '404':
+                    $ref: '#/components/responses/NotFound'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+        delete:
+            tags: [Stories]
+            summary: Delete a story
+            description: |
+                Permanently deletes a story. Caller must be the story owner or an admin.
+            security:
+                - bearerAuth: []
+            parameters:
+                - $ref: '#/components/parameters/StoryIdPath'
+            responses:
+                '200':
+                    description: Deletion acknowledged.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MessageResponse'
+                            example:
+                                message: Story deleted successfully
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '403':
+                    $ref: '#/components/responses/Forbidden'
+                '404':
+                    $ref: '#/components/responses/NotFound'
+                default:
+                    $ref: '#/components/responses/InternalServerError'
+
+    /stories/{storyId}/summary:
+        post:
+            tags: [Stories]
+            summary: Generate (or regenerate) an AI summary for a story
+            description: |
+                Calls the Gemini AI to produce a 2–3 sentence summary of the story body
+                and persists it. If the story already has a summary, pass
+                `?regenerate=true` to overwrite it. Rate limited to 5 requests / minute
+                per IP.
+            security:
+                - bearerAuth: []
+            parameters:
+                - $ref: '#/components/parameters/StoryIdPath'
+                - $ref: '#/components/parameters/RegenerateQuery'
+            responses:
+                '200':
+                    description: Story with the (possibly newly generated) summary.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Story'
+                '400':
+                    $ref: '#/components/responses/BadRequest'
+                '401':
+                    $ref: '#/components/responses/Unauthorized'
+                '403':
+                    $ref: '#/components/responses/Forbidden'
+                '404':
+                    $ref: '#/components/responses/NotFound'
+                '429':
+                    $ref: '#/components/responses/TooManyRequests'
+                '502':
+                    $ref: '#/components/responses/AIServiceError'
+                default:
+                    $ref: '#/components/responses/InternalServerError'

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { NAME, USERNAME } from '../constants/user.js';
+import { NAME, USERNAME } from '../constants/index.js';
 import { createListQuerySchema } from './listQuerySchema.js';
 import { idSchema } from './idSchema.js';
 
@@ -37,6 +37,17 @@ export const updateUserBodySchema = createUserBodySchema
         message: 'At least one field must be provided',
     });
 
+export const updateUserProfileBodySchema = z
+    .object({
+        name: nameSchema.optional(),
+        username: usernameSchema.optional(),
+        email: emailSchema.optional(),
+    })
+    .strict()
+    .refine((body) => Object.keys(body).length > 0, {
+        message: 'At least one field must be provided',
+    });
+
 export const userIdParamsSchema = z.object({
     userId: idSchema,
 });
@@ -52,9 +63,15 @@ export const updateUserSchema = {
     body: updateUserBodySchema,
 };
 
+export const updateUserProfileSchema = {
+    body: updateUserProfileBodySchema,
+};
+
 export const getUserSchema = {
     params: userIdParamsSchema,
 };
+
+export const getUserProfileSchema = getUserSchema;
 
 export const deleteUserSchema = {
     params: userIdParamsSchema,

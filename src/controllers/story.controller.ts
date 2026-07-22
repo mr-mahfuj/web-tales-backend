@@ -1,8 +1,6 @@
-import type { Request, Response } from 'express';
-import { StatusCode } from '../constants/status-code.js';
-import type { StoryDTO } from '../dtos/storyDTO.js';
+import type { Response } from 'express';
+import { StatusCode } from '../constants/index.js';
 import { StoryService } from '../services/story.service.js';
-import { toListResponse } from '../utils/listResponse.js';
 import type {
     createStorySchema,
     getAllStoriesSchema,
@@ -10,11 +8,9 @@ import type {
     updateStorySchema,
     deleteStorySchema,
 } from '../schemas/storySchema.js';
-import type { Validated } from '../types/validation.js';
+import type { ValidatedRequest } from '../types/validation.js';
 
 const storyService = new StoryService();
-
-type ValidatedRequest<S> = Request & { validated?: Validated<S> };
 
 export const StoryController = {
     createStory: async (req: ValidatedRequest<typeof createStorySchema>, res: Response) => {
@@ -24,10 +20,8 @@ export const StoryController = {
 
     getAllStories: async (req: ValidatedRequest<typeof getAllStoriesSchema>, res: Response) => {
         const query = req.validated.query;
-        const result = await storyService.getAllStories(query);
-        return res
-            .status(StatusCode.Ok)
-            .json(toListResponse<StoryDTO>(result.data, query, result.meta.total));
+        const stories = await storyService.getAllStories(query);
+        return res.status(StatusCode.Ok).json(stories);
     },
 
     getStoryById: async (req: ValidatedRequest<typeof getStorySchema>, res: Response) => {
@@ -48,5 +42,12 @@ export const StoryController = {
         return res.status(StatusCode.Ok).json({
             message: 'Story deleted successfully',
         });
+    },
+
+    generateSummary: async (req: ValidatedRequest<typeof getStorySchema>, res: Response) => {
+        const { storyId } = req.validated.params;
+        const { regenerate } = req.validated.regenerate;
+        const story = await storyService.generateStorySummary(storyId, regenerate);
+        return res.status(StatusCode.Ok).json(story);
     },
 };

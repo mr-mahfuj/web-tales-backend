@@ -1,10 +1,14 @@
 import type { z } from 'zod';
 import type {
-    changePasswordBodySchema,
+    confirmPasswordChangeBodySchema,
+    initiatePasswordChangeBodySchema,
     loginBodySchema,
     registerBodySchema,
+    resendConfirmationEmailBodySchema,
 } from '../schemas/authSchema.js';
 
-export type RegisterDto = z.output<typeof registerBodySchema>;
-export type LoginDto = z.output<typeof loginBodySchema>;
-export type ChangePasswordDto = z.output<typeof changePasswordBodySchema>;
+export type RegisterDTO = z.output<typeof registerBodySchema>;
+export type LoginDTO = z.output<typeof loginBodySchema>;
+export type InitiatePasswordChangeDTO = z.output<typeof initiatePasswordChangeBodySchema>;
+export type ConfirmPasswordChangeDTO = z.output<typeof confirmPasswordChangeBodySchema>;
+export type ResendConfirmationEmailDTO = z.output<typeof resendConfirmationEmailBodySchema>;

@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { StoryController } from '../controllers/story.controller.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
-import { requireOwnerOrAdmin } from '../middleware/authorizeMiddleware.js';
+import { requireAccess } from '../middleware/authorizeMiddleware.js';
 import { validate } from '../middleware/validateMiddleware.js';
-import { StoryService } from '../services/story.service.js';
+import { rateLimit } from '../middleware/rateLimitMiddleware.js';
 import {
     createStorySchema,
     deleteStorySchema,
@@ -11,30 +11,44 @@ import {
     getStorySchema,
     updateStorySchema,
 } from '../schemas/storySchema.js';
+import { STORY_RATE_LIMITS } from '../constants/index.js';
+import { Role } from '@prisma/client';
 
 const router = Router();
-const storyService = new StoryService();
 
-router.post('/', authenticateToken, validate(createStorySchema), StoryController.createStory);
-router.get('/', validate(getAllStoriesSchema), StoryController.getAllStories);
-router.get('/:storyId', validate(getStorySchema), StoryController.getStoryById);
-router.patch(
-    '/:storyId',
+const storyRateLimit = rateLimit({
+    windowMs: STORY_RATE_LIMITS.windowMs,
+    max: STORY_RATE_LIMITS.max,
+});
+
+router
+    .route('/')
+    .post(authenticateToken, validate(createStorySchema), StoryController.createStory)
+    .get(validate(getAllStoriesSchema), StoryController.getAllStories);
+
+router
+    .route('/:storyId')
+    .get(validate(getStorySchema), StoryController.getStoryById)
+    .patch(
+        authenticateToken,
+        validate(updateStorySchema),
+        requireAccess(true, Role.ADMIN, Role.USER),
+        StoryController.updateStory,
+    )
+    .delete(
+        authenticateToken,
+        validate(deleteStorySchema),
+        requireAccess(true, Role.ADMIN, Role.USER),
+        StoryController.deleteStory,
+    );
+
+router.post(
+    '/:storyId/summary',
     authenticateToken,
-    validate(updateStorySchema),
-    requireOwnerOrAdmin<{ storyId: string }>((req) =>
-        storyService.getStoryOwnerId(req.params.storyId),
-    ),
-    StoryController.updateStory,
-);
-router.delete(
-    '/:storyId',
-    authenticateToken,
-    validate(deleteStorySchema),
-    requireOwnerOrAdmin<{ storyId: string }>((req) =>
-        storyService.getStoryOwnerId(req.params.storyId),
-    ),
-    StoryController.deleteStory,
+    storyRateLimit,
+    validate(getStorySchema),
+    requireAccess(true, Role.ADMIN, Role.USER),
+    StoryController.generateSummary,
 );
 
 export default router;

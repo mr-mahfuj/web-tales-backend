@@ -1,5 +1,6 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import { ValidationError } from '../common/errors.js';
+import { ERROR_MESSAGES } from '../constants/index.js';
 import { formatZodIssues } from '../utils/errorFormatters.js';
 import type { ValidationSchema, Validated } from '../types/validation.js';
 
@@ -10,7 +11,7 @@ function validateRequest<S extends ValidationSchema>(req: Request, schema: S): V
         const result = schema.params.safeParse(req.params);
         if (!result.success) {
             throw new ValidationError(
-                'Validation failed',
+                ERROR_MESSAGES.VALIDATION_FAILED,
                 formatZodIssues(result.error.issues),
                 result.error,
             );
@@ -22,7 +23,7 @@ function validateRequest<S extends ValidationSchema>(req: Request, schema: S): V
         const result = schema.body.safeParse(req.body);
         if (!result.success) {
             throw new ValidationError(
-                'Validation failed',
+                ERROR_MESSAGES.VALIDATION_FAILED,
                 formatZodIssues(result.error.issues),
                 result.error,
             );
@@ -35,7 +36,7 @@ function validateRequest<S extends ValidationSchema>(req: Request, schema: S): V
         const result = schema.query.safeParse(req.query);
         if (!result.success) {
             throw new ValidationError(
-                'Validation failed',
+                ERROR_MESSAGES.VALIDATION_FAILED,
                 formatZodIssues(result.error.issues),
                 result.error,
             );
@@ -48,12 +49,8 @@ function validateRequest<S extends ValidationSchema>(req: Request, schema: S): V
 
 export function validate<S extends ValidationSchema>(schema: S): RequestHandler {
     return (req: Request, _res: Response, next: NextFunction) => {
-        try {
-            req.validated = validateRequest(req, schema);
-            next();
-        } catch (err) {
-            next(err);
-        }
+        req.validated = validateRequest(req, schema);
+        next();
     };
 }
 
@@ -66,13 +63,9 @@ export function withValidation<S extends ValidationSchema>(
     ) => unknown,
 ): RequestHandler {
     return (req, res, next) => {
-        try {
-            req.validated = validateRequest(req, schema);
-            Promise.resolve(handler(req as Request & { validated: Validated<S> }, res, next)).catch(
-                next,
-            );
-        } catch (err) {
-            next(err);
-        }
+        req.validated = validateRequest(req, schema);
+        Promise.resolve(handler(req as Request & { validated: Validated<S> }, res, next)).catch(
+            next,
+        );
     };
 }
