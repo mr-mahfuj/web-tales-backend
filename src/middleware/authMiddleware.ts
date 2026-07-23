@@ -11,10 +11,17 @@ const userService = new UserService();
 
 function extractToken(req: Request): string | null {
     const header = req.headers.authorization;
-    if (!header || !header.startsWith('Bearer ')) return null;
+    if (header?.startsWith('Bearer ')) {
+        const token = header.slice('Bearer '.length).trim();
+        if (token.length > 0) return token;
+    }
 
-    const token = header.slice('Bearer '.length).trim();
-    return token.length > 0 ? token : null;
+    const cookieToken = req.cookies?.token;
+    if (typeof cookieToken === 'string' && cookieToken.length > 0) {
+        return cookieToken;
+    }
+
+    return null;
 }
 
 export async function authenticateToken(

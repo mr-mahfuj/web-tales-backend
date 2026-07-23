@@ -2,7 +2,12 @@ import type { z } from 'zod';
 import type { createStoryBodySchema, updateStoryBodySchema } from '../schemas/storySchema.js';
 import type { Category, Story } from '@prisma/client';
 
-export type CreateStoryDTO = z.output<typeof createStoryBodySchema>;
+export type CreateStoryBodyDTO = z.output<typeof createStoryBodySchema>;
+
+export type CreateStoryDTO = CreateStoryBodyDTO & {
+    userId: string;
+};
+
 export type UpdateStoryDTO = z.output<typeof updateStoryBodySchema>;
 
 type StoryWithCategories = Story & { categories?: Category[] };

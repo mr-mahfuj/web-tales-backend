@@ -28,7 +28,6 @@ const categoryIdsSchema = z
 
 export const createStoryBodySchema = z
     .object({
-        userId: idSchema,
         title: titleSchema,
         body: bodySchema,
         categoryIds: categoryIdsSchema,

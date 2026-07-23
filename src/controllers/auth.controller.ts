@@ -21,6 +21,12 @@ export const AuthController = {
 
     login: async (req: ValidatedRequest<typeof loginSchema>, res: Response) => {
         const result = await authService.login(req.validated!.body);
+        res.cookie('token', result.token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax',
+            maxAge: 24 * 60 * 60 * 1000,
+        });
         return res.status(StatusCode.Ok).json(result);
     },
 

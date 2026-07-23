@@ -153,11 +153,6 @@ components:
                         type: object
                         required: [userId, title, body]
                         properties:
-                            userId:
-                                type: string
-                                format: uuid
-                                description: UUID of the user who owns the story. Admins may create stories for any user; regular users may only create for themselves.
-                                example: 8f3c2f5e-2e1b-4d3a-9c8e-7d6c5b4a3f2e
                             title:
                                 type: string
                                 minLength: 10
@@ -175,10 +170,7 @@ components:
                                     format: uuid
                                 example:
                                     - 9a2c1c08-19eb-4e74-9b54-1dc1e6b2f81a
-                            summary:
-                                type: string
-                                minLength: 1
-                                maxLength: 500
+
                             generateSummary:
                                 type: boolean
                                 description: When `true`, the server calls the AI service to generate a summary from the `body`.

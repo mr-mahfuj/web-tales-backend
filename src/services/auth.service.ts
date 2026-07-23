@@ -68,7 +68,14 @@ export class AuthService {
         const user = await userService.findUserByEmail(data.email);
         if (!user) throw new UnauthorizedError();
 
-        if (!user.isEmailVerified) throw new UnauthorizedError();
+        if (!user.isEmailVerified) {
+            await sendVerificationEmail({
+                userId: user.id,
+                email: user.email,
+                username: user.username,
+            });
+            throw new UnauthorizedError();
+        }
 
         const auth = await authRepository.findAuthByUserId(user.id);
         if (!auth) throw new UnauthorizedError();

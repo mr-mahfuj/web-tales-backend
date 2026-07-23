@@ -14,7 +14,11 @@ const storyService = new StoryService();
 
 export const StoryController = {
     createStory: async (req: ValidatedRequest<typeof createStorySchema>, res: Response) => {
-        const story = await storyService.createStory(req.validated.body);
+        const storyData = {
+            ...req.validated.body,
+            userId: req.user.id,
+        };
+        const story = await storyService.createStory(storyData);
         return res.status(StatusCode.Created).json(story);
     },
 
