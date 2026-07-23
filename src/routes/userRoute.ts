@@ -30,6 +30,11 @@ router.get(
     UserController.getAllUsers,
 );
 router
+    .route('/profile')
+    .get(authenticateToken, UserController.getProfile)
+    .patch(authenticateToken, validate(updateUserProfileSchema), UserController.updateProfile);
+
+router
     .route('/:userId')
     .get(
         authenticateToken,
@@ -49,11 +54,6 @@ router
         requireAccess(true, Role.ADMIN, Role.USER),
         UserController.deleteUser,
     );
-
-router
-    .route('/profile')
-    .get(authenticateToken, UserController.getProfile)
-    .patch(authenticateToken, validate(updateUserProfileSchema), UserController.updateProfile);
 
 router.post(
     '/change-password',
