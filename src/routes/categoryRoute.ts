@@ -38,6 +38,4 @@ router
         CategoryController.deleteCategory,
     );
 
-router;
-
 export default router;

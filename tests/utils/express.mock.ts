@@ -4,13 +4,15 @@ type MockRes = Response & {
     status: jest.Mock;
     json: jest.Mock;
     sendStatus: jest.Mock;
+    cookie: jest.Mock;
 };
 
 export function createMockRes(): MockRes {
     const json = jest.fn();
     const status = jest.fn().mockReturnValue({ json });
     const sendStatus = jest.fn();
-    return { status, json, sendStatus } as unknown as MockRes;
+    const cookie = jest.fn();
+    return { status, json, sendStatus, cookie } as unknown as MockRes;
 }
 
 export function createMockReq(overrides: Partial<Request> = {}): Request {

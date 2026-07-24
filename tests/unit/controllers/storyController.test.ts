@@ -52,12 +52,15 @@ describe('StoryController', () => {
             const body = buildCreateStoryDTO();
             const story = { id: 's-1', ...body };
             storyServiceMock.createStory.mockResolvedValue(story);
-            const req = { validated: { body } } as unknown as Request;
+            const req = {
+                validated: { body },
+                user: { id: 'u-1' },
+            } as unknown as Request;
             const res = createMockRes();
 
             await StoryController.createStory(req, res);
 
-            expect(storyServiceMock.createStory).toHaveBeenCalledWith(body);
+            expect(storyServiceMock.createStory).toHaveBeenCalledWith({ ...body, userId: 'u-1' });
             expect(res.status).toHaveBeenCalledWith(StatusCode.Created);
             expect(res.json).toHaveBeenCalledWith(story);
         });
@@ -130,8 +133,7 @@ describe('StoryController', () => {
         it('returns 200 with the story containing the generated summary', async () => {
             const story = { id: 's-1', summary: 'A summary' };
             storyServiceMock.generateStorySummary.mockResolvedValue(story);
-            // Controller reads req.validated.regenerate.regenerate (not .query.regenerate) —
-            // mirrored here to match the current implementation.
+
             const req = {
                 validated: { params: { storyId: 's-1' }, regenerate: { regenerate: 'true' } },
             } as unknown as Request;
