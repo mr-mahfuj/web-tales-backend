@@ -1,13 +1,17 @@
 import type { Prisma } from '@prisma/client';
-import { type Story } from '@prisma/client';
-import type { CreateStoryDTO, UpdateStoryDTO } from '../dtos/storyDTO.js';
+import type {
+    CreateStoryDTO,
+    StoryDetailRow,
+    StoryListRow,
+    UpdateStoryDTO,
+} from '../dtos/storyDTO.js';
 import prisma from '../config/prisma.js';
 import type { ListStoriesQuery } from '../schemas/storySchema.js';
 import {
     mapStoryCategoriesConnect,
     mapStoryCategoriesSet,
 } from '../utils/storyCategoriesMapper.js';
-import { storyCategoriesSelect } from '../utils/storyCategorySelect.js';
+import { storyDetailInclude, storyListSelect } from '../utils/storySelect.js';
 
 const getStoryOrderBy = (
     orderBy: ListStoriesQuery['orderBy'],
@@ -48,7 +52,7 @@ const buildStoryWhere = (search?: string, category?: string): Prisma.StoryWhereI
 };
 
 export class StoryRepository {
-    async create(data: CreateStoryDTO): Promise<Story> {
+    async create(data: CreateStoryDTO): Promise<StoryDetailRow> {
         const { categoryIds, summary, ...storyFields } = data;
         return prisma.story.create({
             data: {
@@ -56,11 +60,11 @@ export class StoryRepository {
                 ...(summary !== undefined ? { summary } : {}),
                 ...mapStoryCategoriesConnect(categoryIds),
             },
-            include: { categories: { select: storyCategoriesSelect } },
+            include: storyDetailInclude,
         });
     }
 
-    async findAll(query: ListStoriesQuery): Promise<{ data: Story[]; total?: number }> {
+    async findAll(query: ListStoriesQuery): Promise<{ data: StoryListRow[]; total?: number }> {
         const where = buildStoryWhere(query.search, query.category);
         const orderBy = getStoryOrderBy(query.orderBy);
 
@@ -70,7 +74,7 @@ export class StoryRepository {
                 orderBy,
                 skip: query.offset,
                 take: query.limit,
-                include: { categories: { select: storyCategoriesSelect } },
+                select: storyListSelect,
             }),
             query.count ? prisma.story.count({ where }) : Promise.resolve(undefined),
         ]);
@@ -81,14 +85,14 @@ export class StoryRepository {
         };
     }
 
-    async findById(storyId: string): Promise<Story | null> {
+    async findById(storyId: string): Promise<StoryDetailRow | null> {
         return prisma.story.findUnique({
             where: { storyId },
-            include: { categories: { select: storyCategoriesSelect } },
+            include: storyDetailInclude,
         });
     }
 
-    async update(storyId: string, data: UpdateStoryDTO): Promise<Story> {
+    async update(storyId: string, data: UpdateStoryDTO): Promise<StoryDetailRow> {
         const { categoryIds, summary, ...storyFields } = data;
         return prisma.story.update({
             where: { storyId },
@@ -97,7 +101,7 @@ export class StoryRepository {
                 ...(summary !== undefined ? { summary } : {}),
                 ...mapStoryCategoriesSet(categoryIds),
             } as Prisma.StoryUpdateInput,
-            include: { categories: { select: storyCategoriesSelect } },
+            include: storyDetailInclude,
         });
     }
 
@@ -107,13 +111,9 @@ export class StoryRepository {
     }
 
     async existsById(storyId: string): Promise<boolean> {
-        const story = prisma.story.findUnique({
-            where: {
-                storyId,
-            },
-            select: {
-                storyId: true,
-            },
+        const story = await prisma.story.findUnique({
+            where: { storyId },
+            select: { storyId: true },
         });
         return story !== null;
     }

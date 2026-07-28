@@ -2,7 +2,7 @@ import type { Prisma, User } from '@prisma/client';
 import prisma from '../config/prisma.js';
 import type { CreateUserDTO, UpdateUserDTO } from '../dtos/userDTO.js';
 import type { ListUsersQuery } from '../schemas/userSchema.js';
-import { userListSelect } from '../utils/user.select.js';
+import { userListSelect } from '../utils/userSelect.js';
 
 const getUserOrderBy = (
     orderBy?: ListUsersQuery['orderBy'],

@@ -14,3 +14,8 @@ export const userDetailSelect = {
     ...userListSelect,
     isEmailVerified: true,
 } satisfies Prisma.UserSelect;
+
+export const storyAuthorSelect = {
+    username: true,
+    name: true,
+} satisfies Prisma.UserSelect;

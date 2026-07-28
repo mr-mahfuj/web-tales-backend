@@ -1,3 +1,6 @@
+const defaultAuthor = { username: 'johndoe', name: 'John Doe' };
+const defaultCategories = [{ id: 'c-1', name: 'Technology' }];
+
 export function buildCreateStoryDTO(overrides = {}) {
     return {
         userId: 'u-1',
@@ -25,13 +28,29 @@ export function buildStory(overrides = {}) {
         userId: 'u-1',
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01'),
+        user: defaultAuthor,
+        categories: defaultCategories,
+        ...overrides,
+    };
+}
+
+export function buildStoryListItem(overrides = {}) {
+    return {
+        storyId: 's-1',
+        title: 'A Great Story',
+        summary: null,
+        userId: 'u-1',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        user: defaultAuthor,
+        categories: defaultCategories,
         ...overrides,
     };
 }
 
 export function buildStoryList(count = 2) {
     return Array.from({ length: count }, (_, i) =>
-        buildStory({ storyId: `s-${i + 1}`, title: `Story ${i + 1}` }),
+        buildStoryListItem({ storyId: `s-${i + 1}`, title: `Story ${i + 1}` }),
     );
 }
 

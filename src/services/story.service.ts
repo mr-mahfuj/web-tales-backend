@@ -1,4 +1,9 @@
-import { type CreateStoryDTO, type UpdateStoryDTO, StoryDTO } from '../dtos/storyDTO.js';
+import {
+    type CreateStoryDTO,
+    type UpdateStoryDTO,
+    StoryDTO,
+    StoryListItemDTO,
+} from '../dtos/storyDTO.js';
 import { AIServiceError, NotFoundError, ValidationError } from '../common/errors.js';
 import { ERROR_MESSAGES } from '../constants/index.js';
 import { StoryRepository } from '../repositories/story.repository.js';
@@ -48,11 +53,11 @@ export class StoryService {
         return new StoryDTO(await this.storyRepository.create(storyFields));
     }
 
-    async getAllStories(query: ListStoriesQuery): Promise<ListResponse<StoryDTO>> {
+    async getAllStories(query: ListStoriesQuery): Promise<ListResponse<StoryListItemDTO>> {
         const result = await this.storyRepository.findAll(query);
 
         return toListResponse(
-            result.data.map((story) => new StoryDTO(story)),
+            result.data.map((story) => new StoryListItemDTO(story)),
             query,
             result.total,
         );
