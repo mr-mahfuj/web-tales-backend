@@ -45,7 +45,7 @@ export function requireAccess(
                 return next(new BadRequestError());
             }
 
-            const owner = await isOwner(storyId, req.user.userId);
+            const owner = await isOwner(storyId, req.user.id);
 
             if (!owner) {
                 return next(new ForbiddenError(ERROR_MESSAGES.INSUFFICIENT_PERMISSIONS));
