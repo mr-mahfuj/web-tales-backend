@@ -36,7 +36,7 @@ export async function sendVerificationEmail({
     username,
 }: SendVerificationEmailParams) {
     const token = generateEmailVerificationToken(userId, email);
-    const verificationLink = `http://${env.host}:${env.port}/auth/confirm-email/${token}`;
+    const verificationLink = `${env.frontendUrl}/auth/confirm-email/${token}`;
 
     return sendEmail({
         to: email,
@@ -61,7 +61,7 @@ export async function sendPasswordChangeConfirmationEmail({
         throw new Error(ERROR_MESSAGES.PASSWORD_CHANGE_TOKEN_REQUIRED);
     }
 
-    const link = `http://${env.host}:${env.port}/users/validate-password-change/${token}`;
+    const link = `${env.frontendUrl}/users/confirm-password-change/${token}`;
 
     return sendEmail({
         to: email,
