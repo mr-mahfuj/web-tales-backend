@@ -64,19 +64,24 @@ export class StoryRepository {
         });
     }
 
-    async findAll(query: ListStoriesQuery): Promise<{ data: StoryListRow[]; total?: number }> {
+    async findAll(
+        query: ListStoriesQuery & { authorUserId?: string },
+    ): Promise<{ data: StoryListRow[]; total?: number }> {
         const where = buildStoryWhere(query.search, query.category);
         const orderBy = getStoryOrderBy(query.orderBy);
+        const storyWhere = query.authorUserId
+            ? { AND: [where, { userId: query.authorUserId }] }
+            : where;
 
         const [data, total] = await Promise.all([
             prisma.story.findMany({
-                where,
+                where: storyWhere,
                 orderBy,
                 skip: query.offset,
                 take: query.limit,
                 select: storyListSelect,
             }),
-            query.count ? prisma.story.count({ where }) : Promise.resolve(undefined),
+            query.count ? prisma.story.count({ where: storyWhere }) : Promise.resolve(undefined),
         ]);
 
         return {

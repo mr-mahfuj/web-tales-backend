@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { TITLE, BODY, SUMMARY, CATEGORY } from '../constants/index.js';
 import { createListQuerySchema } from './listQuerySchema.js';
 import { idSchema } from './idSchema.js';
+import { usernameSchema } from './userSchema.js';
 
 const emptyToUndefined = (v: unknown) => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 
@@ -80,6 +81,7 @@ export const listStoriesQuerySchema = createListQuerySchema(storyOrderBySchema).
             .max(CATEGORY.MAX, 'Category filter is too long')
             .optional(),
     ),
+    authorUsername: z.preprocess(emptyToUndefined, usernameSchema.optional()),
 });
 
 export const getAllStoriesSchema = {

@@ -52,7 +52,12 @@ export const userIdParamsSchema = z.object({
     userId: idSchema,
 });
 
+export const usernameParamsSchema = z.object({
+    username: usernameSchema,
+});
+
 export type UserIdParams = z.infer<typeof userIdParamsSchema>;
+export type UsernameParams = z.infer<typeof usernameParamsSchema>;
 
 export const createUserSchema = {
     body: createUserBodySchema,
@@ -72,6 +77,10 @@ export const getUserSchema = {
 };
 
 export const getUserProfileSchema = getUserSchema;
+
+export const getUserProfileByUsernameSchema = {
+    params: usernameParamsSchema,
+};
 
 export const deleteUserSchema = {
     params: userIdParamsSchema,

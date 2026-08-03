@@ -7,6 +7,7 @@ import type {
     updateUserSchema,
     deleteUserSchema,
     updateUserProfileSchema,
+    getUserProfileByUsernameSchema,
 } from '../schemas/userSchema.js';
 import type { AuthedValidatedRequest, ValidatedRequest } from '../types/validation.js';
 
@@ -28,6 +29,15 @@ export const UserController = {
     getProfile: async (req: AuthedValidatedRequest<never>, res: Response) => {
         const userId = req.user!.id;
         const user = await userService.getUserProfile(userId);
+        return res.status(StatusCode.Ok).json(user);
+    },
+
+    getProfileByUsername: async (
+        req: ValidatedRequest<typeof getUserProfileByUsernameSchema>,
+        res: Response,
+    ) => {
+        const { username } = req.validated.params;
+        const user = await userService.getUserByUsername(username);
         return res.status(StatusCode.Ok).json(user);
     },
 

@@ -3,7 +3,6 @@ import { CategoryController } from '../controllers/category.controller.js';
 import { validate } from '../middleware/validateMiddleware.js';
 import {
     createCategorySchema,
-    getCategorySchema,
     updateCategorySchema,
     deleteCategorySchema,
 } from '../schemas/categorySchema.js';
@@ -21,7 +20,7 @@ router
         validate(createCategorySchema),
         CategoryController.createCategory,
     )
-    .get(authenticateToken, validate(getCategorySchema), CategoryController.getAllCategories);
+    .get(CategoryController.getAllCategories);
 
 router
     .route('/:categoryId')

@@ -4,6 +4,7 @@ import {
     type UpdateUserDTO,
     type UpdateUserProfileDTO,
     UserDTO,
+    UserProfileResponseDTO,
 } from '../dtos/userDTO.js';
 import { ConflictError, NotFoundError } from '../common/errors.js';
 import { ERROR_MESSAGES } from '../constants/index.js';
@@ -54,6 +55,20 @@ export class UserService {
         }
 
         return new UserDTO(user);
+    }
+
+    async getUserByUsername(username: string): Promise<UserProfileResponseDTO> {
+        const user = await this.userRepository.findByUsername(username);
+
+        if (!user) {
+            throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND, { username });
+        }
+
+        return new UserProfileResponseDTO(user);
+    }
+
+    async findUserByUsername(username: string): Promise<User | null> {
+        return this.userRepository.findByUsername(username);
     }
 
     getUserProfile(userId: string): Promise<UserDTO> {

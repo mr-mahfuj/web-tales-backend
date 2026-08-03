@@ -29,3 +29,14 @@ export class UserDTO {
         this.role = user.role;
     }
 }
+
+export class UserProfileResponseDTO {
+    readonly username: string;
+    readonly name: string;
+    readonly email: string;
+    constructor(user: UserLike) {
+        this.username = user.username;
+        this.name = user.name;
+        this.email = user.email;
+    }
+}

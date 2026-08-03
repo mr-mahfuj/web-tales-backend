@@ -17,7 +17,7 @@ export const PASSWORD = {
 
 export const CATEGORY = {
     MIN: 1,
-    MAX: 10,
+    MAX: 100,
 } as const;
 
 export const QUERY_CONSTANTS = {

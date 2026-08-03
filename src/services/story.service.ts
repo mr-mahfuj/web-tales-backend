@@ -11,8 +11,10 @@ import type { ListStoriesQuery } from '../schemas/storySchema.js';
 import { toListResponse, type ListResponse } from '../utils/paginationMapper.js';
 import { CategoryService } from './category.service.js';
 import { AIService } from './ai.service.js';
+import { UserService } from './user.services.js';
 
 const categoryService = new CategoryService();
+const userService = new UserService();
 
 const ensureCategoriesExist = async (categoryIds: string[]): Promise<void> => {
     const uniqueIds = Array.from(new Set(categoryIds));
@@ -54,7 +56,21 @@ export class StoryService {
     }
 
     async getAllStories(query: ListStoriesQuery): Promise<ListResponse<StoryListItemDTO>> {
-        const result = await this.storyRepository.findAll(query);
+        let authorUserId: string | undefined;
+
+        if (query.authorUsername) {
+            const author = await userService.findUserByUsername(query.authorUsername);
+
+            if (!author) {
+                return toListResponse([], query, 0);
+            }
+
+            authorUserId = author.id;
+        }
+
+        const result = await this.storyRepository.findAll(
+            authorUserId ? { ...query, authorUserId } : query,
+        );
 
         return toListResponse(
             result.data.map((story) => new StoryListItemDTO(story)),

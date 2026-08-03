@@ -11,6 +11,7 @@ import {
     getUserSchema,
     updateUserSchema,
     updateUserProfileSchema,
+    getUserProfileByUsernameSchema,
 } from '../schemas/userSchema.js';
 import {
     confirmPasswordChangeSchema,
@@ -33,6 +34,10 @@ router
     .route('/profile')
     .get(authenticateToken, UserController.getProfile)
     .patch(authenticateToken, validate(updateUserProfileSchema), UserController.updateProfile);
+
+router
+    .route('/profile/:username')
+    .get(validate(getUserProfileByUsernameSchema), UserController.getProfileByUsername);
 
 router
     .route('/:userId')
