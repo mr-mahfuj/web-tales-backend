@@ -7,6 +7,7 @@ import {
     UnauthorizedError,
     ValidationError,
 } from '../../../src/common/errors.js';
+import { ERROR_MESSAGES } from '../../../src/constants/index.js';
 import {
     buildRegisterDTO,
     buildLoginDTO,
@@ -156,6 +157,10 @@ describe('AuthService', () => {
         it('throws ConflictError when email already exists', async () => {
             userServiceMock.existsByEmail.mockResolvedValue(true);
 
+            await expect(service.register(buildRegisterDTO())).rejects.toMatchObject({
+                message: ERROR_MESSAGES.EMAIL_ALREADY_IN_USE,
+                details: { field: 'email' },
+            });
             await expect(service.register(buildRegisterDTO())).rejects.toThrow(ConflictError);
             expect(authRepositoryMock.createUserWithAuth).not.toHaveBeenCalled();
         });
@@ -163,7 +168,11 @@ describe('AuthService', () => {
         it('throws ConflictError when username already exists', async () => {
             userServiceMock.existsByEmail.mockResolvedValue(false);
             userServiceMock.existsByUsername.mockResolvedValue(true);
-
+            await expect(service.register(buildRegisterDTO())).rejects.toMatchObject({
+                message: ERROR_MESSAGES.USERNAME_ALREADY_TAKEN,
+                details: { field: 'username' },
+            });
+            await expect(service.register(buildRegisterDTO())).rejects.toThrow(ConflictError);
             await expect(service.register(buildRegisterDTO())).rejects.toThrow(ConflictError);
             expect(authRepositoryMock.createUserWithAuth).not.toHaveBeenCalled();
         });
@@ -271,7 +280,7 @@ describe('AuthService', () => {
             await expect(service.confirmEmail('valid-token')).rejects.toThrow(NotFoundError);
         });
 
-        it('throws ConflictError when the email is already verified', async () => {
+        it('returns successfully when the email is already verified', async () => {
             (jwt.verify as jest.Mock).mockReturnValue({
                 userId: 'u-1',
                 email: 'john@example.com',
@@ -281,7 +290,8 @@ describe('AuthService', () => {
                 buildUser({ id: 'u-1', isEmailVerified: true }),
             );
 
-            await expect(service.confirmEmail('valid-token')).rejects.toThrow(ConflictError);
+            await expect(service.confirmEmail('valid-token')).resolves.toBeUndefined();
+            expect(userServiceMock.markEmailVerified).not.toHaveBeenCalled();
         });
     });
 

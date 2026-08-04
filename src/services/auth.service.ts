@@ -36,8 +36,17 @@ function signToken(userId: string, role: Role = Role.ADMIN) {
 
 export class AuthService {
     async register(data: RegisterDTO) {
-        if (await userService.existsByEmail(data.email)) throw new ConflictError();
-        if (await userService.existsByUsername(data.username)) throw new ConflictError();
+        if (await userService.existsByEmail(data.email)) {
+            throw new ConflictError(ERROR_MESSAGES.EMAIL_ALREADY_IN_USE, {
+                field: 'email',
+            });
+        }
+
+        if (await userService.existsByUsername(data.username)) {
+            throw new ConflictError(ERROR_MESSAGES.USERNAME_ALREADY_TAKEN, {
+                field: 'username',
+            });
+        }
 
         const hashedPassword = await bcrypt.hash(data.password, env.saltRounds);
 
@@ -112,11 +121,9 @@ export class AuthService {
             throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
         }
 
-        if (user.isEmailVerified) {
-            throw new ConflictError(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED);
+        if (!user.isEmailVerified) {
+            await userService.markEmailVerified(user.id);
         }
-
-        await userService.markEmailVerified(user.id);
     }
 
     async resendConfirmationEmail(data: ResendConfirmationEmailDTO) {

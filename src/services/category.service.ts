@@ -35,11 +35,11 @@ export class CategoryService {
         }
     }
 
-    existsByIdCheck(id: string) {
-        categoryRepository.existsById(id);
+    async existsByIdCheck(id: string): Promise<boolean> {
+        return categoryRepository.existsById(id);
     }
 
-    existsByNameCheck(name: string) {
-        categoryRepository.existsByName(name);
+    async existsByNameCheck(name: string): Promise<boolean> {
+        return categoryRepository.existsByName(name);
     }
 }

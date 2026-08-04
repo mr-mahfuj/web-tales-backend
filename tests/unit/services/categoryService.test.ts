@@ -115,14 +115,18 @@ describe('CategoryService', () => {
     });
 
     describe('existsByIdCheck / existsByNameCheck', () => {
-        it('calls the repository with the given id', () => {
-            service.existsByIdCheck('c-1');
+        it('returns the repository result for the given id', async () => {
+            categoryRepositoryMock.existsById.mockResolvedValue(true);
+
+            await expect(service.existsByIdCheck('c-1')).resolves.toBe(true);
 
             expect(categoryRepositoryMock.existsById).toHaveBeenCalledWith('c-1');
         });
 
-        it('calls the repository with the given name', () => {
-            service.existsByNameCheck('Adventure');
+        it('returns the repository result for the given name', async () => {
+            categoryRepositoryMock.existsByName.mockResolvedValue(false);
+
+            await expect(service.existsByNameCheck('Adventure')).resolves.toBe(false);
 
             expect(categoryRepositoryMock.existsByName).toHaveBeenCalledWith('Adventure');
         });
