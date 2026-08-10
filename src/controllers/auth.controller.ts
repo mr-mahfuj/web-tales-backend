@@ -6,6 +6,7 @@ import type {
     loginSchema,
     initiatePasswordChangeSchema,
     confirmPasswordChangeSchema,
+    forgotPasswordSchema,
     resendConfirmationEmailSchema,
 } from '../schemas/authSchema.js';
 import type { emailVerificationTokenSchema } from '../schemas/emailVerificationTokenSchema.js';
@@ -44,6 +45,11 @@ export const AuthController = {
         res: Response,
     ) => {
         await authService.resendConfirmationEmail(req.validated!.body);
+        return res.sendStatus(StatusCode.NoContent);
+    },
+
+    forgotPassword: async (req: ValidatedRequest<typeof forgotPasswordSchema>, res: Response) => {
+        await authService.forgotPassword(req.validated!.body);
         return res.sendStatus(StatusCode.NoContent);
     },
 

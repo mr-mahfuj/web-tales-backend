@@ -135,7 +135,7 @@ describe('StoryController', () => {
             storyServiceMock.generateStorySummary.mockResolvedValue(story);
 
             const req = {
-                validated: { params: { storyId: 's-1' }, regenerate: { regenerate: 'true' } },
+                validated: { params: { storyId: 's-1' }, query: { regenerate: 'true' } },
             } as unknown as Request;
             const res = createMockRes();
 

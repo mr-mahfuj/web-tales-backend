@@ -67,6 +67,22 @@ export const getStorySchema = {
     params: storyIdParamsSchema,
 };
 
+export const generateStorySummarySchema = {
+    params: storyIdParamsSchema,
+    query: z
+        .object({
+            regenerate: z
+                .preprocess((value) => {
+                    if (typeof value === 'string') {
+                        return value.toLowerCase() === 'true';
+                    }
+                    return value;
+                }, z.boolean().optional())
+                .optional(),
+        })
+        .strict(),
+};
+
 export const deleteStorySchema = {
     params: storyIdParamsSchema,
 };

@@ -39,19 +39,27 @@ export function requireAccess(
                 return next();
             }
 
-            const { storyId } = req.params;
+            const storyId = typeof req.params.storyId === 'string' ? req.params.storyId : undefined;
+            const userId = typeof req.params.userId === 'string' ? req.params.userId : undefined;
 
-            if (!storyId || typeof storyId !== 'string') {
-                return next(new BadRequestError());
+            if (storyId) {
+                const owner = await isOwner(storyId, req.user.id);
+
+                if (!owner) {
+                    return next(new ForbiddenError(ERROR_MESSAGES.INSUFFICIENT_PERMISSIONS));
+                }
+
+                return next();
             }
 
-            const owner = await isOwner(storyId, req.user.id);
-
-            if (!owner) {
-                return next(new ForbiddenError(ERROR_MESSAGES.INSUFFICIENT_PERMISSIONS));
+            if (userId) {
+                if (req.user.id !== userId) {
+                    return next(new ForbiddenError(ERROR_MESSAGES.INSUFFICIENT_PERMISSIONS));
+                }
+                return next();
             }
 
-            return next();
+            return next(new BadRequestError());
         } catch (err) {
             return next(err);
         }

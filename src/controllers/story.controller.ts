@@ -5,6 +5,7 @@ import type {
     createStorySchema,
     getAllStoriesSchema,
     getStorySchema,
+    generateStorySummarySchema,
     updateStorySchema,
     deleteStorySchema,
 } from '../schemas/storySchema.js';
@@ -48,9 +49,12 @@ export const StoryController = {
         });
     },
 
-    generateSummary: async (req: ValidatedRequest<typeof getStorySchema>, res: Response) => {
+    generateSummary: async (
+        req: ValidatedRequest<typeof generateStorySummarySchema>,
+        res: Response,
+    ) => {
         const { storyId } = req.validated.params;
-        const { regenerate } = req.validated.regenerate;
+        const regenerate = req.validated.query.regenerate;
         const story = await storyService.generateStorySummary(storyId, regenerate);
         return res.status(StatusCode.Ok).json(story);
     },

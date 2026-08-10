@@ -150,6 +150,7 @@ describe('AuthService', () => {
                     username: createdUser.username,
                     name: createdUser.name,
                     email: createdUser.email,
+                    role: createdUser.role,
                 },
             });
         });
@@ -198,6 +199,7 @@ describe('AuthService', () => {
                     username: user.username,
                     name: user.name,
                     email: user.email,
+                    role: user.role,
                 },
             });
         });

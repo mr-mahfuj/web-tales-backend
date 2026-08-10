@@ -38,6 +38,7 @@ export class AIService {
                 'X-goog-api-key': this.apiKey,
             },
             body: JSON.stringify({
+                model: DEFAULT_AI_MODEL,
                 contents: [
                     {
                         parts: [{ text: `${SUMMARY_PROMPT}\n\n${content}` }],

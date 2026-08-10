@@ -10,6 +10,7 @@ import {
 import { ERROR_MESSAGES } from '../constants/index.js';
 import type {
     ConfirmPasswordChangeDTO,
+    ForgotPasswordDTO,
     InitiatePasswordChangeDTO,
     LoginDTO,
     RegisterDTO,
@@ -69,6 +70,7 @@ export class AuthService {
                 username: user.username,
                 name: user.name,
                 email: user.email,
+                role: user.role,
             },
         };
     }
@@ -101,6 +103,7 @@ export class AuthService {
                 username: user.username,
                 name: user.name,
                 email: user.email,
+                role: user.role,
             },
         };
     }
@@ -141,6 +144,30 @@ export class AuthService {
         });
     }
 
+    private async createPasswordChangeTokenAndNotify(
+        userId: string,
+        email: string,
+        username: string,
+    ) {
+        const token = generatePasswordChangeToken(userId, env.passwordChangeTokenExpiresIn);
+        await authRepository.setPasswordChangeToken(userId, token);
+        await sendPasswordChangeConfirmationEmail({
+            userId,
+            email,
+            username,
+            token,
+        });
+    }
+
+    async forgotPassword(data: ForgotPasswordDTO) {
+        const user = await userService.findUserByEmail(data.email);
+        if (!user) {
+            throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
+        }
+
+        await this.createPasswordChangeTokenAndNotify(user.id, user.email, user.username);
+    }
+
     async initiatePasswordChange(userId: string, data: InitiatePasswordChangeDTO) {
         const auth = await this.findAuthByUserId(userId);
 
@@ -150,17 +177,7 @@ export class AuthService {
         }
 
         const user = await userService.getUserById(userId);
-
-        const token = generatePasswordChangeToken(userId, env.passwordChangeTokenExpiresIn);
-
-        await authRepository.setPasswordChangeToken(userId, token);
-
-        await sendPasswordChangeConfirmationEmail({
-            userId,
-            email: user.email,
-            username: user.username,
-            token,
-        });
+        await this.createPasswordChangeTokenAndNotify(userId, user.email, user.username);
     }
 
     async validatePasswordChangeToken(token: string) {

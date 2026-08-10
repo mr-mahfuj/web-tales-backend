@@ -38,10 +38,17 @@ export const confirmPasswordChangeBodySchema = z
     })
     .strict();
 
+export const forgotPasswordBodySchema = z
+    .object({
+        email: emailSchema,
+    })
+    .strict();
+
 export const registerSchema = { body: registerBodySchema };
 export const loginSchema = { body: loginBodySchema };
 export const initiatePasswordChangeSchema = { body: initiatePasswordChangeBodySchema };
 export const confirmPasswordChangeSchema = { body: confirmPasswordChangeBodySchema };
+export const forgotPasswordSchema = { body: forgotPasswordBodySchema };
 
 export const resendConfirmationEmailBodySchema = z
     .object({
@@ -53,4 +60,5 @@ export const resendConfirmationEmailSchema = {
     body: resendConfirmationEmailBodySchema,
 };
 
+export type ForgotPasswordDTO = z.output<typeof forgotPasswordBodySchema>;
 export type ResendConfirmationEmailDTO = z.output<typeof resendConfirmationEmailBodySchema>;

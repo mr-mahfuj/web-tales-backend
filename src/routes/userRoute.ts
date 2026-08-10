@@ -26,7 +26,7 @@ const router = Router();
 router.get(
     '/',
     authenticateToken,
-    requireAccess(false, Role.ADMIN, Role.USER),
+    requireAccess(false, Role.ADMIN),
     validate(getAllUsersSchema),
     UserController.getAllUsers,
 );

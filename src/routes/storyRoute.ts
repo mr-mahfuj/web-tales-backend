@@ -8,6 +8,7 @@ import {
     createStorySchema,
     deleteStorySchema,
     getAllStoriesSchema,
+    generateStorySummarySchema,
     getStorySchema,
     updateStorySchema,
 } from '../schemas/storySchema.js';
@@ -46,8 +47,7 @@ router.post(
     '/:storyId/summary',
     authenticateToken,
     storyRateLimit,
-    validate(getStorySchema),
-    requireAccess(true, Role.ADMIN, Role.USER),
+    validate(generateStorySummarySchema),
     StoryController.generateSummary,
 );
 

@@ -180,13 +180,13 @@ describe('StoryService', () => {
             expect(result.sumary).toBe('Existing summary');
         });
 
-        it('regenerates the summary when regenerate is "true"', async () => {
+        it('regenerates the summary when regenerate is true', async () => {
             const story = buildStory({ storyId: 's-1', summary: 'Old summary', body: 'body text' });
             repo.findById.mockResolvedValue(story);
             aiService.generateSummary.mockResolvedValue({ summary: 'New summary' });
             repo.update.mockResolvedValue({ ...story, summary: 'New summary' });
 
-            const result = await service.generateStorySummary('s-1', 'true');
+            const result = await service.generateStorySummary('s-1', true);
 
             expect(aiService.generateSummary).toHaveBeenCalledWith(story.body);
             expect(repo.update).toHaveBeenCalledWith('s-1', { summary: 'New summary' });

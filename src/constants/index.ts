@@ -1,12 +1,14 @@
 export const AI_CONFIG = {
-    temperature: 0.3,
+    temperature: 0.0,
     maxOutputTokens: 300,
 } as const;
 
 export const SUMMARY_PROMPT =
-    'Summarize the following story in a concise paragraph of approximately 120–180 words. ' +
-    'Capture the main events, key context, and important outcomes while avoiding unnecessary details. ' +
-    'Return only the summary text with no preamble, labels, or markdown.';
+    'Read the story text below and write one clear paragraph of about 50-150 words. ' +
+    'Summarize only the story content. Focus on the main events, key context, and outcomes. ' +
+    'Do not include titles, headings, author names, dates, category names, bullets, lists, markdown, hyperlinks, or any metadata. ' +
+    'Do not repeat the prompt, do not add labels such as "Summary:" or "##", and do not mention word counts or instructions. ' +
+    'Return only the summary text in plain English as plain text with no preamble, no labels, and no formatting.';
 
 export const DEFAULT_AI_MODEL = 'gemini-flash-latest';
 
