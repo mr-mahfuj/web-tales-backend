@@ -45,6 +45,8 @@ model Story {
   summary   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  seriesTitle String?
+  seriesOrder Int?
 
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

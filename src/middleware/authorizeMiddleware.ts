@@ -8,13 +8,13 @@ import { Role } from '@prisma/client';
 const storyService = new StoryService();
 
 async function isOwner(storyId: string, userId: string): Promise<boolean> {
-    const story = await storyService.getStoryById(storyId);
+    const ownerId = await storyService.getStoryOwnerId(storyId);
 
-    if (!story) {
+    if (!ownerId) {
         throw new NotFoundError(ERROR_MESSAGES.STORY_NOT_FOUND);
     }
 
-    return story.userId === userId;
+    return ownerId === userId;
 }
 
 export function requireAccess(

@@ -75,6 +75,41 @@ export class AuthService {
         };
     }
 
+    async registerAdmin(data: RegisterDTO) {
+        if (await userService.existsByEmail(data.email)) {
+            throw new ConflictError(ERROR_MESSAGES.EMAIL_ALREADY_IN_USE, {
+                field: 'email',
+            });
+        }
+
+        if (await userService.existsByUsername(data.username)) {
+            throw new ConflictError(ERROR_MESSAGES.USERNAME_ALREADY_TAKEN, {
+                field: 'username',
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(data.password, env.saltRounds);
+
+        const user = await authRepository.createUserWithAuth({
+            username: data.username,
+            name: data.name,
+            email: data.email,
+            hashedPassword,
+            role: Role.ADMIN,
+            isEmailVerified: true,
+        });
+
+        return {
+            user: {
+                id: user.id,
+                username: user.username,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+            },
+        };
+    }
+
     async login(data: LoginDTO) {
         const user = await userService.findUserByEmail(data.email);
         if (!user) throw new UnauthorizedError();

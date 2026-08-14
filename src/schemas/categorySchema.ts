@@ -22,7 +22,7 @@ export const updateCategoryBodySchema = createCategoryBodySchema
     });
 
 export const categoryIdParamsSchema = z.object({
-    id: idSchema,
+    categoryId: idSchema,
 });
 
 export type CategoryIdParams = z.infer<typeof categoryIdParamsSchema>;

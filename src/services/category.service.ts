@@ -26,13 +26,16 @@ export class CategoryService {
         if (!(await categoryRepository.existsById(id))) {
             throw new NotFoundError(ERROR_MESSAGES.CATEGORY_NOT_FOUND);
         }
-        return categoryRepository.update(id, data);
+
+        return new CategoryDTO(await categoryRepository.update(id, data));
     }
 
-    async deleteCategory(id: string) {
+    async deleteCategory(id: string): Promise<void> {
         if (!(await categoryRepository.existsById(id))) {
             throw new NotFoundError(ERROR_MESSAGES.CATEGORY_NOT_FOUND);
         }
+
+        await categoryRepository.delete(id);
     }
 
     async existsByIdCheck(id: string): Promise<boolean> {

@@ -9,6 +9,8 @@ export class AuthRepository {
                 username: data.username,
                 name: data.name,
                 email: data.email,
+                ...(data.role ? { role: data.role } : {}),
+                ...(data.isEmailVerified ? { isEmailVerified: data.isEmailVerified } : {}),
                 auth: {
                     create: {
                         password: data.hashedPassword,

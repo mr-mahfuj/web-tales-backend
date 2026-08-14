@@ -16,6 +16,7 @@ import {
 import {
     confirmPasswordChangeSchema,
     initiatePasswordChangeSchema,
+    registerSchema,
 } from '../schemas/authSchema.js';
 import { emailVerificationTokenSchema } from '../schemas/emailVerificationTokenSchema.js';
 import { PASSWORD_RATE_LIMITS } from '../constants/index.js';
@@ -29,6 +30,14 @@ router.get(
     requireAccess(false, Role.ADMIN),
     validate(getAllUsersSchema),
     UserController.getAllUsers,
+);
+
+router.post(
+    '/admins',
+    authenticateToken,
+    requireAccess(false, Role.ADMIN),
+    validate(registerSchema),
+    AuthController.createAdmin,
 );
 router
     .route('/profile')

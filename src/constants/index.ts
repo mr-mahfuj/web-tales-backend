@@ -1,16 +1,7 @@
 export const AI_CONFIG = {
     temperature: 0.0,
-    maxOutputTokens: 300,
+    maxOutputTokens: 1024,
 } as const;
-
-export const SUMMARY_PROMPT =
-    'Read the story text below and write one clear paragraph of about 50-150 words. ' +
-    'Summarize only the story content. Focus on the main events, key context, and outcomes. ' +
-    'Do not include titles, headings, author names, dates, category names, bullets, lists, markdown, hyperlinks, or any metadata. ' +
-    'Do not repeat the prompt, do not add labels such as "Summary:" or "##", and do not mention word counts or instructions. ' +
-    'Return only the summary text in plain English as plain text with no preamble, no labels, and no formatting.';
-
-export const DEFAULT_AI_MODEL = 'gemini-flash-latest';
 
 export const PASSWORD = {
     MIN: 8,
@@ -129,6 +120,7 @@ export const ERROR_MESSAGES = {
     OWN_PROFILE_REQUIRED: 'You can only access your own profile',
 
     AI_SERVICE_FAILED: 'AI service failed to generate summary',
+    AI_CATEGORY_SUGGESTION_FAILED: 'AI service failed to suggest categories',
 
     DATABASE_URL_REQUIRED: 'DATABASE_URL is required to initialize PrismaClient',
     PASSWORD_CHANGE_TOKEN_REQUIRED:

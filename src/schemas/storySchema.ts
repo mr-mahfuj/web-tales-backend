@@ -87,6 +87,17 @@ export const deleteStorySchema = {
     params: storyIdParamsSchema,
 };
 
+export const suggestCategoriesBodySchema = z
+    .object({
+        title: titleSchema.optional(),
+        body: bodySchema,
+    })
+    .strict();
+
+export const suggestCategoriesSchema = {
+    body: suggestCategoriesBodySchema,
+};
+
 export const listStoriesQuerySchema = createListQuerySchema(storyOrderBySchema).extend({
     category: z.preprocess(
         emptyToUndefined,

@@ -34,6 +34,7 @@ export class StoryDTO {
     readonly updatedAt: Date;
     readonly author: AuthorDTO;
     readonly categories: CategoryRefDTO[];
+    similar: StoryListItemDTO[] = [];
 
     constructor(story: StoryDetailRow) {
         this.userId = story.userId;

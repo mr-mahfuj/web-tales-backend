@@ -122,4 +122,22 @@ export class StoryRepository {
         });
         return story !== null;
     }
+
+    async findSimilarByCategories(
+        categoryIds: string[],
+        excludeStoryId: string,
+        limit: number,
+    ): Promise<StoryListRow[]> {
+        if (categoryIds.length === 0) return [];
+
+        return prisma.story.findMany({
+            where: {
+                storyId: { not: excludeStoryId },
+                categories: { some: { id: { in: categoryIds } } },
+            },
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+            select: storyListSelect,
+        });
+    }
 }

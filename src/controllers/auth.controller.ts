@@ -20,6 +20,11 @@ export const AuthController = {
         return res.status(StatusCode.Created).json(result);
     },
 
+    createAdmin: async (req: ValidatedRequest<typeof registerSchema>, res: Response) => {
+        const result = await authService.registerAdmin(req.validated!.body);
+        return res.status(StatusCode.Created).json(result);
+    },
+
     login: async (req: ValidatedRequest<typeof loginSchema>, res: Response) => {
         const result = await authService.login(req.validated!.body);
         res.cookie('token', result.token, {

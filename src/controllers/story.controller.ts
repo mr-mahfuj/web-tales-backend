@@ -8,6 +8,7 @@ import type {
     generateStorySummarySchema,
     updateStorySchema,
     deleteStorySchema,
+    suggestCategoriesSchema,
 } from '../schemas/storySchema.js';
 import type { ValidatedRequest } from '../types/validation.js';
 
@@ -57,5 +58,14 @@ export const StoryController = {
         const regenerate = req.validated.query.regenerate;
         const story = await storyService.generateStorySummary(storyId, regenerate);
         return res.status(StatusCode.Ok).json(story);
+    },
+
+    suggestCategories: async (
+        req: ValidatedRequest<typeof suggestCategoriesSchema>,
+        res: Response,
+    ) => {
+        const { title, body } = req.validated.body;
+        const categories = await storyService.suggestCategoriesForStory(title, body);
+        return res.status(StatusCode.Ok).json({ categories });
     },
 };

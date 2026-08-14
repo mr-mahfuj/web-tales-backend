@@ -11,6 +11,7 @@ import {
     generateStorySummarySchema,
     getStorySchema,
     updateStorySchema,
+    suggestCategoriesSchema,
 } from '../schemas/storySchema.js';
 import { STORY_RATE_LIMITS } from '../constants/index.js';
 import { Role } from '@prisma/client';
@@ -49,6 +50,14 @@ router.post(
     storyRateLimit,
     validate(generateStorySummarySchema),
     StoryController.generateSummary,
+);
+
+router.post(
+    '/suggest-categories',
+    authenticateToken,
+    storyRateLimit,
+    validate(suggestCategoriesSchema),
+    StoryController.suggestCategories,
 );
 
 export default router;
