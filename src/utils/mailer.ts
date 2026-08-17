@@ -1,4 +1,4 @@
-import { resend } from '../config/emailTransporter.js';
+import { mailjet } from '../config/emailTransporter.js';
 import { emailGenerator } from './emailGenerator.js';
 import { env } from '../config/env.js';
 import { ERROR_MESSAGES } from '../constants/index.js';
@@ -19,19 +19,33 @@ export async function sendEmail({ to, subject, template, values }: SendEmailPara
         .map(([key, value]) => `${key}: ${value}`)
         .join('\n');
 
-    const { data, error } = await resend.emails.send({
-        from: `Web Tales <${env.emailFrom}>`,
-        to,
-        subject,
-        html,
-        text,
+    const credentials = Buffer.from(`${mailjet.apiKey}:${mailjet.secretKey}`).toString('base64');
+
+    const response = await fetch(mailjet.apiUrl, {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json',
+            authorization: `Basic ${credentials}`,
+        },
+        body: JSON.stringify({
+            Messages: [
+                {
+                    From: { Email: env.emailFrom, Name: 'Web Tales' },
+                    To: [{ Email: to }],
+                    Subject: subject,
+                    TextPart: text,
+                    HTMLPart: html,
+                },
+            ],
+        }),
     });
 
-    if (error) {
-        throw new Error(`Failed to send email: ${error.message}`);
+    if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`Failed to send email: ${errorBody}`);
     }
 
-    return data;
+    return response.json();
 }
 
 export async function sendVerificationEmail({

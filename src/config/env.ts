@@ -14,7 +14,8 @@ const envSchema = z.object({
     JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
     JWT_EXPIRES_IN: z.string().default('30d'),
     SALT_ROUNDS: z.coerce.number().default(10),
-    RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required'),
+    MAILJET_API_KEY: z.string().min(1, 'MAILJET_API_KEY is required'),
+    MAILJET_SECRET_KEY: z.string().min(1, 'MAILJET_SECRET_KEY is required'),
     EMAIL_FROM: z.string().min(1, 'EMAIL_FROM is required'),
     EMAIL_CONFIRMATION_TOKEN_EXPIRES_IN: z
         .string()
@@ -45,7 +46,8 @@ export const env = {
     jwtSecret: parsed.data.JWT_SECRET,
     jwtExpiresIn: parsed.data.JWT_EXPIRES_IN as StringValue,
     saltRounds: parsed.data.SALT_ROUNDS,
-    resendApiKey: parsed.data.RESEND_API_KEY,
+    mailjetApiKey: parsed.data.MAILJET_API_KEY,
+    mailjetSecretKey: parsed.data.MAILJET_SECRET_KEY,
     emailFrom: parsed.data.EMAIL_FROM,
     emailConfirmationTokenExpiresIn: parsed.data.EMAIL_CONFIRMATION_TOKEN_EXPIRES_IN as StringValue,
     geminiAPIKey: parsed.data.GOOGLE_GEMINI_API_KEY,
