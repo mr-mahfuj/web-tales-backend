@@ -1,6 +1,7 @@
 import type { Response } from 'express';
 import { StatusCode } from '../constants/index.js';
 import { AuthService } from '../services/auth.service.js';
+import { env } from '../config/env.js';
 import type {
     registerSchema,
     loginSchema,
@@ -27,10 +28,11 @@ export const AuthController = {
 
     login: async (req: ValidatedRequest<typeof loginSchema>, res: Response) => {
         const result = await authService.login(req.validated!.body);
+        const isProduction = env.nodeEnv === 'production';
         res.cookie('token', result.token, {
             httpOnly: true,
-            secure: false,
-            sameSite: 'lax',
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
             maxAge: 24 * 60 * 60 * 1000,
         });
         return res.status(StatusCode.Ok).json(result);

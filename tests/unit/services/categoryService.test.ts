@@ -14,6 +14,7 @@ jest.mock('../../../src/repositories/category.repository.js', () => {
         findAll: jest.fn(),
         existsById: jest.fn(),
         update: jest.fn(),
+        delete: jest.fn(),
     };
     return {
         CategoryRepository: jest.fn().mockImplementation(() => mockRepo),
@@ -30,6 +31,7 @@ const { __mockRepo: categoryRepositoryMock } = jest.requireMock(
         findAll: jest.Mock;
         existsById: jest.Mock;
         update: jest.Mock;
+        delete: jest.Mock;
     };
 };
 

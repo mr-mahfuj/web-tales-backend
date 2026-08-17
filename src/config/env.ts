@@ -14,10 +14,8 @@ const envSchema = z.object({
     JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
     JWT_EXPIRES_IN: z.string().default('30d'),
     SALT_ROUNDS: z.coerce.number().default(10),
-    SMTP_PORT: z.coerce.number(),
-    SMTP_USER: z.string().min(1, 'SMTP Mail is required'),
-    SMTP_PASS: z.string().min(1, 'SMTP Password is required'),
-    SMTP_HOST: z.string().min(1, 'SMTP Host is required'),
+    RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required'),
+    EMAIL_FROM: z.string().min(1, 'EMAIL_FROM is required'),
     EMAIL_CONFIRMATION_TOKEN_EXPIRES_IN: z
         .string()
         .min(1, 'Email confirmation token expiration time is required.')
@@ -47,10 +45,8 @@ export const env = {
     jwtSecret: parsed.data.JWT_SECRET,
     jwtExpiresIn: parsed.data.JWT_EXPIRES_IN as StringValue,
     saltRounds: parsed.data.SALT_ROUNDS,
-    smtpPort: parsed.data.SMTP_PORT,
-    smtpUser: parsed.data.SMTP_USER,
-    smtpPass: parsed.data.SMTP_PASS,
-    smtpHost: parsed.data.SMTP_HOST,
+    resendApiKey: parsed.data.RESEND_API_KEY,
+    emailFrom: parsed.data.EMAIL_FROM,
     emailConfirmationTokenExpiresIn: parsed.data.EMAIL_CONFIRMATION_TOKEN_EXPIRES_IN as StringValue,
     geminiAPIKey: parsed.data.GOOGLE_GEMINI_API_KEY,
     aiModel: parsed.data.MODEL,

@@ -29,5 +29,6 @@ export function createStoryRepositoryMock(): StoryRepositoryMock {
         existsById: jest.fn(),
         update: jest.fn(),
         delete: jest.fn(),
+        findSimilarByCategories: jest.fn().mockResolvedValue([]),
     } as unknown as StoryRepositoryMock;
 }

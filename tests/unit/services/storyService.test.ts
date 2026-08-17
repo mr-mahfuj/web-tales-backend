@@ -92,16 +92,22 @@ describe('StoryService', () => {
             );
         });
 
-        it('throws AIServiceError when summary generation fails', async () => {
+        it('creates the story without a summary when the AI service fails', async () => {
             const input = buildCreateStoryDTO({
                 generateSummary: true,
                 body: 'Some body',
                 categoryIds: [],
             });
-            aiService.generateSummary.mockResolvedValue({ summary: undefined });
+            aiService.generateSummary.mockRejectedValue(new AIServiceError());
+            repo.create.mockResolvedValue(buildStory({ summary: null }));
 
-            await expect(service.createStory(input)).rejects.toThrow(AIServiceError);
-            expect(repo.create).not.toHaveBeenCalled();
+            const result = await service.createStory(input);
+
+            expect(aiService.generateSummary).toHaveBeenCalledWith(input.body);
+            expect(repo.create).toHaveBeenCalledWith(
+                expect.not.objectContaining({ summary: expect.anything() }),
+            );
+            expect(result.sumary).toBeNull();
         });
     });
 

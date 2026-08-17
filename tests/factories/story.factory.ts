@@ -25,6 +25,8 @@ export function buildStory(overrides = {}) {
         title: 'A Great Story',
         body: 'Once upon a time...',
         summary: null,
+        seriesTitle: null,
+        seriesOrder: null,
         userId: 'u-1',
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01'),
